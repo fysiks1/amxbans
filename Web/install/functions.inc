@@ -54,15 +54,14 @@ function is__writable($path) {
         unlink($path);
     return true;
 }
-function sql_get_privilege() {
+function sql_get_privilege($db) {
 	$privileges=array();
+
 	//global privileges
-	$query=mysql_query("SHOW GRANTS FOR CURRENT_USER()")	or die (mysql_error());
+	$query=$db->query("SHOW GRANTS FOR CURRENT_USER()")	or die ($db->error);
 	$db_db = str_replace("_","\_",$_SESSION["dbdb"]);
-	while($row = mysql_fetch_array($query)){
+	while($row = $query->fetch_array()){
 		$v = $row[0];
-		
-		// Thanks HoLyCoW for the sql_get_privilege() bug fix
 		if(stristr($v,$db_db) || stristr($v,"*.*")) {
 			if(stristr($v,"ALL PRIVILEGES")) {
 				$privileges = array("SELECT","INSERT","UPDATE","DELETE","CREATE");
@@ -76,28 +75,6 @@ function sql_get_privilege() {
 		}
 	}
 	return $privileges;
-}
-function sql_connect() {
-	global $msg;
-	$mysql=@mysql_connect($_SESSION["dbhost"],$_SESSION["dbuser"],$_SESSION["dbpass"]) or $msg="_CANTCONNECT";
-	if(!$msg) $ressource=@mysql_select_db($_SESSION["dbdb"]) or $msg="_CANTSELECTDB";
-	if($msg) return false;
-	return true;
-}
-function sql_create_table($table,$structure) {
-	$query=@mysql_query("CREATE TABLE `".$table."` (".$structure.") DEFAULT CHARSET=utf8");
-		if(!$query) return ("_ALREADYEXISTS");
-	return ("_CREATED");
-}
-function sql_insert_data($table,$data) {
-	$query=@mysql_query("INSERT INTO `".$table."` ".$data);
-		if(!$query) return ("_FAILED");
-	return ("_INSERTED");
-}
-function sql_insert_setting($sqlquery) {
-	$query=@mysql_query($sqlquery);
-		if(!$query) return ("_FAILED");
-	return ("_INSERTED");
 }
 function write_cfg_file($file,$content) {
 	if(!file_exists($file)) {

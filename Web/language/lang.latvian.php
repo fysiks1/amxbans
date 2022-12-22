@@ -12,7 +12,7 @@ define("_LOCALE","lv_LV"); //de_DE,fr_FR,en_EN...
 define("_SHORTSECONDS","Sek.");
 define("_NOACCESS","Tev nav pieejas, lai apskatītu šo lapu!");
 define("_LOADTIME","Lapa atvērta ");
-define("_BANSINDB","Pavisam bani datubāzē");
+define("_BANSINDB","Bani datubāzē");
 define("_BY","veidoja");
 define("_OR","vai");
 define("_ON","ieslēgts");

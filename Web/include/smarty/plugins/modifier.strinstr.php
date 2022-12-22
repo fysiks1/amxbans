@@ -5,7 +5,7 @@
  */
 function smarty_modifier_strinstr($source, $splitwith, $search, $return)
 {
-	$array=split($splitwith,$source);
+	$array=explode($splitwith,$source);
 	if( in_array($search,$array)) {
 		return $return;
 		exit;

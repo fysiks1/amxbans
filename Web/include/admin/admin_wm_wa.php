@@ -30,16 +30,16 @@
 	$uid=(int)$_POST["uid"];
 	//Levels holen
 	$levels=array();
-	$query = mysql_query("SELECT `level` FROM `".$config->db_prefix."_levels` ORDER BY `level`") or die (mysql_error());
-	while($result = mysql_fetch_object($query)) {
+	$query = $mysql->query("SELECT `level` FROM `".$config->db_prefix."_levels` ORDER BY `level`") or die ($mysql->error);
+	while($result = $query->fetch_object()) {
 		$level=array($result->level=>$result->level);
 		$levels[]=$result->level;
 	}
 	
 	function checkAdmin($nickname, $email) {
-		global $config;
-		$query = mysql_query("SELECT * FROM `".$config->db_prefix."_webadmins` WHERE username='".$nickname."' OR email='".$email."'") or die (mysql_error());
-		if(mysql_num_rows($query)) {
+		global $config, $mysql;
+		$query = $mysql->query("SELECT * FROM `".$config->db_prefix."_webadmins` WHERE username='".$nickname."' OR email='".$email."'") or die ($mysql->error);
+		if($query->num_rows) {
 			return true;
 		}
 		return false;
@@ -59,7 +59,7 @@
 		
 		if(!$user_msg) {
 			#echo "pw ".$newpw." wird gesetzt.";
-			$query = mysql_query("UPDATE `".$config->db_prefix."_webadmins` SET 
+			$query = $mysql->query("UPDATE `".$config->db_prefix."_webadmins` SET 
 						`password`='".md5($newpw)."'
 						WHERE `id`=".$uid." LIMIT 1") or $user_msg="_PASSWORDCHANGEDFAILED";
 			if(!$user_msg) {
@@ -83,19 +83,19 @@
 	//Webadmin save
 	if(isset($_POST["save"]) && $_SESSION['webadmins_edit']) {
 		if(!$user_msg) {
-			$query = mysql_query("UPDATE `".$config->db_prefix."_webadmins` SET 
+			$query = $mysql->query("UPDATE `".$config->db_prefix."_webadmins` SET 
 						`username`='".$name."',
 						`level`='".(int)$_POST["level"]."',
 						`email`='".$email."',
 						`logcode`='' 
-						WHERE `id`=".$uid." LIMIT 1") or die (mysql_error());
+						WHERE `id`=".$uid." LIMIT 1") or die ($mysql->error);
 			$user_msg[]='_WADMINSAVED';
 			log_to_db("Webadmin config","Edited user: ".html_safe($_POST["name"])." (id: ".$uid.")");
 		}
 	}
 	//Webadmin delete
 	if(isset($_POST["del"]) && $_SESSION['webadmins_edit']) {
-		$query = mysql_query("DELETE FROM `".$config->db_prefix."_webadmins` WHERE `id`=".$uid." LIMIT 1") or die (mysql_error());
+		$query = $mysql->query("DELETE FROM `".$config->db_prefix."_webadmins` WHERE `id`=".$uid." LIMIT 1") or die ($mysql->error);
 		$user_msg[]='_WADMINDELETED';
 		log_to_db("Webadmin config","Deleted user: ".html_safe($_POST["name"]));
 	}
@@ -118,11 +118,11 @@
 		}
 		if(!$user_msg) {
 			//save webadmin to db
-			$query = mysql_query("INSERT INTO `".$config->db_prefix."_webadmins` 
+			$query = $mysql->query("INSERT INTO `".$config->db_prefix."_webadmins` 
 						(`username`,`password`,`level`,`email`) 
 						VALUES 
 						('".$name."','".md5($pw)."','".$level."','".$email."')
-						") or $user_msg[]='_WADMINADDEDFAILED';#die (mysql_error());
+						") or $user_msg[]='_WADMINADDEDFAILED';#die ($mysql->error);
 			if(!$user_msg) {
 				$user_msg[]='_WADMINADDED';
 				log_to_db("User Level config","Added user: ".html_safe($_POST["name"])." (level ".$level.")");

@@ -8,7 +8,7 @@
 	<meta http-equiv="content-type" content="text/html" charset="utf-8" />
 	<meta name="description" content="A ban system for the HL1 engine to manage multiple server bans."/>
 	<meta name="keywords" content="amx, bans, amxbans" />
-	<meta name="author" content="setoy, shorty, Sleepwalker" />
+	<meta name="author" content="setoy, shorty, Sleepwalker, indianiso1" />
 	<meta http-equiv="pragma" content="no-cache" /> 
 	<meta http-equiv="cache-control" content="no-cache" />
 	<link rel="stylesheet" type="text/css" href="templates/{$design}_css/style.css" />

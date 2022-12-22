@@ -35,7 +35,7 @@
 		$use_static_bantime=$_POST["use_static_bantime"];
 		$user_id=$_POST["hid_uid"];
 		//delete all admins for this server
-		$query = mysql_query("DELETE FROM `".$config->db_prefix."_admins_servers` WHERE `server_id`=".$sid) or die (mysql_error());
+		$query = $mysql->query("DELETE FROM `".$config->db_prefix."_admins_servers` WHERE `server_id`=".$sid) or die ($mysql->error);
 		//search for the new settings
 		if(is_array($aktiv)) {
 			foreach($aktiv as $k => $aid) {
@@ -44,11 +44,11 @@
 					$sban=sql_safe(trim($use_static_bantime[$k]));
 					$uid=sql_safe(trim($user_id[$k]));
 					//safe the admin to the db
-					$query = mysql_query("INSERT INTO `".$config->db_prefix."_admins_servers` 
+					$query = $mysql->query("INSERT INTO `".$config->db_prefix."_admins_servers` 
 								(`admin_id`,`server_id`,`custom_flags`,`use_static_bantime`) 
 								VALUES 
 								('".(int)$uid."','".$sid."','".trim($cflags)."','".$sban."')
-								") or die (mysql_error());
+								") or die ($mysql->error);
 				}
 			}
 		}

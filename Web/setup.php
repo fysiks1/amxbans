@@ -30,7 +30,8 @@ session_start();
 require_once("install/functions.inc");
 require_once("include/functions.inc.php");
 
-$config->v_web = "6.0.3";
+$config = (object)array();
+$config->v_web = "6.14.4";
 
 
 //installation are 6 sites
@@ -55,20 +56,15 @@ if($sitenr < 1 || $sitenr > $sitenrall) $sitenr=1;
 /////////////// basic functions /////////////////
 
 //$config->path_root=str_replace("/".basename($_SERVER["SCRIPT_FILENAME"]),"",$_SERVER["SCRIPT_FILENAME"]);
-$config->path_root=str_replace("/".basename(str_replace("\\", "/", $_SERVER["SCRIPT_FILENAME"])),"",str_replace("\\", "/", $_SERVER["SCRIPT_FILENAME"]));
-$config->document_root=str_replace("/".basename($_SERVER["PHP_SELF"]),"",$_SERVER["PHP_SELF"]);
+$config->path_root=str_replace(DIRECTORY_SEPARATOR . basename(__FILE__), '', __FILE__);
+$config->document_root=str_replace("/". basename($_SERVER["PHP_SELF"]),"",$_SERVER["PHP_SELF"]);
 $config->templatedir = $config->path_root."/install";
 $config->langfilesdir = $config->path_root."/install/language/";
-$config->default_lang = "german";
+$config->default_lang = "english";
 if(empty($_SESSION["lang"])) $_SESSION["lang"]="english";
-
+//debug
 if(!is__writable($config->path_root."/include/smarty/templates_c/")) {
-	echo '<br />
-			<table border="0" align="center">
-			<tr>
-				<td align="center" style="color: #c04040;font-width=bold;font-size=18px;"><img src="images/warning.gif" /> <u>Directory include/smarty/templates_c is not writable !!</u></td>
-			</tr>
-		</table>';
+	echo '<div style="text-align: center; margin-top: 10%; color: #c04040;font-width=bold;font-size=18px;"><img src="images/warning.gif" /> <u>Directory include/smarty/templates_c is not writable !!</u></div>';
 	exit;
 }
 
@@ -78,11 +74,11 @@ define("SMARTY_DIR", $config->path_root."/include/smarty/");
 require_once(SMARTY_DIR."Smarty.class.php");
 
 class dynamicPage extends Smarty {
-	function dynamicPage() {
+	function __construct() {
 
 		global $config;
 
-		$this->Smarty();
+		parent::__construct();
 
 		$this->template_dir = $config->templatedir;
 		$this->compile_dir	= SMARTY_DIR."templates_c/";
@@ -90,7 +86,7 @@ class dynamicPage extends Smarty {
 		$this->cache_dir	= SMARTY_DIR."cache/";
 		$this->caching		= false;
 		
-		//for changing templates it´s better "true", but slow down site load
+		//for changing templates itï¿½s better "true", but slow down site load
 		$this->force_compile = true;
 		$this->caching = false;
 		
@@ -118,7 +114,7 @@ if($sitenr==2) {
 			"version_php"=>phpversion(),
 			"version_amxbans_web"=>$config->v_web,
 			"server_software"=>$_SERVER["SERVER_SOFTWARE"],
-			"mysql_version"=>mysql_get_client_info(),
+			"mysql_version"=>mysqli_get_client_info(),
 			"bcmath"=>(extension_loaded('bcmath')=="1")?"_YES":"_NO",
 			"gmp"=>(extension_loaded('gmp')=="1")?"_YES":"_NO"
 		);
@@ -174,16 +170,15 @@ if($sitenr==4 && isset($_POST["check4"])) {
 		$msg="_NOREQUIREDFIELDS";
 	}
 	
-	$mysql=@mysql_connect($dbhost,$dbuser,$dbpass) or $msg="_CANTCONNECT";
+	$mysql= new mysqli($dbhost,$dbuser,$dbpass, $dbdb);
+	if (mysqli_connect_errno()) $msg="_CANTCONNECT";
 	if(!$msg) {
-		$enc = @mysql_query("SET CHARACTER SET 'utf-8'");
-		$enc = @mysql_query("SET NAMES 'utf8'");
-		$ressource=@mysql_select_db($dbdb) or $msg="_CANTSELECTDB";
+		$enc = @$mysql->set_charset('utf8');
 	}
 	
 	//get user privileges
 	if(!$msg) {
-		$previleges=sql_get_privilege();
+		$previleges=sql_get_privilege($mysql);
 		$prev[]=array("name"=>"SELECT","value"=>in_array("SELECT",$previleges));
 		$prev[]=array("name"=>"INSERT","value"=>in_array("INSERT",$previleges));
 		$prev[]=array("name"=>"UPDATE","value"=>in_array("UPDATE",$previleges));
@@ -196,12 +191,11 @@ if($sitenr==4 && isset($_POST["check4"])) {
 	}
 	//check for existing tables
 	if(!$msg) {
-		$ressource=@mysql_select_db($dbdb);
 		//search for existing dbprefix
-		if( mysql_num_rows( @mysql_query("SHOW TABLES FROM `".$dbdb."` LIKE '".$dbprefix."\_%'"))) {
+		if($mysql->query("SHOW TABLES FROM `".$dbdb."` LIKE '".$dbprefix."\_%'")->num_rows) {
 			$prefix_exists=true;
 			//search for field "imported" in bans table, added since 6.0
-			if( mysql_num_rows( @mysql_query("SHOW COLUMNS FROM `".$dbprefix."_bans` WHERE Field LIKE 'imported'"))) {
+			if( @$mysql->query("SHOW COLUMNS FROM `".$dbprefix."_bans` WHERE Field LIKE 'imported'")->num_rows) {
 				$prefix_isnew=true;
 			}
 		}
@@ -270,37 +264,37 @@ if($sitenr==6) $smarty->assign("checkvalue","_STEP7");
 
 /////////////// site 7 end /////////////////
 if($sitenr==7 && $_SESSION["dbcheck"]==true && $_SESSION["admincheck"]==true && !isset($_POST["check7"])) {
-	
-	if(sql_connect()) {
-		//get tables structure
-		include("install/tables.inc");
-		//create db structure
-		foreach($table_create as $k => $v) {
-			$table=array("table"=>$k,"success"=>sql_create_table($k,$v));
-			$tables[]=$table;
-		}
-		//get default data
-		include("install/datas.inc");
-		//create default data
-		foreach($data_create as $k => $v) {
-			$data=array("data"=>$k,"success"=>sql_insert_data($k,$v));
-			$datas[]=$data;
-		}
-		//create default websettings
-		$websettings_create=array("data"=>"_CREATEWEBSETTINGS","success"=>sql_insert_setting($websettings_query));
-		//create default usermenu
-		$usermenu_create=array("data"=>"_CREATEUSERMENU","success"=>sql_insert_setting($usermenu_query));
-		//create webadmin userlevel
-		$webadmin_create[]=array("data"=>"_CREATEUSERLEVEL","success"=>sql_insert_setting($userlevel_query));
-		//create webadmin
-		$webadmin_create[]=array("data"=>"_CREATEWEBADMIN","success"=>sql_insert_setting($webadmin_query));
-		//install default modules
-		foreach($modules_install as $k => $v) {
-			$modul=array("name"=>$k,"success"=>sql_insert_setting($v));
-			$modules[]=$modul;
-		}
-		
-		//write db.config.inc.php
+	// Open connection to database again
+	$mysql = new mysqli($_SESSION["dbhost"], $_SESSION["dbuser"], $_SESSION["dbpass"], $_SESSION["dbdb"]);
+	if (mysqli_connect_errno()) $msg="_CANTCONNECT";
+	include("install/tables.inc");
+	//create db structure
+	foreach($table_create as $k => $v) {
+		$table=array("table"=>$k,"success"=>($mysql->query("CREATE TABLE ".$k." (".$v.") DEFAULT CHARSET=utf8")? "_CREATED" : "_ALREADYEXISTS"));
+		$tables[]=$table;
+	}
+	//get default data
+	include("install/datas.inc");
+	//create default data
+	foreach($data_create as $k => $v) {
+		$data=array("data"=>$k,"success"=>($mysql->query("INSERT INTO ".$k." ".$v)? "_INSERTED" : "_FAILED"));
+		$datas[]=$data;
+	}
+	//create default websettings
+	$websettings_create=array("data"=>"_CREATEWEBSETTINGS","success"=>($mysql->query($websettings_query)? "_INSERTED" : "_FAILED"));
+	//create default usermenu
+	$usermenu_create=array("data"=>"_CREATEUSERMENU","success"=>($mysql->query($usermenu_query)? "_INSERTED" : "_FAILED"));
+	//create webadmin userlevel
+	$webadmin_create[]=array("data"=>"_CREATEUSERLEVEL","success"=>($mysql->query($userlevel_query)? "_INSERTED" : "_FAILED"));
+	//create webadmin
+	$webadmin_create[]=array("data"=>"_CREATEWEBADMIN","success"=>($mysql->query($webadmin_query)? "_INSERTED" : "_FAILED"));
+	//install default modules
+	foreach($modules_install as $k => $v) {
+		$modul=array("name"=>$k,"success"=>($mysql->query($v)? "_INSERTED" : "_FAILED"));
+		$modules[]=$modul;
+	}
+
+	//write db.config.inc.php
 $content="<?php
 
 	\$config->document_root = \"".$_SESSION["document_root"]."\";
@@ -313,11 +307,11 @@ $content="<?php
 	\$config->db_prefix = \"".$_SESSION["dbprefix"]."\";
 	
 ?>";
-		$msg=write_cfg_file($config->path_root."/include/db.config.inc.php",$content);
-		$smarty->assign("content",$content);
-		//create first log ;-)
-		sql_insert_setting($log_query);
-	}
+	$msg=write_cfg_file($config->path_root."/include/db.config.inc.php",$content);
+	$smarty->assign("content",$content);
+	//create first log ;-)
+	$mysql->query($log_query);
+
 	$smarty->assign("tables",$tables);
 	$smarty->assign("datas",$datas);
 	$smarty->assign("modules",$modules);
@@ -329,8 +323,9 @@ $content="<?php
 if($sitenr==7 && isset($_POST["check7"])) {
 	//clear smarty cache
 	$smarty->clear_compiled_tpl();
-	//delete setup.php
-	@unlink("setup.php");
+	//delete setup info
+	//@unlink("setup.php");
+	//@rmdir("install");
 	header("Location: index.php");
 	exit;
 }
@@ -347,4 +342,3 @@ $smarty->assign("current_lang",$config->default_lang);
 $smarty->assign("v_web",$config->v_web);
 
 $smarty->display('setup.tpl');
-?>

@@ -22,9 +22,6 @@ require_once("include/steam.inc.php");
 require_once("include/sql.inc.php");
 require_once("include/logfunc.inc.php");
 require_once("include/functions.inc.php");
-if (!function_exists('geoip_country_code_by_addr')) {
-        require_once("include/geoip.inc");
-}
 require_once("include/thumbs.inc.php");
 
 // Template generieren
@@ -39,7 +36,6 @@ if(isset($_GET["bid"]) && is_numeric($_GET["bid"])) {
 //user page loader
 if(isset($_POST["bid"])) {
         isset($_POST["details_x"])?$tmp="bd":""; //ban details
-        isset($_POST["edit_x"])?$tmp="be":""; //ban edit
         if(file_exists("include/user/user_".$tmp.".php")) {
                 $user_site=$tmp;
                 include("include/user/user_".$tmp.".php");
@@ -50,11 +46,11 @@ $ban_page = "";
 if(!$user_site) {
 	$page = "";
         //count activ bans
-        $query = mysql_query("SELECT COUNT(bid) FROM `".$config->db_prefix."_bans` WHERE `expired`=0") or die (mysql_error());
-        $ban_count[0]=mysql_result($query,0);
+        $query = $mysql->query("SELECT COUNT(bid) FROM `".$config->db_prefix."_bans` WHERE `expired`=0") or die ($mysql->error);
+        $ban_count[0]=$query->fetch_row()[0];
         //count all bans
-        $query = mysql_query("SELECT COUNT(bid) FROM `".$config->db_prefix."_bans`") or die (mysql_error());
-        $ban_count[1]=mysql_result($query,0);
+        $query = $mysql->query("SELECT COUNT(bid) FROM `".$config->db_prefix."_bans`") or die ($mysql->error);
+        $ban_count[1]=$query->fetch_row()[0];
         //calc max sites
         $ban_page_max=ceil($ban_count[0] / $config->bans_per_page);
     if(isset($_REQUEST["site"])) $page=(int)$_REQUEST["site"];
@@ -76,27 +72,19 @@ if(!$user_site) {
                 "all_ban"       => $ban_count[1]                     //count all bans
         );
         //get bans for current page
-        $query  = mysql_query("SELECT ba.*, se.gametype,se.timezone_fixx, aa.nickname FROM `".$config->db_prefix."_bans` AS ba
+        $query  = $mysql->query("SELECT ba.*, se.gametype,se.timezone_fixx, aa.nickname FROM `".$config->db_prefix."_bans` AS ba
                                 LEFT JOIN `".$config->db_prefix."_serverinfo` AS se ON ba.server_ip=se.address
                                 LEFT JOIN `".$config->db_prefix."_amxadmins` AS aa ON (aa.steamid=ba.admin_nick OR aa.steamid=ba.admin_ip OR aa.steamid=ba.admin_id)
-                                WHERE ba.expired=0 ORDER BY ban_created DESC LIMIT ".$min.",".$config->bans_per_page) or die(mysql_error());
+                                WHERE ba.expired=0 ORDER BY ban_created DESC LIMIT ".$min.",".$config->bans_per_page) or die($mysql->error);
+
         //build ban list array
-        $ban_list=array();
-		$gi="";
-        $cc="";
-        $cn="";
-		$gi = geoip_open($config->path_root."/include/GeoIP.dat",GEOIP_STANDARD);
-        while($result = mysql_fetch_object($query)) {
+        while($result = $query->fetch_object()) {
                 if($result->expired==1) continue;
                 $steamid="";
                 $steamcomid="";
                 if(!empty($result->player_id)) {
                         $steamid = html_safe($result->player_id);
                         $steamcomid = GetFriendId($steamid);
-                }
-                if(!empty($result->player_ip)) {
-                        $cc = geoip_country_code_by_addr($gi, $result->player_ip);
-                        $cn = geoip_country_name_by_addr($gi, $result->player_ip);
                 }
                 $ban_row=array(
                         "bid"       => $result->bid,
@@ -115,16 +103,14 @@ if(!$user_site) {
                         "server_ip"     => $result->server_ip,
                         "server_name"   => html_safe($result->server_name),
 						"expired"		=> $result->expired,
-                        "cc"            => $cc,
-                        "cn"            => $cn
                 );
                 // get previous offences if any
-				$query2   = mysql_query("SELECT count(player_id) as ban_count FROM `".$config->db_prefix."_bans` WHERE player_id = '".$result->player_id."'") or die(mysql_error());
-                while($result2 = mysql_fetch_object($query2)) {
+				$query2   = $mysql->query("SELECT count(player_id) as ban_count FROM `".$config->db_prefix."_bans` WHERE player_id = '".$result->player_id."'") or die($mysql->error);
+                while($result2 = $query2->fetch_object()) {
                         $ban_row["bancount"] = $result2->ban_count;
                 }
-				$queryX = mysql_query("SELECT count(player_id) as ban_count FROM `".$config->db_prefix."_bans` WHERE player_id = '".$result->player_id."' AND (ban_length > 5 OR ban_length = 0)") or die(mysql_error());
-				while($resultX = mysql_fetch_object($queryX)) {
+				$queryX = $mysql->query("SELECT count(player_id) as ban_count FROM `".$config->db_prefix."_bans` WHERE player_id = '".$result->player_id."' AND (ban_length > 5 OR ban_length = 0)") or die($mysql->error);
+				while($resultX = $queryX->fetch_object()) {
 						$tmp_bancount = $resultX->ban_count;
 				}
 				
@@ -135,14 +121,14 @@ if(!$user_site) {
                                 $ban_row["ban_length"] = "0";
 								$new_reason = $ban_row["ban_reason"] . ' (' .$config->max_offences_reason.')';
                                 $ban_row["ban_reason"] = $new_reason;
-                                $prune_query = mysql_query("UPDATE `".$config->db_prefix."_bans` SET `expired`=0,`ban_length`=0,`ban_reason`='".$new_reason."' WHERE `bid`=".$result->bid);
-								$prune_query = mysql_query("INSERT INTO `".$config->db_prefix."_bans_edit` (`bid`,`edit_time`,`admin_nick`,`edit_reason`) VALUES (
+                                $prune_query = $mysql->query("UPDATE `".$config->db_prefix."_bans` SET `expired`=0,`ban_length`=0,`ban_reason`='".$new_reason."' WHERE `bid`=".$result->bid);
+								$prune_query = $mysql->query("INSERT INTO `".$config->db_prefix."_bans_edit` (`bid`,`edit_time`,`admin_nick`,`edit_reason`) VALUES (
 															'".$result->bid."',UNIX_TIMESTAMP(NOW()),'amxbans','".$new_reason."')");
                         }
                         //prune expired bans
                         if($ban_row["ban_end"] < time() && $ban_row["ban_length"] != "0") {
-                                $prune_query = mysql_query("UPDATE `".$config->db_prefix."_bans` SET `expired`=1 WHERE `bid`=".$ban_row["bid"]);
-								$prune_query = mysql_query("INSERT INTO `".$config->db_prefix."_bans_edit` (`bid`,`edit_time`,`admin_nick`,`edit_reason`) VALUES (
+                                $prune_query = $mysql->query("UPDATE `".$config->db_prefix."_bans` SET `expired`=1 WHERE `bid`=".$ban_row["bid"]);
+								$prune_query = $mysql->query("INSERT INTO `".$config->db_prefix."_bans_edit` (`bid`,`edit_time`,`admin_nick`,`edit_reason`) VALUES (
 																	'".$result->bid."','".$ban_row["ban_end"]."','amxbans','Bantime expired')");
                         }
                 }
@@ -166,15 +152,14 @@ if(!$user_site) {
                 }
                 $ban_list[]=$ban_row;
         }
-        geoip_close($gi);
         $smarty->assign("ban_list",$ban_list);
         $smarty->assign("ban_page",$ban_page);
 }
 //ban delete
 if(isset($_POST["del_ban_x"]) && isset($_POST["bid"]) && $_SESSION["loggedin"]) {
         //get all uploaded files for the ban and delete it
-        $query = mysql_query("SELECT `id`,`demo_file` FROM `".$config->db_prefix."_files` WHERE `bid`=".$bid) or die (mysql_error());
-        while($result = mysql_fetch_object($query)) {
+        $query = $mysql->query("SELECT `id`,`demo_file` FROM `".$config->db_prefix."_files` WHERE `bid`=".$bid) or die ($mysql->error);
+        while($result = $query->fetch_object()) {
                 if(file_exists("include/files/".$result->demo_file)) {
                         //delete the file(s)
                         if(file_exists("include/files/".$result->demo_file."_thumb")) {
@@ -182,16 +167,16 @@ if(isset($_POST["del_ban_x"]) && isset($_POST["bid"]) && $_SESSION["loggedin"]) 
                         }
                         if(unlink("include/files/".$result->demo_file)) {
                                 //if file deleted, remove db entry
-                                $query2 = mysql_query("DELETE FROM `".$config->db_prefix."_files` WHERE `id`=".$result->id." LIMIT 1") or die (mysql_error());
+                                $query2 = $mysql->query("DELETE FROM `".$config->db_prefix."_files` WHERE `id`=".$result->id." LIMIT 1") or die ($mysql->error);
                         }
                 }
         }
         //delete all comments for the ban
-        $query = mysql_query("DELETE FROM `".$config->db_prefix."_comments` WHERE `bid`=".$bid) or die (mysql_error());
+        $query = $mysql->query("DELETE FROM `".$config->db_prefix."_comments` WHERE `bid`=".$bid) or die ($mysql->error);
         //get ban details
         $ban_row=sql_get_ban_details($bid);
         //delete the ban
-        $query = mysql_query("DELETE FROM `".$config->db_prefix."_bans` WHERE `bid`=".$bid." LIMIT 1") or die (mysql_error());
+        $query = $mysql->query("DELETE FROM `".$config->db_prefix."_bans` WHERE `bid`=".$bid." LIMIT 1") or die ($mysql->error);
         log_to_db("Ban edit","Deleted ban: ID ".$bid." (<".sql_safe($ban_row["player_nick"])."> <".sql_safe($ban_row["player_id"]).">)");
         //redirect to start page
         if($query) { header("Location:index.php"); exit; }
@@ -211,7 +196,7 @@ $smarty->assign("bbcodes",$bbcodes);
 $smarty->assign("menu",$menu);
 $smarty->assign("banner",$config->banner);
 $smarty->assign("banner_url",$config->banner_url);
-$smarty->assign("pagenav", construct_vb_page_nav($ban_page['current'], $ban_page['max_page'], 3, array(10, 50, 100, 500, 1000)));
+$smarty->assign("pagenav", construct_vb_page_nav(@$ban_page['current'], @$ban_page['max_page'], 3, array(10, 50, 100, 500, 1000)));
 $smarty->display('main_header.tpl');
 //load main page, currently ban list or ban details/edit
 if($user_site !== "") {
@@ -279,4 +264,3 @@ function construct_vb_page_nav($current, $total, $pagenavpages, $pagenavsarr)
     }
     return $result;
 }
-?>

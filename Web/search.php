@@ -99,18 +99,17 @@ if ((isset($_POST['nick'])) || (isset($_POST['steamid'])) || (isset($_POST['ip']
 	}
 	
 	if(isset($_POST["timesbanned"]) && is_numeric($_POST["timesbanned"])) {
-		//$query=mysql_query("SELECT * FROM ".$config->db_prefix."_bans WHERE player_id IN (SELECT player_id FROM ".$config->db_prefix."_bans GROUP BY player_id HAVING COUNT(*)>=".(int)$_POST["timesbanned"].") ORDER BY player_id,ban_created DESC") or die (mysql_error());
-		$query = mysql_query("SELECT *,COUNT(*) as bancount FROM ".$config->db_prefix."_bans GROUP BY player_id HAVING COUNT(*) >= ".(int)$_POST["timesbanned"]." ORDER BY ban_created DESC,player_id");
-	
-		while($result = mysql_fetch_object($query)) {
+		$query = $mysql->query("SELECT *,COUNT(*) as bancount FROM ".$config->db_prefix."_bans GROUP BY player_id HAVING COUNT(*) >= ".(int)$_POST["timesbanned"]." ORDER BY ban_created DESC,player_id");
+
+		while($result = $query->fetch_object()) {
 			if(!empty($result->player_id)) {
 				$steamid = html_safe($result->player_id);
 				$steamcomid = GetFriendId($steamid);
 			}
 			//search for a activ ban and make it as ref
-			$query2=mysql_query("SELECT * FROM ".$config->db_prefix."_bans WHERE `player_id`='".$result->player_id."' AND `expired`=0 ORDER BY ban_created DESC LIMIT 1");
-			if(mysql_num_rows($query2)) {
-				$result2 = mysql_fetch_object($query2);
+			$query2=$mysql->query("SELECT * FROM ".$config->db_prefix."_bans WHERE `player_id`='".$result->player_id."' AND `expired`=0 ORDER BY ban_created DESC LIMIT 1");
+			if($query2->num_rows) {
+				$result2 = $query2->fetch_object();
 				$result2->bancount=$result->bancount;
 				$result=$result2;
 			}

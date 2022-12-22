@@ -56,10 +56,10 @@ if(isset($_GET["modul"])) {
 	$modul=basename("");
 }
 
-$modul_exists = "";
+$modul_exists = false;
 if(isset($_GET["modul"]) && file_exists("include/modules/modul_".$modul.".php")) {
-	include("include/modules/modul_".$modul.".php");
-	$modul_exists=1;
+	include("include/modules/modul_$modul.php");
+	$modul_exists=true;
 	
 }
 //admin page loader
@@ -69,11 +69,10 @@ if(isset($_GET["site"])) {
 	$site=basename("");
 }
 if(!$modul_exists) {
-	if(isset($_GET["site"]) && file_exists("include/admin/admin_".$site.".php")) {
-		include("include/admin/admin_".$site.".php");
-	} else {
-		include("include/admin/admin_".$site_start.".php");
-	}
+	if(isset($_GET["site"]) && file_exists("include/admin/admin_".$site.".php"))
+		include("include/admin/admin_$site.php");
+	else
+		include("include/admin/admin_$site_start.php");
 }
 
 //get module menu (only active)
@@ -98,7 +97,7 @@ $smarty->assign("menu",$menu);
 $smarty->assign("modules_menu",$modules_menu);
 $smarty->assign("modules_menu_count",$modules_menu_count);
 $smarty->assign("msg",$user_msg);
-if($modul_exists==1) {
+if($modul_exists) {
 	$smarty->assign("site",$modul_site);
 } else {
 	$smarty->assign("site",$admin_site);
@@ -106,7 +105,7 @@ if($modul_exists==1) {
 
 $smarty->display('main_header.tpl');
 $smarty->display('admin_index.tpl');
-if($modul_exists==1) {
+if($modul_exists) {
 	$smarty->display('modul_'.$modul_site.'.tpl');
 } else {
 	$smarty->display('admin_'.$admin_site.'.tpl');

@@ -20,7 +20,6 @@
 
 */
 
-session_start();
 
 if(!$_SESSION["loggedin"]) {
 	die("access denied!");
@@ -98,16 +97,16 @@ if(isset($_POST["dbbansexp"]) && $_SESSION["loggedin"]) {
 //import banned.cfg
 if(isset($_POST["bancfgupl"]) && $_SESSION["loggedin"]) {
 
-	$reason=mysql_real_escape_string($_POST["reason"]);
-	$plnick=mysql_real_escape_string($_POST["player_nick"]);
-	$server=mysql_real_escape_string($_POST["server_name"]);
+	$reason=$mysql->escape_string($_POST["reason"]);
+	$plnick=$mysql->escape_string($_POST["player_nick"]);
+	$server=$mysql->escape_string($_POST["server_name"]);
 	$date=explode("-",trim($_POST["ban_created"]));
 	
 	if($reason=="" || $plnick=="" || $server=="" || $date=="" || sizeof($date)!=3) {
 		$user_msg="_NOREQUIREDFIELDS";
 	} else {
 		$date=(int)strtotime($date[2].$date[1].$date[0]);
-		$file=mysql_real_escape_string($_FILES['filename']['name']);
+		$file=$mysql->escape_string($_FILES['filename']['name']);
 		$types=array("cfg","txt");
 		
 		if($file=="") {
@@ -134,13 +133,13 @@ if(isset($_POST["bancfgupl"]) && $_SESSION["loggedin"]) {
 					$reason_real="";
 					if($bans[4] != "") {
 						for($i=4;$i<=sizeof($bans);$i++) {
-							$reason_real.=mysql_real_escape_string($bans[$i])." ";
+							$reason_real.=$mysql->escape_string($bans[$i])." ";
 						}
 					} else {
 						$reason_real=$reason;
 					}
 					trim($reason_real);
-					$steamid=mysql_real_escape_string(trim($bans[2]));
+					$steamid=$mysql->escape_string(trim($bans[2]));
 					if(trim($bans[0])=="" || trim($bans[0])=="//") continue;
 					if($time!=0) {$status["failed"]++;;continue;}
 					
@@ -148,28 +147,28 @@ if(isset($_POST["bancfgupl"]) && $_SESSION["loggedin"]) {
 						//ban with steamid
 						if(!preg_match("/^STEAM_0:(0|1):[0-9]{1,18}/",$steamid)) { $status["failed"]++; continue;}
 						//search for a already existing permanent ban
-						$query = mysql_query("SELECT `player_id` FROM `".$config->db_prefix."_bans` WHERE `player_id`='".$steamid."' AND `expired`=0") or die (mysql_error());
-						if(mysql_num_rows($query)) {$status["failed"]++; continue;}
+						$query = $mysql->query("SELECT `player_id` FROM `".$config->db_prefix."_bans` WHERE `player_id`='".$steamid."' AND `expired`=0") or die ($mysql->error);
+						if($query->num_rows) {$status["failed"]++; continue;}
 						//write ban to db
 						$status["imported"]++;
-						$query = mysql_query("INSERT INTO `".$config->db_prefix."_bans` 
+						$query = $mysql->query("INSERT INTO `".$config->db_prefix."_bans` 
 							(`player_id`,`player_nick`,`admin_nick`,`ban_type`,`ban_reason`,`ban_created`,`ban_length`,`server_name`,`imported`) 
 							VALUES 
 							('".$steamid."','".$plnick."','".$_SESSION["uname"]."','S','".$reason_real."',".$date.",".$time.",'".$server."',1)
-							") or die (mysql_error());
+							") or die ($mysql->error);
 					}else if(trim($bans[0])=="banip") {
 						//ban with ip
 						if(!preg_match("/^[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}$/",$steamid)) { $status["failed"]++; continue;}
 						//search for a already existing permanent ban
-						$query = mysql_query("SELECT `player_ip` FROM `".$config->db_prefix."_bans` WHERE `player_id`='".$steamid."' AND `expired`=0") or die (mysql_error());
-						if(mysql_num_rows($query)) {$status["failed"]++; continue;}
+						$query = $mysql->query("SELECT `player_ip` FROM `".$config->db_prefix."_bans` WHERE `player_id`='".$steamid."' AND `expired`=0") or die ($mysql->error);
+						if($query->num_rows) {$status["failed"]++; continue;}
 						//write ban to db
 						$status["imported"]++;
-						$query = mysql_query("INSERT INTO `".$config->db_prefix."_bans` 
+						$query = $mysql->query("INSERT INTO `".$config->db_prefix."_bans` 
 							(`player_ip`,`player_nick`,`admin_nick`,`ban_type`,`ban_reason`,`ban_created`,`ban_length`,`server_name`,`imported`) 
 							VALUES 
 							('".$steamid."','".$plnick."','".$_SESSION["uname"]."','SI','".$reason_real."',".$date.",".$time.",'".$server."',1)
-							") or die (mysql_error());
+							") or die ($mysql->error);
 					} else { $status["failed"]++; continue;}
 				}
 				fclose($handle);
@@ -191,8 +190,8 @@ if(isset($_POST["bancfgexp"]) && $_SESSION["loggedin"]) {
 	
 	$status["exported"]=0;
 	if($handle = fopen($file,"w")) {
-		$query = mysql_query("SELECT `player_id`,`ban_length`,`ban_reason` FROM `".$config->db_prefix."_bans` WHERE `expired`=0".(($onlyperm)?" AND `ban_length`=0":"")) or die (mysql_error());
-		while($result = mysql_fetch_object($query)) {
+		$query = $mysql->query("SELECT `player_id`,`ban_length`,`ban_reason` FROM `".$config->db_prefix."_bans` WHERE `expired`=0".(($onlyperm)?" AND `ban_length`=0":"")) or die ($mysql->error);
+		while($result = $query->fetch_object()) {
 			$line="banid ".$result->ban_length.".0 ".trim($result->player_id).(($increason)?" // ".trim($result->ban_reason):"")."\n";
 			$n = fputs($handle,$line);
 			$status["exported"]++;
@@ -219,18 +218,18 @@ if(isset($_POST["bancfgexp"]) && $_SESSION["loggedin"]) {
 }
 //db check from amxbans 5.x data
 if(isset($_POST["bandbcheck"]) && $_SESSION["loggedin"]) {
-	#$dbdata["host"]=mysql_real_escape_string($_POST["impdbhost"]);
-	$dbdata["host"]=mysql_real_escape_string($_POST["impdbhost"]);
-	$dbdata["user"]=mysql_real_escape_string($_POST["impdbuser"]);
-	$dbdata["pass"]=mysql_real_escape_string($_POST["impdbpw"]);
-	$dbdata["database"]=mysql_real_escape_string($_POST["impdbdb"]);
-	$dbdata["table"]=mysql_real_escape_string($_POST["impdbtable"]);
+	#$dbdata["host"]=$mysql->escape_string($_POST["impdbhost"]);
+	$dbdata["host"]=$mysql->escape_string($_POST["impdbhost"]);
+	$dbdata["user"]=$mysql->escape_string($_POST["impdbuser"]);
+	$dbdata["pass"]=$mysql->escape_string($_POST["impdbpw"]);
+	$dbdata["database"]=$mysql->escape_string($_POST["impdbdb"]);
+	$dbdata["table"]=$mysql->escape_string($_POST["impdbtable"]);
 	$dbdata["onlyperm"]=(isset($_POST["onlyperm"]))?true:false;
 	$dbdata["dellocal"]=(isset($_POST["dellocal"]))?true:false;
 	//connect to db
-	$mysql2 = @mysql_connect($dbdata["host"],$dbdata["user"],$dbdata["pass"]) or $user_msg="_DBLOGINFAILED";
-	if(!$user_msg) $resource2 = @mysql_select_db($dbdata["database"],$mysql2) or $user_msg="_DBSELECTDBFAILED";
-	if(!$user_msg) $query2 = @mysql_query("SELECT * FROM `".$dbdata["table"]."` WHERE `ban_length`=0",$mysql2) or $user_msg="_TABLESSELECTFAILED";
+	$mysql2 = @new mysqli($dbdata["host"],$dbdata["user"],$dbdata["pass"], $dbdata["database"]);
+	if (mysqli_connect_errno()) $user_msg="_DBLOGINFAILED";
+	if(!$user_msg) $query2 = @$mysql2->query("SELECT * FROM `".$dbdata["table"]."` WHERE `ban_length`=0") or $user_msg="_TABLESSELECTFAILED";
 	if(!$user_msg) {
 		$user_msg="_DBDATAOK";
 		$dbcheck="OK";
@@ -244,20 +243,19 @@ if(isset($_POST["bandbimp"]) && $_SESSION["loggedin"]) {
 	$onlyperm=(isset($_POST["onlyperm"]))?true:false;
 	$dellocal=(isset($_POST["dellocal"]))?true:false;
 	
-	#$dbdata["host"]=mysql_real_escape_string($_POST["impdbhost"]);
-	$dbdata["host"]=mysql_real_escape_string($_POST["impdbhost"]);
-	$dbdata["user"]=mysql_real_escape_string($_POST["impdbuser"]);
-	$dbdata["pass"]=mysql_real_escape_string($_POST["impdbpw"]);
-	$dbdata["database"]=mysql_real_escape_string($_POST["impdbdb"]);
-	$dbdata["table"]=mysql_real_escape_string($_POST["impdbtable"]);
+	#$dbdata["host"]=$mysql->escape_string($_POST["impdbhost"]);
+	$dbdata["host"]=$mysql->escape_string($_POST["impdbhost"]);
+	$dbdata["user"]=$mysql->escape_string($_POST["impdbuser"]);
+	$dbdata["pass"]=$mysql->escape_string($_POST["impdbpw"]);
+	$dbdata["database"]=$mysql->escape_string($_POST["impdbdb"]);
+	$dbdata["table"]=$mysql->escape_string($_POST["impdbtable"]);
 	$dbdata["onlyperm"]=$onlyperm;
 	$dbdata["dellocal"]=$dellocal;
 	//connect to db for import
-	$mysql2 = @mysql_connect($dbdata["host"],$dbdata["user"],$dbdata["pass"]) or $user_msg="_DBLOGINFAILED";
-	//select the database for import
-	if(!$user_msg) $resource2 = @mysql_select_db($dbdata["database"],$mysql2) or $user_msg="_DBSELECTDBFAILED";
+	$mysql2 = @new mysqli($dbdata["host"],$dbdata["user"],$dbdata["pass"], $dbdata["database"]);
+	if (mysqli_connect_errno()) $user_msg="_DBLOGINFAILED";
 	//get all bans from table for import
-	if(!$user_msg) $query2 = @mysql_query("SELECT * FROM `".$dbdata["table"]."`".(($onlyperm)?" WHERE `ban_length`=0":"")." ORDER BY `ban_created` DESC",$mysql2) or $user_msg="_TABLESSELECTFAILED";
+	if(!$user_msg) $query2 = @$mysql2->query("SELECT * FROM `".$dbdata["table"]."`".(($onlyperm)?" WHERE `ban_length`=0":"")." ORDER BY `ban_created` DESC") or $user_msg="_TABLESSELECTFAILED";
 	
 	if(!$user_msg) {
 		$status["imported"]=0;
@@ -265,24 +263,24 @@ if(isset($_POST["bandbimp"]) && $_SESSION["loggedin"]) {
 	
 		if($dellocal) {
 			//delete all local bans include edit logs
-			$query=mysql_query("DELETE FROM `".$config->db_prefix."_bans`",$mysql) or die (mysql_error());
-			$query=mysql_query("DELETE FROM `".$config->db_prefix."_bans_edit`",$mysql) or die (mysql_error());
+			$query=$mysql->query("DELETE FROM `".$config->db_prefix."_bans`") or die ($mysql->error);
+			$query=$mysql->query("DELETE FROM `".$config->db_prefix."_bans_edit`") or die ($mysql->error);
 			$user_msg="_LOCALTABLEDELETED";
 		}
-		while($result2 = mysql_fetch_object($query2)) {
+		while($result2 = $query2->fetch_object()) {
 			//is the table a 5.x history table?
 			if($result2->unban_created != "") {$history=true;}
 			
 			if(!$dellocal) {
 				//search if the ban to import exists
-				$query = mysql_query("SELECT * FROM `".$config->db_prefix."_bans` WHERE 
+				$query = $mysql->query("SELECT * FROM `".$config->db_prefix."_bans` WHERE 
 							`player_id`='".$result2->player_id."' AND
 							`player_ip`='".$result2->player_ip."' AND
-							`player_nick`='".mysql_real_escape_string($result2->player_nick)."' AND
+							`player_nick`='".$mysql->escape_string($result2->player_nick)."' AND
 							`ban_created`='".$result2->ban_created."' AND
-							`ban_length`='".$result2->ban_length."' LIMIT 1",$mysql) or die (mysql_error());
+							`ban_length`='".$result2->ban_length."' LIMIT 1") or die ($mysql->error);
 							
-				if(mysql_num_rows($query)) { $status["failed"]++; continue; }
+				if($query->num_rows) { $status["failed"]++; continue; }
 			}
 			//some filter for bad bans
 			if($result2->player_id == "" && $result2->player_ip == "") { $status["failed"]++; continue; } //steamid & ip empty
@@ -294,31 +292,31 @@ if(isset($_POST["bandbimp"]) && $_SESSION["loggedin"]) {
 				$expired=(($result2->ban_created + ($result2->ban_length * 60)) < time() && $result2->ban_length != 0) ? "1" : "0";
 			}
 			//save the ban to new table
-			$query = mysql_query("INSERT INTO `".$config->db_prefix."_bans` 
+			$query = $mysql->query("INSERT INTO `".$config->db_prefix."_bans` 
 				(`player_ip`,`player_id`,`player_nick`,`admin_ip`,`admin_id`,`admin_nick`,`ban_type`,`ban_reason`,`ban_created`,`ban_length`,`server_ip`,`server_name`,`expired`,`imported`) 
 				VALUES 
 				('".$result2->player_ip."',
 				'".$result2->player_id."',
-				'".mysql_real_escape_string($result2->player_nick)."',
+				'".$mysql->escape_string($result2->player_nick)."',
 				'".$result2->admin_ip."',
 				'".$result2->admin_id."',
-				'".mysql_real_escape_string($result2->admin_nick)."',
+				'".$mysql->escape_string($result2->admin_nick)."',
 				'".$result2->ban_type."',
-				'".mysql_real_escape_string($result2->ban_reason)."',
+				'".$mysql->escape_string($result2->ban_reason)."',
 				'".$result2->ban_created."',
 				'".$result2->ban_length."',
 				'".$result2->server_ip."',
-				'".mysql_real_escape_string($result2->server_name)."',
+				'".$mysql->escape_string($result2->server_name)."',
 				'".$expired."',
-				'1')",$mysql) or die (mysql_error());
+				'1')") or die ($mysql->error);
 			//if importing the history table save the edit details
 			if($history) {
-				$insertid=mysql_insert_id($mysql) or die (mysql_error());
-				$query3 = mysql_query("INSERT INTO `".$config->db_prefix."_bans_edit` (`bid`,`edit_time`,`admin_nick`,`edit_reason`) VALUES ('".
-							$insertid."','".$result2->unban_created."','".mysql_real_escape_string($result2->unban_admin_nick)."','".mysql_real_escape_string($result2->unban_reason)."')",$mysql) or die (mysql_error());
+				$insertid=$mysql->insert_id or die ($mysql->error);
+				$query3 = $mysql->query("INSERT INTO `{$config->db_prefix}_bans_edit` (`bid`,`edit_time`,`admin_nick`,`edit_reason`)
+					VALUES ('$insertid','{$result2->unban_created}','".$mysql->escape_string($result2->unban_admin_nick)."','".$mysql->escape_string($result2->unban_reason)."'") or die ($mysql->error);
 			}
 			if($query) $status["imported"]++;
-			
+
 		}
 		$smarty->assign("status",$status);
 	}
@@ -327,14 +325,14 @@ if(isset($_POST["bandbimp"]) && $_SESSION["loggedin"]) {
 //del all imported bans
 if(isset($_POST["delimport"]) && $_SESSION["loggedin"]) {
 	$count=-1;
-	$query = mysql_query("DELETE FROM `".$config->db_prefix."_bans` WHERE `imported`=1") or die (mysql_error());
-	$smarty->assign("delcount",mysql_affected_rows());
+	$query = $mysql->query("DELETE FROM `".$config->db_prefix."_bans` WHERE `imported`=1") or die ($mysql->error);
+	$smarty->assign("delcount",$mysql->affected_rows);
 }
 //set all to not imported
 if(isset($_POST["setnotimported"]) && $_SESSION["loggedin"]) {
 	$count=-1;
-	$query = mysql_query("UPDATE `".$config->db_prefix."_bans` SET `imported`=0 WHERE `imported`=1") or die (mysql_error());
-	$smarty->assign("updatecount",mysql_affected_rows());
+	$query = $mysql->query("UPDATE `".$config->db_prefix."_bans` SET `imported`=0 WHERE `imported`=1") or die ($mysql->error);
+	$smarty->assign("updatecount",$mysql->affected_rows);
 }
 //search backups
 $d=opendir($config->path_root."/include/backup/");
@@ -350,8 +348,8 @@ if(is_array($backups)) rsort($backups);
 closedir($d);
 
 //Anzahl importierter Banns suchen
-$query = mysql_query("SELECT `bid` FROM `".$config->db_prefix."_bans` WHERE `imported`=1",$mysql) or die (mysql_error());
-$smarty->assign("importcount",mysql_num_rows($query));
+$query = $mysql->query("SELECT `bid` FROM `".$config->db_prefix."_bans` WHERE `imported`=1") or die ($mysql->error);
+$smarty->assign("importcount",$query->num_rows);
 
 $smarty->assign("backups",$backups);
 $smarty->assign("count",$count);

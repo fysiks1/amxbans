@@ -23,9 +23,6 @@
 session_start();
 
 require_once("include/config.inc.php");
-if (!function_exists('geoip_country_code_by_addr')) {
-	require_once("include/geoip.inc");
-}
 require_once("include/amxx_langs.inc.php");
 require_once("include/functions.inc.php");
 

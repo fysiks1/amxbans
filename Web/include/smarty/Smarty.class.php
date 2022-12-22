@@ -574,7 +574,7 @@ class Smarty
     /**
      * The class constructor.
      */
-    function Smarty()
+    function __construct()
     {
       $this->assign('SCRIPT_NAME', isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME']
                     : @$GLOBALS['HTTP_SERVER_VARS']['SCRIPT_NAME']);
@@ -624,12 +624,13 @@ class Smarty
             $this->_tpl_vars[$tpl_var] = &$value;
     }
 
-    /**
-     * appends values to template variables
-     *
-     * @param array|string $tpl_var the template variable name(s)
-     * @param mixed $value the value to append
-     */
+	/**
+	 * appends values to template variables
+	 *
+	 * @param array|string $tpl_var the template variable name(s)
+	 * @param mixed $value the value to append
+	 * @param bool $merge
+	 */
     function append($tpl_var, $value=null, $merge=false)
     {
         if (is_array($tpl_var)) {
@@ -664,12 +665,13 @@ class Smarty
         }
     }
 
-    /**
-     * appends values to template variables by reference
-     *
-     * @param string $tpl_var the template variable name
-     * @param mixed $value the referenced value to append
-     */
+	/**
+	 * appends values to template variables by reference
+	 *
+	 * @param string $tpl_var the template variable name
+	 * @param mixed $value the referenced value to append
+	 * @param bool $merge
+	 */
     function append_by_ref($tpl_var, &$value, $merge=false)
     {
         if ($tpl_var != '' && isset($value)) {
@@ -702,12 +704,14 @@ class Smarty
     }
 
 
-    /**
-     * Registers custom function to be used in templates
-     *
-     * @param string $function the name of the template function
-     * @param string $function_impl the name of the PHP function to register
-     */
+	/**
+	 * Registers custom function to be used in templates
+	 *
+	 * @param string $function the name of the template function
+	 * @param string $function_impl the name of the PHP function to register
+	 * @param bool $cacheable
+	 * @param string|null $cache_attrs
+	 */
     function register_function($function, $function_impl, $cacheable=true, $cache_attrs=null)
     {
         $this->_plugins['function'][$function] =
@@ -732,7 +736,7 @@ class Smarty
      * @param object &$object_impl the referenced PHP object to register
      * @param null|array $allowed list of allowed methods (empty = all)
      * @param boolean $smarty_args smarty argument format, else traditional
-     * @param null|array $block_functs list of methods that are block format
+     * @param null|array $block_methods list of methods that are block format
      */
     function register_object($object, &$object_impl, $allowed = array(), $smarty_args = true, $block_methods = array())
     {
@@ -753,12 +757,14 @@ class Smarty
     }
 
 
-    /**
-     * Registers block function to be used in templates
-     *
-     * @param string $block name of template block
-     * @param string $block_impl PHP function to register
-     */
+	/**
+	 * Registers block function to be used in templates
+	 *
+	 * @param string $block name of template block
+	 * @param string $block_impl PHP function to register
+	 * @param bool $cacheable
+	 * @param null $cache_attrs
+	 */
     function register_block($block, $block_impl, $cacheable=true, $cache_attrs=null)
     {
         $this->_plugins['block'][$block] =
@@ -775,12 +781,13 @@ class Smarty
         unset($this->_plugins['block'][$block]);
     }
 
-    /**
-     * Registers compiler function
-     *
-     * @param string $function name of template function
-     * @param string $function_impl name of PHP function to register
-     */
+	/**
+	 * Registers compiler function
+	 *
+	 * @param string $function name of template function
+	 * @param string $function_impl name of PHP function to register
+	 * @param bool $cacheable
+	 */
     function register_compiler_function($function, $function_impl, $cacheable=true)
     {
         $this->_plugins['compiler'][$function] =
@@ -966,7 +973,7 @@ class Smarty
 
         if (!empty($this->cache_handler_func)) {
             return call_user_func_array($this->cache_handler_func,
-                                  array('clear', &$this, &$dummy, $tpl_file, $cache_id, $compile_id, $exp_time));
+                                  array('clear', &$this, $tpl_file, $cache_id, $compile_id, $exp_time));
         } else {
             $_params = array('auto_base' => $this->cache_dir,
                             'auto_source' => $tpl_file,
@@ -1066,7 +1073,6 @@ class Smarty
      * Returns an array containing template variables
      *
      * @param string $name
-     * @param string $type
      * @return array
      */
     function &get_template_vars($name=null)
@@ -1086,7 +1092,6 @@ class Smarty
      * Returns an array containing config variables
      *
      * @param string $name
-     * @param string $type
      * @return array
      */
     function &get_config_vars($name=null)
@@ -1133,6 +1138,8 @@ class Smarty
      * @param string $cache_id
      * @param string $compile_id
      * @param boolean $display
+     *
+     * @return string
      */
     function fetch($resource_name, $cache_id = null, $compile_id = null, $display = false)
     {
@@ -1780,12 +1787,14 @@ class Smarty
         return $_return;
     }
 
-    /**
-     * unlink a file, possibly using expiration time
-     *
-     * @param string $resource
-     * @param integer $exp_time
-     */
+	/**
+	 * unlink a file, possibly using expiration time
+	 *
+	 * @param string $resource
+	 * @param integer $exp_time
+	 *
+	 * @return bool
+	 */
     function _unlink($resource, $exp_time = null)
     {
         if(isset($exp_time)) {
@@ -1839,10 +1848,12 @@ class Smarty
     }
 
 
-    /**
-     * callback function for preg_replace, to call a non-cacheable block
-     * @return string
-     */
+	/**
+	 * callback function for preg_replace, to call a non-cacheable block
+	 * @param $match
+	 *
+	 * @return string
+	 */
     function _process_compiled_include_callback($match) {
         $_func = '_smarty_tplfunc_'.$match[2].'_'.$match[3];
         ob_start();
@@ -1853,16 +1864,15 @@ class Smarty
     }
 
 
-    /**
-     * called for included templates
-     *
-     * @param string $_smarty_include_tpl_file
-     * @param string $_smarty_include_vars
-     */
-
-    // $_smarty_include_tpl_file, $_smarty_include_vars
-
-    function _smarty_include($params)
+	/**
+	 * called for included templates
+	 *
+	 * @param $params
+	 * @return void
+	 * @internal param string $_smarty_include_tpl_file
+	 * @internal param string $_smarty_include_vars
+	 */
+	function _smarty_include($params)
     {
         if ($this->debugging) {
             $_params = array();
@@ -1907,11 +1917,14 @@ class Smarty
     }
 
 
-    /**
-     * get or set an array of cached attributes for function that is
-     * not cacheable
-     * @return array
-     */
+	/**
+	 * get or set an array of cached attributes for function that is
+	 * not cacheable
+	 * @param $cache_serial
+	 * @param int $count
+	 *
+	 * @return array
+	 */
     function &_smarty_cache_attrs($cache_serial, $count) {
         $_cache_attrs =& $this->_cache_info['cache_attrs'][$cache_serial][$count];
 
@@ -1931,25 +1944,26 @@ class Smarty
     }
 
 
-    /**
-     * wrapper for include() retaining $this
-     * @return mixed
-     */
-    function _include($filename, $once=false, $params=null)
+	/**
+	 * wrapper for include() retaining $this
+	 * @param string $filename
+	 * @param bool $once
+     *
+	 * @return mixed
+	 */
+    function _include($filename, $once=false)
     {
-        if ($once) {
-            return include_once($filename);
-        } else {
-            return include($filename);
-        }
+        return $once? include_once ($filename) : include ($filename);
     }
 
 
-    /**
-     * wrapper for eval() retaining $this
-     * @return mixed
-     */
-    function _eval($code, $params=null)
+	/**
+	 * wrapper for eval() retaining $this
+	 * @param $code
+     *
+	 * @return mixed
+	 */
+    function _eval($code)
     {
         return eval($code);
     }
@@ -1971,10 +1985,4 @@ class Smarty
 			return $function;
 		}
 	}
-  
-    /**#@-*/
-
 }
-
-/* vim: set expandtab: */
-?>

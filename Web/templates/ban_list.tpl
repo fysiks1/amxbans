@@ -66,9 +66,9 @@
 
 				<tr>
 
-					<th style="width:18px;">&nbsp;</th>
+					<th style="width:20px;"></th>
 
-					<th style="width:80px;">{"_DATE"|lang}</th>
+					<th>{"_DATE"|lang}</th>
 
 					<th>{"_PLAYER"|lang}</th>
 
@@ -76,13 +76,13 @@
 
 					<th>{"_REASON"|lang}</th>
 
-					<th style="width:80px;">{"_LENGHT"|lang}</th>
+					<th>{"_LENGHT"|lang}</th>
 
-					{if $ban_page.show_comments == 1 && $vars.use_comment == 1}<th style="width:80px;">{"_BL_COMMENTS"|lang}</th>{/if}
+					{if $ban_page.show_comments == 1 && $vars.use_comment == 1}<th style="width: 30px;">{"_BL_COMMENTS"|lang}</th>{/if}
 
-					{if $ban_page.show_demos == 1 && $vars.use_demo == 1}<th style="width:45px;">{"_BL_FILES"|lang}</th>{/if}
+					{if $ban_page.show_demos == 1 && $vars.use_demo == 1}<th style="width: 30px;">{"_BL_FILES"|lang}</th>{/if}
 
-					{if $ban_page.show_kicks == 1}<th style="width:45px;">{"_BL_KICKS"|lang}</th>{/if}
+					{if $ban_page.show_kicks == 1}<th style="width: 30px;">{"_BL_KICKS"|lang}</th>{/if}
 
 				</tr>
 
@@ -126,24 +126,17 @@
 
 						<td>{$ban_list.ban_created|date_format:"%Y-%m-%d"}</td>
 
-						<td><img alt="" src="templates/{$design}_gfx/country/{if $ban_list.cc}{$ban_list.cc|lower}{else}clear{/if}.png" /> {$ban_list.player_nick}</td>
+						<td> {$ban_list.player_nick}</td>
 
 						<td>{$ban_list.admin_nick}</td>
 
 						<td>{$ban_list.ban_reason}</td>
 
-						<td>
-
-							{if $ban_list.ban_length>0}
-
+						<td>{if $ban_list.ban_length>0}
 								{$ban_list.ban_length*60|date2word:true}
-
 							{else}
-
 								{"_PERMANENT"|lang}
-
 							{/if}
-
 						</td>
 
 						{if $ban_page.show_comments == 1 && $vars.use_comment == 1}<td class="_center">{$ban_list.comment_count}</td>{/if}

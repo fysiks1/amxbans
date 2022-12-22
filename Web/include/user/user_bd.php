@@ -79,9 +79,9 @@ if(isset($_POST["edit_ban"]) && isset($_POST["bid"]) && $_SESSION["loggedin"]) {
 	
 	if(!$error) {
 		//save ban edit log
-		$query = mysql_query("INSERT INTO `".$config->db_prefix."_bans_edit` (`bid`,`edit_time`,`admin_nick`,`edit_reason`) 
+		$query = $mysql->query("INSERT INTO `".$config->db_prefix."_bans_edit` (`bid`,`edit_time`,`admin_nick`,`edit_reason`) 
 				VALUES ('".$bid."',UNIX_TIMESTAMP(),'".$_SESSION["uname"]."','".$edit_reason."')"
-				) or die (mysql_error());
+				) or die ($mysql->error);
 		//save it to db
 		if($unban) {
 			//get ban details
@@ -106,8 +106,8 @@ if(isset($_POST["edit_ban"]) && isset($_POST["bid"]) && $_SESSION["loggedin"]) {
 					$edit_query.=", `expired`=0"; 
 				}
 		}
-		$query = mysql_query($edit_query." WHERE `bid`=".$bid 
-				) or die (mysql_error());
+		$query = $mysql->query($edit_query." WHERE `bid`=".$bid) 
+			or die ($mysql->error);
 		$msg_banedit="_BANEDITED";
 		log_to_db("Ban edit",(($unban)?"Unban":"Edited ban").": ID ".$bid." (<".sql_safe($player_nick)."> <".sql_safe($player_id).">)");
 	}
@@ -116,8 +116,8 @@ if(isset($_POST["edit_ban"]) && isset($_POST["bid"]) && $_SESSION["loggedin"]) {
 //ban delete
 if(isset($_POST["del_ban_x"]) && isset($_POST["bid"]) && $_SESSION["loggedin"]) {
 	//get all uploaded files for the ban and delete it
-	$query = mysql_query("SELECT `id`,`demo_file` FROM `".$config->db_prefix."_files` WHERE `bid`=".$bid) or die (mysql_error());
-	while($result = mysql_fetch_object($query)) {
+	$query = $mysql->query("SELECT `id`,`demo_file` FROM `".$config->db_prefix."_files` WHERE `bid`=".$bid) or die ($mysql->error);
+	while($result = $query->fetch_object()) {
 		if(file_exists("include/files/".$result->demo_file)) {
 			//delete the file(s)
 			if(file_exists("include/files/".$result->demo_file."_thumb")) {
@@ -125,23 +125,23 @@ if(isset($_POST["del_ban_x"]) && isset($_POST["bid"]) && $_SESSION["loggedin"]) 
 			}
 			if(unlink("include/files/".$result->demo_file)) {
 				//if file deleted, remove db entry
-				$query2 = mysql_query("DELETE FROM `".$config->db_prefix."_files` WHERE `id`=".$result->id." LIMIT 1") or die (mysql_error());
+				$query2 = $mysql->query("DELETE FROM `".$config->db_prefix."_files` WHERE `id`=".$result->id." LIMIT 1") or die ($mysql->error);
 			}
 		}
 	}
 	//delete all comments for the ban
-	$query = mysql_query("DELETE FROM `".$config->db_prefix."_comments` WHERE `bid`=".$bid) or die (mysql_error());
+	$query = $mysql->query("DELETE FROM `".$config->db_prefix."_comments` WHERE `bid`=".$bid) or die ($mysql->error);
 	//get ban details
 	$ban_row=sql_get_ban_details($bid);
 	//delete the ban
-	$query = mysql_query("DELETE FROM `".$config->db_prefix."_bans` WHERE `bid`=".$bid." LIMIT 1") or die (mysql_error());
+	$query = $mysql->query("DELETE FROM `".$config->db_prefix."_bans` WHERE `bid`=".$bid." LIMIT 1") or die ($mysql->error);
 	log_to_db("Ban edit","Deleted ban: ID ".$bid." (<".sql_safe($ban_row["player_nick"])."> <".sql_safe($ban_row["player_id"]).">)");
 	//redirect to start page
 	if($query) { header("Location:index.php"); exit; }
 }
 //comment delete
 if(isset($_POST["del_comment_x"]) && isset($_POST["cid"]) && $_SESSION["loggedin"]) {
-	$query = mysql_query("DELETE FROM `".$config->db_prefix."_comments` WHERE `id`=".(int)$_POST["cid"]." LIMIT 1") or die (mysql_error());
+	$query = $mysql->query("DELETE FROM `".$config->db_prefix."_comments` WHERE `id`=".(int)$_POST["cid"]." LIMIT 1") or die ($mysql->error);
 	if($query) $msg_comment="_COMDELETED";
 }
 //validate input fields for following functions
@@ -160,9 +160,9 @@ if(isset($_POST["add_comment"]) && $bid) {
 		 $error[]="_WRONGCAPTCHA";
 	}
 	if(!$error) {
-		$query = mysql_query("INSERT INTO `".$config->db_prefix."_comments` (`name`,`comment`,`email`,`addr`,`date`,`bid`) 
+		$query = $mysql->query("INSERT INTO `".$config->db_prefix."_comments` (`name`,`comment`,`email`,`addr`,`date`,`bid`) 
 				VALUES ('".$name."','".$comment."','".$email."','".$_SERVER["REMOTE_ADDR"]."',UNIX_TIMESTAMP(),".$bid.")"
-				) or die (mysql_error());
+				) or die ($mysql->error);
 		$msg_comment="_COMADDED";
 	}
 	new_captcha();
@@ -173,8 +173,8 @@ if(isset($_POST["add_comment"]) && $bid) {
 if(isset($_POST["edit_comment"]) && isset($_POST["cid"]) && $_SESSION["loggedin"]) {
 	if(!$error) {
 		//save it to db
-		$query = mysql_query("UPDATE `".$config->db_prefix."_comments` SET `comment`='".$comment."',`name`='".$name."',`email`='".$email."' WHERE `id`=".(int)$_POST["cid"] 
-				) or die (mysql_error());
+		$query = $mysql->query("UPDATE `".$config->db_prefix."_comments` SET `comment`='".$comment."',`name`='".$name."',`email`='".$email."' WHERE `id`=".(int)$_POST["cid"] 
+				) or die ($mysql->error);
 		$msg_comment="_COMEDITED";
 	}
 	$smarty->assign("comment_error",$error);
@@ -182,8 +182,8 @@ if(isset($_POST["edit_comment"]) && isset($_POST["cid"]) && $_SESSION["loggedin"
 //file delete
 if(isset($_POST["del_demo_x"]) && isset($_POST["did"]) && $_SESSION["loggedin"]) {
 	//get the file name first
-	$query = mysql_query("SELECT `demo_file` FROM `".$config->db_prefix."_files` WHERE `id`=".(int)$_POST["did"]." LIMIT 1") or die (mysql_error());
-	if(mysql_num_rows($query)) $file=mysql_result($query,0);
+	$query = $mysql->query("SELECT `demo_file` FROM `".$config->db_prefix."_files` WHERE `id`=".(int)$_POST["did"]." LIMIT 1") or die ($mysql->error);
+	if($query->num_rows) $file = $query->fetch_row()[0];
 	//delete thumb if exists
 	if(file_exists("include/files/".$file."_thumb") && $file) {
 		unlink("include/files/".$file."_thumb");
@@ -193,7 +193,7 @@ if(isset($_POST["del_demo_x"]) && isset($_POST["did"]) && $_SESSION["loggedin"])
 		//delete the file
 		if(unlink("include/files/".$file)) {
 			//if file deleted, remove db entry
-			$query = mysql_query("DELETE FROM `".$config->db_prefix."_files` WHERE `id`=".(int)$_POST["did"]." LIMIT 1") or die (mysql_error());
+			$query = $mysql->query("DELETE FROM `".$config->db_prefix."_files` WHERE `id`=".(int)$_POST["did"]." LIMIT 1") or die ($mysql->error);
 			if($query) $msg_demo="_FILEDELSUCCESS";
 		} else { $msg_demo="_FILEDELFAILED"; }
 	} else { $msg_demo="_FILENOTFOUND"; }
@@ -203,8 +203,8 @@ if(isset($_POST["edit_demo"]) && isset($_POST["did"]) && $_SESSION["loggedin"]) 
 	#if($name=="" || $email=="" || $comment=="") $error[]="_NOREQUIREDFIELDS";
 	if(!$error) {
 		//save it to db
-		$query = mysql_query("UPDATE `".$config->db_prefix."_files` SET `comment`='".$comment."',`name`='".$name."',`email`='".$email."' WHERE `id`=".(int)$_POST["did"] 
-				) or die (mysql_error());
+		$query = $mysql->query("UPDATE `".$config->db_prefix."_files` SET `comment`='".$comment."',`name`='".$name."',`email`='".$email."' WHERE `id`=".(int)$_POST["did"] 
+				) or die ($mysql->error);
 		$msg_demo="_FILEEDITED";
 	}
 	$smarty->assign("upload_error",$error);
@@ -213,7 +213,7 @@ if(isset($_POST["edit_demo"]) && isset($_POST["did"]) && $_SESSION["loggedin"]) 
 if(isset($_POST["add_demo"]) && isset($_FILES['filename']['tmp_name']) && ($config->demo_all || $_SESSION["loggedin"])) {
 	global $config;
 	
-	$real_file=mysql_real_escape_string($_FILES['filename']['name']);
+	$real_file=$mysql->escape_string($_FILES['filename']['name']);
 	
 	if ((($_SESSION["captcha_code"] !=0) || ($_POST["verify"] != $_SESSION["captcha_code"])) && $_SESSION["loggedin"]!=true){ 
 		 $error[]="_WRONGCAPTCHA"; 
@@ -240,9 +240,9 @@ if(isset($_POST["add_demo"]) && isset($_FILES['filename']['tmp_name']) && ($conf
 	//save file to db
 	if(!$error) {
 		//save it to db
-		$query = mysql_query("INSERT INTO `".$config->db_prefix."_files` (`upload_time`,`down_count`,`bid`,`demo_file`,`demo_real`,`comment`,`name`,`email`,`file_size`,`addr`) 
+		$query = $mysql->query("INSERT INTO `".$config->db_prefix."_files` (`upload_time`,`down_count`,`bid`,`demo_file`,`demo_real`,`comment`,`name`,`email`,`file_size`,`addr`) 
 				VALUES (UNIX_TIMESTAMP(),0,".$bid.",'".$temp_file."','".$real_file."','".$comment."','".$name."','".$email."',".$_FILES['filename']['size'].",'".$_SERVER["REMOTE_ADDR"]."')"
-				) or die (mysql_error());
+				) or die ($mysql->error);
 		$msg_demo="_FILEUPLOADSUCCESS";
 	}
 	new_captcha();
@@ -253,8 +253,8 @@ if(isset($_POST["add_demo"]) && isset($_FILES['filename']['tmp_name']) && ($conf
 if(isset($_POST["down_demo_x"]) && isset($_POST["did"])) {
 	global $config;
 	//get file name from db
-	$query = mysql_query("SELECT `demo_file`,`demo_real`,`file_size` FROM `".$config->db_prefix."_files` WHERE `id`=".(int)$_POST["did"]." LIMIT 1") or die (mysql_error());
-	$result = mysql_fetch_object($query);
+	$query = $mysql->query("SELECT `demo_file`,`demo_real`,`file_size` FROM `".$config->db_prefix."_files` WHERE `id`=".(int)$_POST["did"]." LIMIT 1") or die ($mysql->error);
+	$result = $query->fetch_object();
 	$file_local=$config->path_root."/include/files/".$result->demo_file;
 	$file_real=$result->demo_real;
 	$file_size=$result->file_size;
@@ -264,7 +264,7 @@ if(isset($_POST["down_demo_x"]) && isset($_POST["did"])) {
 	}
 	if(!$error) {
 		//add download count
-		$query = mysql_query("UPDATE `".$config->db_prefix."_files` SET `down_count`=`down_count`+1 WHERE `id`=".(int)$_POST["did"]) or die (mysql_error());
+		$query = $mysql->query("UPDATE `".$config->db_prefix."_files` SET `down_count`=`down_count`+1 WHERE `id`=".(int)$_POST["did"]) or die ($mysql->error);
 		if(ini_get('zlib.output_compression')) 
 			ini_set('zlib.output_compression', 'Off');
 		//send header for download
@@ -297,8 +297,8 @@ $ban_details_activ=sql_get_ban_details_activ($ban_details["player_id"],$activ_co
 $exp_count=0;
 $ban_details_exp=sql_get_ban_details_exp($ban_details["player_id"],$exp_count,$bid);
 //ban edits holen
-$query=mysql_query("SELECT * FROM ".$config->db_prefix."_bans_edit WHERE bid=".$bid);
-while($row=mysql_fetch_assoc($query)) {
+$query=$mysql->query("SELECT * FROM ".$config->db_prefix."_bans_edit WHERE bid=".$bid);
+while($row=$query->fetch_assoc()) {
 	$edit_count++;
 	$ban_details_edits[]=$row;
 }

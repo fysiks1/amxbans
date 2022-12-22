@@ -45,9 +45,9 @@ if(isset($_POST["action"])) {
 	
 	if(!$msg) {
 		//check if username exists
-		$query = mysql_query("SELECT last_action,try FROM `".$config->db_prefix."_webadmins` WHERE username='$uname' LIMIT 1");
-		if(mysql_num_rows($query)) {
-			$result = mysql_fetch_object($query);
+		$query = $mysql->query("SELECT last_action,try FROM `".$config->db_prefix."_webadmins` WHERE username='$uname' LIMIT 1");
+		if($query->num_rows) {
+			$result = $query->fetch_object();
 			$try=$result->try;
 			$last_action=$result->last_action;
 			
@@ -59,21 +59,21 @@ if(isset($_POST["action"])) {
 					$loginblocked=true;
 				} else {
 					//delete wrong trys
-					$query2 = mysql_query("UPDATE `".$config->db_prefix."_webadmins` SET `try`=0 WHERE username='$uname' LIMIT 1");
+					$query2 = $mysql->query("UPDATE `".$config->db_prefix."_webadmins` SET `try`=0 WHERE username='$uname' LIMIT 1");
 					$try=0;
 				}
 			} 
 			if(!$loginblocked) {
 				//check username and password
-				$query = mysql_query("SELECT id,level,email FROM `".$config->db_prefix."_webadmins` WHERE username='$uname' AND password=MD5('$upass') LIMIT 1");
-				if(mysql_num_rows($query)) {
+				$query = $mysql->query("SELECT id,level,email FROM `".$config->db_prefix."_webadmins` WHERE username='$uname' AND password=MD5('$upass') LIMIT 1");
+				if($query->num_rows) {
 					$_SESSION["loginfailed"]=0;
 					//login ok
 					if(isset($_POST["remember"])) {
 						//set cookie, 7 days valid
 						setcookie($config->cookie,session_id().":".$_SESSION["lang"],time()+(((60*60)*24)*7),"/",$_SERVER["HTTP_HOST"]);
 					}
-					$result = mysql_fetch_object($query);
+					$result = $query->fetch_object();
 					
 					$_SESSION["uid"]=$result->id;
 					$_SESSION["uname"]=$uname;
@@ -82,26 +82,26 @@ if(isset($_POST["action"])) {
 					$_SESSION["sid"]=session_id();
 					$_SESSION["loggedin"]=true;
 						
-					$query = mysql_query("SELECT * FROM `".$config->db_prefix."_levels` WHERE level=".$_SESSION["level"]." LIMIT 1");
-					while($result = mysql_fetch_object($query)) {
-						$_SESSION['bans_add'] = $result->bans_add;
-						$_SESSION['bans_edit'] = $result->bans_edit;
-						$_SESSION['bans_delete'] = $result->bans_delete;
-						$_SESSION['bans_unban'] = $result->bans_unban;
-						$_SESSION['bans_import'] = $result->bans_import;
-						$_SESSION['bans_export'] = $result->bans_export;
-						$_SESSION['amxadmins_view'] = $result->amxadmins_view;
-						$_SESSION['amxadmins_edit'] = $result->amxadmins_edit;
-						$_SESSION['webadmins_view'] = $result->webadmins_view;
-						$_SESSION['webadmins_edit'] = $result->webadmins_edit;
-						$_SESSION['websettings_view'] = $result->websettings_view;
-						$_SESSION['websettings_edit'] = $result->websettings_edit;
-						$_SESSION['permissions_edit'] = $result->permissions_edit;
-						$_SESSION['prune_db'] = $result->prune_db;
-						$_SESSION['servers_edit'] = $result->servers_edit;
-						$_SESSION['ip_view'] = $result->ip_view;
-					}
-					$query = mysql_query("UPDATE `".$config->db_prefix."_webadmins` SET `logcode`='".session_id()."',`last_action`=UNIX_TIMESTAMP(),`try`=0 WHERE `id`=".$_SESSION["uid"]);
+					$query = $mysql->query("SELECT * FROM `".$config->db_prefix."_levels` WHERE level=".$_SESSION["level"]." LIMIT 1");
+					$result = $query->fetch_object();
+					$_SESSION['bans_add'] = $result->bans_add;
+					$_SESSION['bans_edit'] = $result->bans_edit;
+					$_SESSION['bans_delete'] = $result->bans_delete;
+					$_SESSION['bans_unban'] = $result->bans_unban;
+					$_SESSION['bans_import'] = $result->bans_import;
+					$_SESSION['bans_export'] = $result->bans_export;
+					$_SESSION['amxadmins_view'] = $result->amxadmins_view;
+					$_SESSION['amxadmins_edit'] = $result->amxadmins_edit;
+					$_SESSION['webadmins_view'] = $result->webadmins_view;
+					$_SESSION['webadmins_edit'] = $result->webadmins_edit;
+					$_SESSION['websettings_view'] = $result->websettings_view;
+					$_SESSION['websettings_edit'] = $result->websettings_edit;
+					$_SESSION['permissions_edit'] = $result->permissions_edit;
+					$_SESSION['prune_db'] = $result->prune_db;
+					$_SESSION['servers_edit'] = $result->servers_edit;
+					$_SESSION['ip_view'] = $result->ip_view;
+
+					$mysql->query("UPDATE `".$config->db_prefix."_webadmins` SET `logcode`='".session_id()."',`last_action`=UNIX_TIMESTAMP(),`try`=0 WHERE `id`=".$_SESSION["uid"]);
 					#$msg="_LOGINOK";
 					header("Location:index.php");
 					exit;
@@ -117,9 +117,9 @@ if(isset($_POST["action"])) {
 					$loginfailed=true;
 					
 					if($try<$max_trys) {
-						$query = @mysql_query("UPDATE `".$config->db_prefix."_webadmins` SET `try`=".$try.",`logcode`=NULL WHERE username='$uname' LIMIT 1");
+						$query = @$mysql->query("UPDATE `".$config->db_prefix."_webadmins` SET `try`=".$try.",`logcode`=NULL WHERE username='$uname' LIMIT 1");
 					} else {
-						$query = @mysql_query("UPDATE `".$config->db_prefix."_webadmins` SET `try`=".$try.",`logcode`=NULL,`last_action`=UNIX_TIMESTAMP() WHERE username='$uname' LIMIT 1");
+						$query = @$mysql->query("UPDATE `".$config->db_prefix."_webadmins` SET `try`=".$try.",`logcode`=NULL,`last_action`=UNIX_TIMESTAMP() WHERE username='$uname' LIMIT 1");
 						$msg="_LOGINBLOCKED";
 						$block_left=$max_trys_block*60;
 						$loginblocked=true;

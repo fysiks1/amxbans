@@ -41,39 +41,38 @@ if($cookie_tmp != "" && $_SESSION["loggedin"]==false) {
 		$sid = sql_safe($cook[0]);
 		if(!$_SESSION["lang"]) $_SESSION["lang"]=$cook[1];
 
-		$query = mysql_query("SELECT id,username,level,email FROM `".$config->db_prefix."_webadmins` WHERE logcode='".$sid."' LIMIT 1") or die (mysql_error());
-		if(mysql_num_rows($query)) {
-			while($result = mysql_fetch_object($query)) {
-				$_SESSION["uid"]=$result->id;
-				$_SESSION["uname"]=$result->username;
-				$_SESSION["email"]=$result->email;
-				$_SESSION["level"]=$result->level;
-				$_SESSION["sid"]=session_id();
-				$_SESSION["loggedin"]=true;
-			}
-			$query = mysql_query("SELECT * FROM `".$config->db_prefix."_levels` WHERE level=".$_SESSION["level"]." LIMIT 1") or die (mysql_error());
-			while($result = mysql_fetch_object($query)) {
-				$_SESSION['bans_add'] = $result->bans_add;
-				$_SESSION['bans_edit'] = $result->bans_edit;
-				$_SESSION['bans_delete'] = $result->bans_delete;
-				$_SESSION['bans_unban'] = $result->bans_unban;
-				$_SESSION['bans_import'] = $result->bans_import;
-				$_SESSION['bans_export'] = $result->bans_export;
-				$_SESSION['amxadmins_view'] = $result->amxadmins_view;
-				$_SESSION['amxadmins_edit'] = $result->amxadmins_edit;
-				$_SESSION['webadmins_view'] = $result->webadmins_view;
-				$_SESSION['webadmins_edit'] = $result->webadmins_edit;
-				$_SESSION['websettings_view'] = $result->websettings_view;
-				$_SESSION['websettings_edit'] = $result->websettings_edit;
-				$_SESSION['permissions_edit'] = $result->permissions_edit;
-				$_SESSION['prune_db'] = $result->prune_db;
-				$_SESSION['servers_edit'] = $result->servers_edit;
-				$_SESSION['ip_view'] = $result->ip_view;
-			}
+		$query = $mysql->query("SELECT id,username,level,email FROM `".$config->db_prefix."_webadmins` WHERE logcode='".$sid."' LIMIT 1") or die ($mysql->error);
+		if($query->num_rows) {
+			$result = $query->fetch_object();
+			$_SESSION["uid"]=$result->id;
+			$_SESSION["uname"]=$result->username;
+			$_SESSION["email"]=$result->email;
+			$_SESSION["level"]=$result->level;
+			$_SESSION["sid"]=session_id();
+			$_SESSION["loggedin"]=true;
+
+			$query = $mysql->query("SELECT * FROM `".$config->db_prefix."_levels` WHERE level=".$_SESSION["level"]." LIMIT 1") or die ($mysql->error);
+			$result = $query->fetch_object();
+			$_SESSION['bans_add'] = $result->bans_add;
+			$_SESSION['bans_edit'] = $result->bans_edit;
+			$_SESSION['bans_delete'] = $result->bans_delete;
+			$_SESSION['bans_unban'] = $result->bans_unban;
+			$_SESSION['bans_import'] = $result->bans_import;
+			$_SESSION['bans_export'] = $result->bans_export;
+			$_SESSION['amxadmins_view'] = $result->amxadmins_view;
+			$_SESSION['amxadmins_edit'] = $result->amxadmins_edit;
+			$_SESSION['webadmins_view'] = $result->webadmins_view;
+			$_SESSION['webadmins_edit'] = $result->webadmins_edit;
+			$_SESSION['websettings_view'] = $result->websettings_view;
+			$_SESSION['websettings_edit'] = $result->websettings_edit;
+			$_SESSION['permissions_edit'] = $result->permissions_edit;
+			$_SESSION['prune_db'] = $result->prune_db;
+			$_SESSION['servers_edit'] = $result->servers_edit;
+			$_SESSION['ip_view'] = $result->ip_view;
 		}
 }
 if($cookie_tmp != "" && $_SESSION["loggedin"]==true) {
-	$query = mysql_query("UPDATE `".$config->db_prefix."_webadmins` SET `last_action`=UNIX_TIMESTAMP() WHERE `id`=".$_SESSION["uid"]);
+	$query = $mysql->query("UPDATE `".$config->db_prefix."_webadmins` SET `last_action`=UNIX_TIMESTAMP() WHERE `id`=".$_SESSION["uid"]);
 }				
 if(isset($_SESSION["sid"]) && $_SESSION["sid"] != session_id()) {
 	unset($_SESSION["uid"]);
@@ -83,5 +82,3 @@ if(isset($_SESSION["sid"]) && $_SESSION["sid"] != session_id()) {
 	unset($_SESSION["sid"]);
 	unset($_SESSION["loggedin"]);
 }
-
-?>

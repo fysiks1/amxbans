@@ -27,7 +27,7 @@
 
 	setcookie($config->cookie,"delete",time()-(60*60*24*7),"",$_SERVER["HTTP_HOST"]);
 	
-	if(isset($_SESSION["uid"])) @$query = mysql_query("UPDATE `".$config->db_prefix."_webadmins` SET `logcode`=NULL WHERE `id`=".(int)$_SESSION["uid"]) or die (mysql_error());
+	if(isset($_SESSION["uid"])) @$query = $mysql->query("UPDATE `".$config->db_prefix."_webadmins` SET `logcode`=NULL WHERE `id`=".(int)$_SESSION["uid"]) or die ($mysql->error);
 	
 	unset($_SESSION["uid"]);
 	unset($_SESSION["uname"]);

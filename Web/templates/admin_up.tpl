@@ -68,7 +68,7 @@
 					<tr class="settings_line">
 						<td><b>{"_YOURWEB"|lang}</b></td>
 						<td>
-							{if $version_web<$latest_version && $latest_version>=$version_web}
+							{if $latest_version>$version_web}
 								<span style="color:orange;font-weight:bold">{$version_web}</span>
 								{assign var="web" value=true}
 								<img src="images/warning.gif" title="{"_UPDATE_RECOMMENDED"|lang}" />
@@ -103,7 +103,7 @@
 						<tr>
 							<td>{$version_server.address}</td>
 							<td>
-								{if $version_server.version<$version_latest && $version_latest>=$version_server.version}
+								{if $version_latest>$version_server.version}
 									<span style="color:orange;font-weight:bold">{$version_server.version}</span>
 									{assign var="plugin" value=true}
 									<img src="images/warning.gif" title="{"_UPDATE_RECOMMENDED"|lang}" />

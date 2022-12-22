@@ -26,14 +26,15 @@ if(!$_SESSION["loggedin"]) {
 
 $admin_site="up";
 $title2 ="_TITLEUPDATE";
+$server_count = 0;
 
-$update_url = "http://www.amxbans.net/version.php";
+$update_url = "http://www.amxbans.net/version.php?web";
 
 
 //get version from servers
-$query=mysql_query("SELECT `address`,`amxban_version` FROM `".$config->db_prefix."_serverinfo` ORDER BY `address`") or die(mysql_error());
+$query=$mysql->query("SELECT `address`,`amxban_version` FROM `".$config->db_prefix."_serverinfo` ORDER BY `address`") or die($mysql->error);
 $version_server=array();
-while($result = mysql_fetch_object($query)) {
+while($result = $query->fetch_object()) {
 	$version=array(
 		"address"=>$result->address,
 		"version"=>$result->amxban_version
@@ -43,43 +44,8 @@ while($result = mysql_fetch_object($query)) {
 }
 $smarty->assign("server_count",$server_count);
 $smarty->assign("version_server",$version_server);
-
-/*
-//get versions from update db
-@$mysql_upd = mysql_connect($update_ip,$update_user,$update_pw) or $error[]="_UPD_CONNECT_ERROR";
-if($mysql_upd) {
-	$resource = mysql_select_db($update_db,$mysql_upd) or $error[]="_UPD_DB_ERROR";
-	if(!$error) {	
-		//get newest web versions info
-		$query = mysql_query("SELECT * FROM `version` WHERE `for`='web' ORDER BY `release` DESC LIMIT 1",$mysql_upd) or $error[]="_UPD_SELECT_ERROR";
-		while($result = mysql_fetch_object($query)) {
-			$version=array(
-				"release"=>$result->release,
-				"beta"=>$result->beta,
-				"recommended_to"=>$result->recommended_to,
-				"changelog"=>$result->changelog,
-				"url"=>$result->url
-			);
-		}
-		$smarty->assign("version_db_web",$version);
-		//get newest plugin versions info
-		$query = mysql_query("SELECT * FROM `version` WHERE `for`='plugin' ORDER BY `release` DESC LIMIT 1",$mysql_upd) or $error[]="_UPD_SELECT_ERROR";
-		while($result = mysql_fetch_object($query)) {
-			$version=array(
-				"release"=>$result->release,
-				"beta"=>$result->beta,
-				"recommended_to"=>$result->recommended_to,
-				"changelog"=>$result->changelog,
-				"url"=>$result->url
-			);
-		}
-		$smarty->assign("version_db_plugin",$version);
-	}
-	mysql_close($mysql_upd);
-}
-*/
 //get versions from update url
 $smarty->assign("version_latest", file_get_contents($update_url));
 
-$smarty->assign("error",$error);
+//$smarty->assign("error",($error? $error));
 ?>

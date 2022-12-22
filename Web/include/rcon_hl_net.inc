@@ -37,7 +37,7 @@ class Rcon
 
 
   //Constructor
-  function Rcon()
+  function __construct()
   {
     $this->challenge_number = 0; 
     $this->connected = true; 
@@ -401,7 +401,7 @@ class Rcon
   {
     //If there is no open connection return false
     if(!$this->connected)
-      return $this->connected;
+      return false;
 	  
 	if($this->challenge_number == "")
     {

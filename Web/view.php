@@ -34,14 +34,14 @@ require_once("include/functions.inc.php");
 require_once("include/rcon_hl_net.inc");
 
 //fetch server_information
-$resource2	= mysql_query("SELECT * FROM ".$config->db_prefix."_serverinfo ORDER BY hostname ASC") or die (mysql_error());
+$resource2	= $mysql->query("SELECT * FROM ".$config->db_prefix."_serverinfo ORDER BY hostname ASC") or die ($mysql->error);
 
 $server_array = array();
 $addons_array = array();
 $rules_array = array();
 $anticheat_array = array();
 $rules = "";
-while($result2 = mysql_fetch_object($resource2)) {
+while($result2 = $resource2->fetch_object()) {
 
 	$split_address = explode (":", $result2->address);
 	$ip	= $split_address['0'];
@@ -64,8 +64,8 @@ while($result2 = mysql_fetch_object($resource2)) {
 				}
 			}
 			//check if mappic exists
-			if(file_exists("images/maps/".$infos[mod]."/".$infos[map].".jpg")) {
-				$mappic = $infos[map];
+			if(file_exists("images/maps/".$infos['mod']."/".$infos['map'].".jpg")) {
+				$mappic = $infos['map'];
 			} else {
 				$mappic = "noimage";
 			}
@@ -168,38 +168,37 @@ while($result2 = mysql_fetch_object($resource2)) {
  * 		Stats
  *
  */
-$stats['total']		= mysql_num_rows( mysql_query("SELECT bid FROM ".$config->db_prefix."_bans") ); 
-$stats['permanent']	= mysql_num_rows( mysql_query("SELECT bid FROM ".$config->db_prefix."_bans WHERE ban_length = 0") ); 
-$stats['active']	= mysql_num_rows( mysql_query("SELECT bid FROM ".$config->db_prefix."_bans WHERE ((ban_created+(ban_length*60)) > ".time()." OR ban_length = 0)") );
+$stats['total']		= $mysql->query("SELECT bid FROM ".$config->db_prefix."_bans")->num_rows;
+$stats['permanent']	= $mysql->query("SELECT bid FROM ".$config->db_prefix."_bans WHERE ban_length = 0")->num_rows;
+$stats['active']	= $mysql->query("SELECT bid FROM ".$config->db_prefix."_bans WHERE ((ban_created+(ban_length*60)) > ".time()." OR ban_length = 0)")->num_rows;
 $stats['temp']		= $stats['active'] - $stats['permanent'];
-$stats['admins']	= mysql_num_rows( mysql_query("SELECT id FROM ".$config->db_prefix."_amxadmins") );
-$stats['servers']	= mysql_num_rows( mysql_query("SELECT id FROM ".$config->db_prefix."_serverinfo") );
+$stats['admins']	= $mysql->query("SELECT id FROM ".$config->db_prefix."_amxadmins")->num_rows;
+$stats['servers']	= $mysql->query("SELECT id FROM ".$config->db_prefix."_serverinfo")->num_rows;
 /*
  *
  * 		Latest Ban
  *
  */
-$last_ban_arr = "";
-$latest_ban		= mysql_query("SELECT player_id, player_nick, ban_reason, ban_created, ban_length, ban_type FROM ".$config->db_prefix."_bans ORDER BY ban_created DESC LIMIT 1") or die (mysql_error());
-while($lb = mysql_fetch_object($latest_ban)) {
-	if($lb->ban_length == 0) {
-		$ban_length	= 0;
-	} else {
-		$ban_length 	= ($lb->ban_created + ($lb->ban_length * 60));
-	}
-	if($lb->ban_type == "SI") {
-		$steamid	= "SI";
-	} else {
-		$steamid	= $lb->player_id;
-	}
+$lb	= $mysql->query("SELECT player_id, player_nick, ban_reason, ban_created, ban_length, ban_type FROM ".$config->db_prefix."_bans ORDER BY ban_created DESC LIMIT 1") or die ($mysql->error);
+$lb = $lb->fetch_object();
 
-	$last_ban_arr		= array("steamid"	=> $steamid,
+if($lb->ban_length == 0) {
+	$ban_length	= 0;
+} else {
+	$ban_length 	= ($lb->ban_created + ($lb->ban_length * 60));
+}
+if($lb->ban_type == "SI") {
+	$steamid	= "SI";
+} else {
+	$steamid	= $lb->player_id;
+}
+
+$last_ban_arr= array("steamid"	=> $steamid,
 					"nickname"	=> html_safe(_substr($lb->player_nick, 15)),
 					"reason"	=> html_safe(_substr($lb->ban_reason, 15)),
 					"created"	=> $lb->ban_created,
 					"length"	=> $ban_length,
 					"time"		=> time());
-}
 /*
  *
  * 		Template parsing
@@ -243,7 +242,6 @@ $smarty->assign("banner_url",$config->banner_url);
 
 $smarty->display('main_header.tpl');
       echo "<script type=\"text/javascript\">
-	<!--
 		function jumpMenu(selection, target)
 		{
 			var url = selection.options[selection.selectedIndex].value;
@@ -257,8 +255,6 @@ $smarty->display('main_header.tpl');
 				window.location = url;
 			}
 		}
-	// -->
 	</script>";
 $smarty->display('view.tpl');
 $smarty->display('main_footer.tpl');
-?>

@@ -27,15 +27,16 @@
 
     $admin_site="av";
 	$title2 ="_TITLEAMXADMINS";
+	$user_msg=array();
 	
 	$aid=(int)$_POST["aid"];
 	
 	//amxadmin delete
 	if(isset($_POST["del"]) && $_SESSION["loggedin"]) {
-		$query = mysql_query("DELETE FROM `".$config->db_prefix."_amxadmins` WHERE `id`=".$aid." LIMIT 1") or die (mysql_error());
-		$query = mysql_query("DELETE FROM `".$config->db_prefix."_admins_servers` WHERE `admin_id`=".$aid) or die (mysql_error());
+		$query = $mysql->query("DELETE FROM `".$config->db_prefix."_amxadmins` WHERE `id`=".$aid." LIMIT 1") or die ($mysql->error);
+		$query = $mysql->query("DELETE FROM `".$config->db_prefix."_admins_servers` WHERE `admin_id`=".$aid) or die ($mysql->error);
 		$user_msg[]='_AMXADMINDELETED';
-		log_to_db("AMXXAdmin config","Deleted admin: ".mysql_real_escape_string($_POST["username"]));
+		log_to_db("AMXXAdmin config","Deleted admin: ".sql_safe($_POST["username"]));
 	}
 	//validate input values
 	if((isset($_POST["save"]) || isset($_POST["new"])) && $_SESSION["loggedin"]) {
@@ -73,7 +74,7 @@
 			$exp=($days<=0)?"0":"(`created`+(".($days * 86400)."))";
 		}
 		if(!$user_msg) {
-			$query = mysql_query("UPDATE `".$config->db_prefix."_amxadmins` SET 
+			$query = $mysql->query("UPDATE `".$config->db_prefix."_amxadmins` SET 
 						`username`='".$username."',
 						`password`='".$password."',
 						`access`='".$access."',
@@ -83,9 +84,9 @@
 						`ashow`='".(int)$_POST["ashow"]."',
 						`expired`=".$exp.",
 						`days`=".$days."
-						WHERE `id`=".$aid." LIMIT 1") or die (mysql_error());
+						WHERE `id`=".$aid." LIMIT 1") or die ($mysql->error);
 			$user_msg[]='_AMXADMINSAVESUCCESS';
-			log_to_db("AMXXAdmin config","Edited admin: ".mysql_real_escape_string($_POST["username"])." (nick: ".mysql_real_escape_string($_POST["nickname"]).")");
+			log_to_db("AMXXAdmin config","Edited admin: ".sql_safe($_POST["username"])." (nick: ".sql_safe($_POST["nickname"]).")");
 		}
 	}
 	//amxadmin add
@@ -100,9 +101,9 @@
 			$exp="(UNIX_TIMESTAMP()+(".($days * 86400).")),";
 		}
 		if(!$user_msg) {
-			$name=mysql_real_escape_string($_POST["username"]);
+			$name=sql_safe($_POST["username"]);
 			//add new amxxadmin to db
-			$query = mysql_query("INSERT INTO `".$config->db_prefix."_amxadmins` 
+			$query = $mysql->query("INSERT INTO `".$config->db_prefix."_amxadmins` 
 							(`username`,`password`,`access`,`flags`,`steamid`,`nickname`,`ashow`,`created`,`expired`,`days`) 
 							VALUES (
 							'".$username."',
@@ -115,18 +116,31 @@
 							UNIX_TIMESTAMP(),
 							".$exp."
 							".$days."
-							)") or die (mysql_error());
+							)") or die ($mysql->error ."INSERT INTO `".$config->db_prefix."_amxadmins` 
+							(`username`,`password`,`access`,`flags`,`steamid`,`nickname`,`ashow`,`created`,`expired`,`days`) 
+							VALUES (
+							'".$username."',
+							'".$password."',
+							'".$access."',
+							'".$flags."',
+							'".$steamid."',
+							'".$nickname."',
+							".(int)$_POST["ashow"].",
+							UNIX_TIMESTAMP(),
+							".$exp."
+							".$days."
+							)");
 			//add as admin to selected servers
-			$adminid=mysql_insert_id();
+			$adminid=$mysql->insert_id;
 			$addtoserver=$_POST["addtoserver"];
-			$sban=mysql_real_escape_string($_POST["staticbantime"]);
+			$sban=sql_safe($_POST["staticbantime"]);
 			if(is_array($addtoserver)) {
 				foreach($addtoserver as $k => $v) {
-					$query = mysql_query("INSERT INTO `".$config->db_prefix."_admins_servers` 
+					$query = $mysql->query("INSERT INTO `".$config->db_prefix."_admins_servers` 
 							(`admin_id`,`server_id`,`custom_flags`,`use_static_bantime`) 
 							VALUES 
 							('".$adminid."','".$v."','','".$sban."')
-							") or die (mysql_error());
+							") or die ($mysql->error);
 					}
 			}
 			$user_msg[]='_AMXADMINADDED';

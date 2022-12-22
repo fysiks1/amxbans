@@ -32,7 +32,7 @@
 		$setname=sql_safe($_POST["setname"]);
 		if(!validate_value($setname,"name",$error,1,31,"REASONSET")) $user_msg=$error;
 		if(!$user_msg) {
-			$query = mysql_query("INSERT INTO `".$config->db_prefix."_reasons_set` (`setname`)	VALUES ('".$setname."')") or die (mysql_error());
+			$query = $mysql->query("INSERT INTO `".$config->db_prefix."_reasons_set` (`setname`)	VALUES ('".$setname."')") or die ($mysql->error);
 			$user_msg='_REASONSETADDED';
 			log_to_db("Reasons config","Added Set: ".sql_safe($setname));
 		}
@@ -43,7 +43,7 @@
 		if(!validate_value($reason,"name",$error,1,99,"REASON")) $user_msg=$error;
 		$time=(int)$_POST["static_bantime"];
 		if(!$user_msg) {
-			$query = mysql_query("INSERT INTO `".$config->db_prefix."_reasons` (`reason`,`static_bantime`)	VALUES ('".$reason."',".$time.")") or die (mysql_error());
+			$query = $mysql->query("INSERT INTO `".$config->db_prefix."_reasons` (`reason`,`static_bantime`)	VALUES ('".$reason."',".$time.")") or die ($mysql->error);
 			$user_msg='_REASONADDED';
 			log_to_db("Reasons config","Added Reason: ".sql_safe($reason)." (".$time." min)");
 		}
@@ -56,9 +56,9 @@
 	if(isset($_POST["delset"]) && $_SESSION["loggedin"]) {
 		$setname=html_safe($_POST["setname"]);
 		//delete the set
-		$query = mysql_query("DELETE FROM `".$config->db_prefix."_reasons_set` WHERE `id`=".$rsid." LIMIT 1") or die (mysql_error());
+		$query = $mysql->query("DELETE FROM `".$config->db_prefix."_reasons_set` WHERE `id`=".$rsid." LIMIT 1") or die ($mysql->error);
 		//delete all reasons for set
-		$query = mysql_query("DELETE FROM `".$config->db_prefix."_reasons_to_set` WHERE `setid`=".$rsid) or die (mysql_error());
+		$query = $mysql->query("DELETE FROM `".$config->db_prefix."_reasons_to_set` WHERE `setid`=".$rsid) or die ($mysql->error);
 		$user_msg='_REASONSETDELETED';
 		log_to_db("Reasons config","Deleted set: ".sql_safe($setname));	
 	}
@@ -68,13 +68,13 @@
 		$setname=sql_safe($_POST["setname"]);
 		if(!validate_value($setname,"name",$error,1,31,"REASONSET")) $user_msg=$error;
 		if(!$user_msg) {
-			$query = mysql_query("DELETE FROM `".$config->db_prefix."_reasons_to_set` WHERE `setid`=".$rsid) or die (mysql_error());
+			$query = $mysql->query("DELETE FROM `".$config->db_prefix."_reasons_to_set` WHERE `setid`=".$rsid) or die ($mysql->error);
 			if (isset($_POST["aktiv"])) {
 				foreach ($_POST["aktiv"] as $k => $v) {
-					$query = mysql_query("INSERT INTO `".$config->db_prefix."_reasons_to_set` (`setid`,`reasonid`) VALUES (".$rsid.",".$v.")") or die (mysql_error());
+					$query = $mysql->query("INSERT INTO `".$config->db_prefix."_reasons_to_set` (`setid`,`reasonid`) VALUES (".$rsid.",".$v.")") or die ($mysql->error);
 				}
 			}
-			$query = mysql_query("UPDATE `".$config->db_prefix."_reasons_set` SET `setname`='".$setname."' WHERE `id`=".$rsid." LIMIT 1") or die (mysql_error());
+			$query = $mysql->query("UPDATE `".$config->db_prefix."_reasons_set` SET `setname`='".$setname."' WHERE `id`=".$rsid." LIMIT 1") or die ($mysql->error);
 			$user_msg='_REASONSSETSAVED';
 			log_to_db("Reasons config","Edited set: ".sql_safe($setname));
 		}
@@ -83,8 +83,8 @@
 	//del reason
 	if(isset($_POST["reasondel"]) && $_SESSION["loggedin"]) {
 		$reason=html_safe($_POST["reason"]);
-		$query = mysql_query("DELETE FROM `".$config->db_prefix."_reasons` WHERE `id`=".$rid." LIMIT 1") or die (mysql_error());
-		$query = mysql_query("DELETE FROM `".$config->db_prefix."_reasons_to_set` WHERE `reasonid`=".$rid) or die (mysql_error());
+		$query = $mysql->query("DELETE FROM `".$config->db_prefix."_reasons` WHERE `id`=".$rid." LIMIT 1") or die ($mysql->error);
+		$query = $mysql->query("DELETE FROM `".$config->db_prefix."_reasons_to_set` WHERE `reasonid`=".$rid) or die ($mysql->error);
 		$user_msg='_REASONDELETED';
 		log_to_db("Reasons config","Deleted reason: ".sql_safe($reason));
 	}
@@ -96,7 +96,7 @@
 		if(!is_numeric($time)) $user_msg=$error;
 		if(!validate_value($reason,"name",$error,1,99,"REASON")) $user_msg=$error;
 		if(!$user_msg) {
-			$query = mysql_query("UPDATE `".$config->db_prefix."_reasons` SET `reason`='".$reason."',`static_bantime`=".$time." WHERE `id`=".$rid." LIMIT 1") or die (mysql_error());
+			$query = $mysql->query("UPDATE `".$config->db_prefix."_reasons` SET `reason`='".$reason."',`static_bantime`=".$time." WHERE `id`=".$rid." LIMIT 1") or die ($mysql->error);
 			$user_msg='_REASONSAVED';
 			log_to_db("Reasons config","Edited reason: ".sql_safe($reason)." (".$time." min)");
 		}

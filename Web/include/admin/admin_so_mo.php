@@ -31,12 +31,12 @@ $mid=(int)$_POST["mid"];
 
 //save module
 if(isset($_POST["save"]) && $_SESSION["loggedin"]) {
-		$query = mysql_query("UPDATE `".$config->db_prefix."_modulconfig` SET 
+		$query = $mysql->query("UPDATE `".$config->db_prefix."_modulconfig` SET 
 					`activ`=".(isset($_POST["activ"])?1:0).",
-					`menuname`='".mysql_real_escape_string($_POST["menuname"])."',
-					`name`='".mysql_real_escape_string($_POST["name"])."',
-					`index`='".mysql_real_escape_string($_POST["index"])."'
-					WHERE `id`=".$mid." LIMIT 1") or die (mysql_error());
+					`menuname`='".$mysql->escape_string($_POST["menuname"])."',
+					`name`='".$mysql->escape_string($_POST["name"])."',
+					`index`='".$mysql->escape_string($_POST["index"])."'
+					WHERE `id`=".$mid." LIMIT 1") or die ($mysql->error);
 		$user_msg='_MODULSAVED';
 		log_to_db("Modules config","Edited module: ID ".$mid);
 }

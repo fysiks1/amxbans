@@ -21,7 +21,7 @@
 */
 
 function db_backup($structur,$droptable,$deleteall,$download,$bansonly) {
-	global $config;
+	global $config, $mysql;
 	
 		// Header der Datei erstellen 
 		$datei = "########################################\n"; 
@@ -32,13 +32,11 @@ function db_backup($structur,$droptable,$deleteall,$download,$bansonly) {
 		$datei .= "\n\n"; 
 		// Alle Tabellen der Datenbank in einem Array speichern
 		if(!$bansonly) {
-			$res = mysql_list_tables($config->db_db);
-			$num = mysql_num_rows($res); 
-			for($i=0; $i<$num; $i++) {
-				$tables[] = mysql_tablename($res, $i);
-			}
+			$res = $mysql->query("SHOW TABLES FROM ". $config->db_db);
+			$num = $res->fetch_all();
+            $tables = array_map(function($a) {  return array_pop($a); }, $num);
 		} else {
-		// nur banns table
+		// nur banns table ------------------------------------------------------------------------------------------------------------------
 			$tables[]=$config->db_prefix."_bans";
 		}
 		// Jede Tabelle einzeln durchlaufen 
@@ -51,13 +49,13 @@ function db_backup($structur,$droptable,$deleteall,$download,$bansonly) {
 			if($droptable == true) { 
 				$datei .= "DROP TABLE IF EXISTS `" . $tab . "`;\n\n"; 
 			} 
-			// Grundlegende Informationen über die Struktur sammeln 
+			// Grundlegende Informationen ï¿½ber die Struktur sammeln 
 			$datei .= "CREATE TABLE IF NOT EXISTS `" . $tab . "` (\n"; 
 			$query = "DESCRIBE " . $tab; 
-			$sql = mysql_query($query); 
-			$num = mysql_num_rows($sql); 
+			$sql = $mysql->query("DESCRIBE " . $tab);
+			$num = $sql->num_rows;
 			$end = 0; 
-			while($info = mysql_fetch_array($sql)) { 
+			while($info = $sql->fetch_assoc()) {
 				$tab_name = $info["Field"]; 
 				$tab_type = $info["Type"]; 
 				$tab_null = (empty($info["Null"])) ? " NOT NULL" : " NULL"; 
@@ -66,14 +64,13 @@ function db_backup($structur,$droptable,$deleteall,$download,$bansonly) {
 				// Ende? Dann keine Kommas mehr setzen. 
 				$end++; 
 				$tab_komma = ($end<$num) ? ",\n" : ""; 
-				// Ergebnisse zu $datei hinzufügen 
+				// Ergebnisse zu $datei hinzufï¿½gen 
 				$datei .= " `" . $tab_name . "` " . $tab_type . $tab_null . $tab_default . $tab_extra . $tab_komma; 
-			} 
-			unset($keyarray); 
-			// Weiter Informationen abfragen 
-			$query = "SHOW KEYS FROM " . $tab; 
-			$sql = mysql_query($query); 
-			while($info = mysql_fetch_array($sql)) { 
+			}
+
+			// Weiter Informationen abfragen
+			$sql = $mysql->query("SHOW KEYS FROM " . $tab);
+			while($info = $sql->fetch_array()) {
 				$keyname = $info["Key_name"]; 
 				$comment = (isset($info["Comment"])) ? $info["Comment"] : ""; 
 				$sub_part = (isset($info["Sub_part"])) ? $info["Sub_part"] : ""; 
@@ -108,22 +105,21 @@ function db_backup($structur,$droptable,$deleteall,$download,$bansonly) {
 			$datei .= ");\n"; 
 			$datei .= "\n"; 
 			
-			// Backup der Datensätze 
+			// Backup der Datensï¿½tze 
 			if($structur == false) {
 				if ($deleteall == true) { 
 					$datei .= "DELETE FROM `" . $tab . "`;\n\n"; 
 				} 
-				// Alle Daten der Tabelle auslesen 
-				$query = "SELECT * FROM `" . $tab ."`"; 
-				$sql = mysql_query($query); 
-				while($info = mysql_fetch_assoc($sql)) { 
+				// Alle Daten der Tabelle auslesen
+				$sql = $mysql->query("SELECT * FROM `" . $tab ."`");
+				while($info = $sql->fetch_assoc()) {
 					unset($values); 
 					unset($fieldnames); 
 					foreach($info as $name => $field) { 
 						$fieldnames = ($fieldnames) ? $fieldnames .= ",`" . $name ."`": "`" . $name . "`"; 
 						$values = ($values) ? $values .= ",'" . addslashes($field) . "'" : "'" . addslashes($field) . "'"; 
 					} 
-					// Formatierten String zu $datei hinzufügen 
+					// Formatierten String zu $datei hinzufï¿½gen 
 					$datei .= "INSERT INTO `" . $tab . "` (" . $fieldnames . ") VALUES (" . $values . ");\n"; 
 				} 
 				$datei .= "\n\n"; 
