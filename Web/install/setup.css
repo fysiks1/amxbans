@@ -1,0 +1,159 @@
+/* body settings */
+html, *, div, p, td, th, legend, fieldset {
+	font: 12px tahoma, verdana, geneva, lucida, 'lucida grande', arial, helvetica, sans-serif;
+}
+
+
+body {
+	font-family: verdana, tahoma, arial;
+	font-size: 1px;
+	font-style: normal;
+	font-weight: normal;
+	
+	margin-top: 0px;
+	margin-right: 0px; 
+	margin-bottom: 0px;
+	margin-left: 0px;
+	
+	padding-top: 10px;
+	padding-right: 0px; 
+	padding-bottom: 0px;
+	padding-left: 0px;
+	
+	background-color: #FFFFFF;
+	background-repeat: repeat-y;
+}
+
+.center-wrapper {
+	margin: 0 auto;
+	width: 980px;
+}
+
+/* Boxes */
+
+.welcome, .notice, .error, .success {
+	border: 1px solid #DDD;
+	margin-bottom: 1em;
+	padding: 0.6em 0.8em;
+}
+
+div.block {
+	padding: 0.7em 0.9em;
+	font-size: 11pt;
+}
+
+div.step {
+	background: #DCDCDC;
+	padding: 0.7em 0.9em;
+	border: 1px #E0EEE0 solid;
+	font-size: 11pt;
+}
+
+.welcome {background: #FBE3E4; display: block; color: #8A1F11; border-color: #FBC2C4;}
+.welcome a {color: #8A1F11;}
+
+.notice {background: #FFF6BF; color: #514721; border-color: #FFD324;}
+.notice a {color: #514721;}
+
+.error {background: #FBE3E4; display: block; color: #8A1F11; border-color: #FBC2C4;}
+.error a {color: #8A1F11;}
+
+.success {background: #E6EFC2; color: #264409; border-color: #C6D880;}
+.success a {color: #264409;}
+
+/* Navigation */
+
+span.navi {
+	color: #505050;
+}
+
+span.navi_select {
+	color: #30c030;
+}
+
+/* Header */
+
+#header {}
+
+/* Site title */
+#site-title {
+	font: normal 1.6em serif;
+	padding-bottom: 24px;
+}
+#site-title span {color: #999;}
+#site-title a {
+	color: #000;
+	text-decoration: none;
+}
+
+/* Fieldset */
+
+.fieldset { 
+	margin-bottom: 6px; 
+}
+
+fieldset { 
+	border: 1px solid #d5d5d5;
+}
+
+legend {
+	font: 11px tahoma, verdana, geneva, lucida, 'lucida grande', arial, helvetica, sans-serif;
+	color: #696969;
+}
+
+span.title {
+	font-weight:bold;
+	font-size:20px;
+	color:green;
+}
+
+/* Links */
+
+a:visited	{ color: #000000; font-size: 10px; text-decoration: none }
+a:link	{ color: #000000; font-size: 10px; font-family: Verdana, Arial, Helvetica, Geneva, Swiss, SunSans-Regular; text-decoration: none }
+a:hover	{ color: #000000; font-size: 10px; font-family: Verdana, Arial, Helvetica, Geneva, Swiss, SunSans-Regular; text-decoration: underline }
+
+/* Tables */
+tr.list {
+	background-color: transparent;
+	border-bottom: 1px solid #d8dfea;
+}
+
+tr.list:hover  {
+	background: #EAEBEB;
+}
+
+tr.settings_line {
+	background-color: white;
+	border-bottom: 1px solid #000;
+	font: 12px tahoma, verdana, geneva, lucida, 'lucida grande', arial, helvetica, sans-serif;
+}
+
+tr.htable {
+	background-color: #ECEFF5;
+	border-bottom: 1px solid #94A3C4;
+	border-top: 1px solid #94A3C4;
+}
+
+select {
+	font-family: verdana, tahoma, arial;
+	font-size: 9px;
+}
+
+/* Inputs */
+
+input {
+	color: black;
+	font-family: verdana, tahoma, arial;
+	font-size: 12px;
+	font-style: normal;
+	font-weight: normal;
+}
+
+input.button {
+	background: #DDD;
+	border: 1px outset #AAA;
+	padding: 2px 5px;
+}
+
+input.button:active {border-style: inset;}
