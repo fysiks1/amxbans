@@ -7,9 +7,9 @@
 				<fieldset>
 					<legend>{"_TABLECREATE"|lang}</legend>
 					<table width="100%" cellpadding="1" style="font-size:10px;">
-							{foreach from=$tables item=tables}
+							{foreach from=$tables item=table}
 								<tr>
-									<td width="40%">{$tables.table}</td><td>{$tables.success|lang}</td>
+									<td width="40%">{$table.table}</td><td>{$table.success|lang}</td>
 								</tr>
 							{/foreach}
 					</table>
@@ -19,9 +19,9 @@
 				<fieldset>
 					<legend>{"_DEFAULTDATACREATE"|lang}</legend>
 					<table width="100%" cellpadding="1" style="font-size:10px;">
-						{foreach from=$datas item=datas}
+						{foreach from=$datas item=data}
 							<tr>
-								<td width="40%">{$datas.data}</td><td>{$datas.success|lang}</td>
+								<td width="40%">{$data.data}</td><td>{$data.success|lang}</td>
 							</tr>
 						{/foreach}
 					</table>
@@ -48,9 +48,9 @@
 				<fieldset>
 					<legend>{"_DEFAULTMODULESCREATE"|lang}</legend>
 					<table width="100%" cellpadding="1" style="font-size:10px;">
-						{foreach from=$modules item=modules}
+						{foreach from=$modules item=module}
 						<tr>
-							<td width="40%">{$modules.name}</td><td>{$modules.success|lang}</td>
+							<td width="40%">{$module.name}</td><td>{$module.success|lang}</td>
 						</tr>
 						{/foreach}
 					</table>
@@ -59,9 +59,9 @@
 				<fieldset>
 					<legend>{"_WEBADMINCREATE"|lang}</legend>
 					<table width="100%" cellpadding="1" style="font-size:10px;">
-						{foreach from=$webadmin_create item=webadmin_create}
+						{foreach from=$webadmin_create item=webadmin}
 							<tr>
-								<td width="40%">{$webadmin_create.data|lang}</td><td>{$webadmin_create.success|lang}</td>
+								<td width="40%">{$webadmin.data|lang}</td><td>{$webadmin.success|lang}</td>
 							</tr>
 						{/foreach}
 					</table>

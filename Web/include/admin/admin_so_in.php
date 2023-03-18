@@ -56,27 +56,36 @@
 		$user_msg="_DBPRUNED";
 	}
 
-	function return_bytes($val) {
-		$val = trim($val);
-		$last = strtolower($val[strlen($val)-1]);
-		switch($last) {
-			// The 'G' modifier is available since PHP 5.1.0
-			case 'g':
-				$val *= 1024;
-			case 'm':
-				$val *= 1024;
-			case 'k':
-				$val *= 1024;
+	function return_bytes($val)
+	{
+		$val = strtolower(trim($val));
+		preg_match("/([\d\.]+)([gmk])/", $val, $matches);
+
+		$retVal = 0;
+		if( $matches )
+		{
+			$retVal = (int)$matches[1];
+			switch($matches[2])
+			{
+				// The 'G' modifier is available since PHP 5.1.0
+				case 'g':
+					$retVal *= 1024;
+				case 'm':
+					$retVal *= 1024;
+				case 'k':
+					$retVal *= 1024;
+			}
 		}
 
-		return $val;
+		return $retVal;
 	}
+
 	@$gd=gd_info();
 	$gd_version=$gd["GD Version"];
 	$php_settings=array(
 			"display_errors"=>(ini_get('display_errors')=="")?"off":ini_get('display_errors'),
 			"register_globals"=>(ini_get('register_globals')==1 || ini_get('register_globals')=="on")?"_ON":"_OFF",
-			"magic_quotes_gpc"=>(get_magic_quotes_gpc()==true)?"_ON":"_OFF",
+			"magic_quotes_gpc"=>"_OFF",
 			"safe_mode"=>(ini_get('safe_mode')==1 || ini_get('safe_mode')=="on")?"_ON":"_OFF",
 			"post_max_size"=>ini_get('post_max_size')." (".return_bytes(ini_get('post_max_size'))." bytes)",
 			"upload_max_filesize"=>ini_get('upload_max_filesize')." (".return_bytes(ini_get('upload_max_filesize'))." bytes)",
@@ -95,7 +104,7 @@
 	//clear smarty cache
 	if(isset($_POST["clear"]) && $_SESSION["loggedin"]) {
 		//special function available from smarty
-		$smarty->clear_compiled_tpl();
+		$smarty->clearAllCache();
 		$user_msg="_CACHEDELETED";
 	}
 	//repair files db

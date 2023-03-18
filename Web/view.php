@@ -21,7 +21,7 @@
 */
 
 // Start session
-session_start();
+require_once("include/init_session.php");
 
 // Require basic site files
 require_once("include/config.inc.php");
@@ -44,8 +44,8 @@ $rules = "";
 while($result2 = $resource2->fetch_object()) {
 
 	$split_address = explode (":", $result2->address);
-	$ip	= $split_address['0'];
-	$port		= $split_address['1'];
+	$ip = $split_address['0'];
+	$port = $split_address['1'];
 		
 	if($ip && $port) {
 		$server = new Rcon();
@@ -72,40 +72,40 @@ while($result2 = $resource2->fetch_object()) {
 			
 			//create addons array
 			if(is_array($rules)) {
-				if($rules[amxmodx_version]) $addons_array[]=array("name"=>"AmxModx","version"=>$rules[amxmodx_version],"url"=>"http://www.amxmodx.org");
-				if($rules[amxbans_version]) $addons_array[]=array("name"=>"AmxBans","version"=>$rules[amxbans_version],"url"=>"http://www.amxbans.de");
-				if($rules[metamod_version]) $addons_array[]=array("name"=>"MetaMod","version"=>$rules[metamod_version],"url"=>"http://www.metamod.org");
-				if($rules[hltv_report]) $addons_array[]=array("name"=>"HLTV Report","version"=>$rules[hltv_report],"url"=>"http://forums.alliedmods.net/showthread.php?t=66506");
-				if($rules[atac_version]) $addons_array[]=array("name"=>"ATAC","version"=>$rules[atac_version],"url"=>"http://forums.alliedmods.net/showthread.php?t=61572");
+				if(isset($rules['amxmodx_version'])) $addons_array[]=array("name"=>"AmxModx","version"=>$rules['amxmodx_version'],"url"=>"http://www.amxmodx.org");
+				if(isset($rules['amxbans_version'])) $addons_array[]=array("name"=>"AmxBans","version"=>$rules['amxbans_version'],"url"=>"http://www.amxbans.de");
+				if(isset($rules['metamod_version'])) $addons_array[]=array("name"=>"MetaMod","version"=>$rules['metamod_version'],"url"=>"http://www.metamod.org");
+				if(isset($rules['hltv_report'])) $addons_array[]=array("name"=>"HLTV Report","version"=>$rules['hltv_report'],"url"=>"http://forums.alliedmods.net/showthread.php?t=66506");
+				if(isset($rules['atac_version'])) $addons_array[]=array("name"=>"ATAC","version"=>$rules['atac_version'],"url"=>"http://forums.alliedmods.net/showthread.php?t=61572");
 				
 				//create anticheat array
-				if($infos[secure]) $anticheat_array[]=array("name"=>"VAC","version"=>"2","url"=>"");
-				if($rules[sbsrv_version]) $anticheat_array[]=array("name"=>"Steambans","version"=>$rules[sbsrv_version],"url"=>"http://www.steambans.com");
-				if($rules[hlg_version]) $anticheat_array[]=array("name"=>"HLGuard","version"=>$rules[hlg_version],"url"=>"");
+				if(isset($infos['secure'])) $anticheat_array[]=array("name"=>"VAC","version"=>"2","url"=>"");
+				if(isset($rules['sbsrv_version'])) $anticheat_array[]=array("name"=>"Steambans","version"=>$rules['sbsrv_version'],"url"=>"http://www.steambans.com");
+				if(isset($rules['hlg_version'])) $anticheat_array[]=array("name"=>"HLGuard","version"=>$rules['hlg_version'],"url"=>"");
 			}
 			//main server info
 			$server_info = array(
 				"sid"			=> $result2->id,
-				"type"			=> $infos[type],
-				"version"		=> $infos[version],
-				"hostname"      => $infos[name], 
-				"map"         	=> $infos[map],
-				"mod"        	=> $infos[mod],
-				"game"         	=> $infos[game],
-				"appid"        	=> $infos[appid],
-				"cur_players"	=> $infos[activeplayers], 
-				"max_players"	=> $infos[maxplayers],
-				"bot_players"	=> $infos[botplayers],
-				"dedicated"		=> ($infos[dedicated]=="d")?"Dedicated":"Listen",
-				"os"			=> ($infos[os]=="l")?"Linux":"Windows",
-				"password"		=> $infos[password],
-				"secure"		=> $infos[secure],
-				"sversion"		=> $infos[sversion],
-				"timeleft"		=> $rules[amx_timeleft],
-				"maxrounds"		=> $rules[mp_maxrounds],
-				"timelimit"		=> $rules[mp_timelimit],
-				"nextmap"		=> $rules[amx_nextmap],
-				"friendlyfire"	=> $rules[mp_friendlyfire],
+				"type"			=> $infos['type'],
+				"version"		=> isset($infos['version']) ? $infos['version'] : "",
+				"hostname"      => $infos['name'],
+				"map"         	=> $infos['map'],
+				"mod"        	=> $infos['mod'],
+				"game"         	=> $infos['game'],
+				"appid"        	=> isset($infos['appid']) ? $infos['appid'] : "",
+				"cur_players"	=> $infos['activeplayers'],
+				"max_players"	=> $infos['maxplayers'],
+				"bot_players"	=> $infos['botplayers'],
+				"dedicated"		=> ($infos['dedicated']=="d")?"Dedicated":"Listen",
+				"os"			=> ($infos['os']=="l")?"Linux":"Windows",
+				"password"		=> $infos['password'],
+				"secure"		=> $infos['secure'],
+				"sversion"		=> isset($infos['sversion']) ? $infos['sversion'] : "",
+				"timeleft"		=> isset($rules['amx_timeleft']) ? $rules['amx_timeleft'] : "00:00",
+				"maxrounds"		=> isset($rules['mp_maxrounds']) ? $rules['mp_maxrounds'] : "0",
+				"timelimit"		=> isset($rules['mp_timelimit']) ? $rules['mp_timelimit'] : "00",
+				"nextmap"		=> isset($rules['amx_nextmap']) ? $rules['amx_nextmap'] : "",
+				"friendlyfire"	=> isset($rules['mp_friendlyfire']) ? $rules['mp_friendlyfire'] : "",
 				"address"		=> $result2->address,
 				"mappic"		=> $mappic,
 				"players"		=> ""
@@ -113,21 +113,21 @@ while($result2 = $resource2->fetch_object()) {
 
 			//get the players
 			$player_array	= array();
-			$int = $infos[activeplayers];
+			$int = $infos['activeplayers'];
 			for ($i=0; $i<$int; $i++) {
 				$player = $players[$i];
-				$player[name] = html_safe($player[name]);
+				$player['name'] = html_safe($player['name']);
 
 				$player_info = array(
-					"name"		=> $player[name],
-					"frag"		=> $player[frag],
-					"time"		=> $player[time],
+					"name"		=> $player['name'],
+					"frag"		=> $player['frag'],
+					"time"		=> $player['time'],
 					);
 
 				$player_array[] = $player_info;
 			}
 			
-			$server_info[players] = $player_array;
+			$server_info['players'] = $player_array;
 			$server_array[] = $server_info;
 		} else {
 			$server_info = array(
@@ -182,23 +182,37 @@ $stats['servers']	= $mysql->query("SELECT id FROM ".$config->db_prefix."_serveri
 $lb	= $mysql->query("SELECT player_id, player_nick, ban_reason, ban_created, ban_length, ban_type FROM ".$config->db_prefix."_bans ORDER BY ban_created DESC LIMIT 1") or die ($mysql->error);
 $lb = $lb->fetch_object();
 
-if($lb->ban_length == 0) {
-	$ban_length	= 0;
-} else {
-	$ban_length 	= ($lb->ban_created + ($lb->ban_length * 60));
-}
-if($lb->ban_type == "SI") {
-	$steamid	= "SI";
-} else {
-	$steamid	= $lb->player_id;
-}
+if( $lb )
+{
+	if($lb->ban_length == 0) {
+		$ban_length	= 0;
+	} else {
+		$ban_length 	= ($lb->ban_created + ($lb->ban_length * 60));
+	}
+	if($lb->ban_type == "SI") {
+		$steamid	= "SI";
+	} else {
+		$steamid	= $lb->player_id;
+	}
 
-$last_ban_arr= array("steamid"	=> $steamid,
+	$last_ban_arr= array("steamid"	=> $steamid,
 					"nickname"	=> html_safe(_substr($lb->player_nick, 15)),
 					"reason"	=> html_safe(_substr($lb->ban_reason, 15)),
 					"created"	=> $lb->ban_created,
 					"length"	=> $ban_length,
 					"time"		=> time());
+}
+else
+{
+	$last_ban_arr= array("steamid"	=> "",
+					"nickname"	=> "",
+					"reason"	=> "",
+					"created"	=> "",
+					"length"	=> 0,
+					"time"		=> 0);
+}
+
+
 /*
  *
  * 		Template parsing
@@ -219,6 +233,8 @@ $smarty->assign("title",$title);
 $smarty->assign("section",$section);
 $smarty->assign("version_web",$config->v_web);
 
+$smarty->assign("true", true);
+
 $smarty->assign("server",$server_array);
 $smarty->assign("stats",$stats);
 $smarty->assign("last_ban",$last_ban_arr);
@@ -228,8 +244,9 @@ $smarty->assign("rules_array",$rules_array);
 $smarty->assign("anticheat_array",$anticheat_array);
 $smarty->assign("players", isset($player_array) ? $player_array : NULL);
 $smarty->assign("empty_result",isset($empty_result) ? $empty_result : NULL);
-//$smarty->assign("error",$error);
+$smarty->assign("error", false);
 
+$smarty->assign("design", "");
 // amxbans.css available in design? if not, take default one.
 if(file_exists("templates/".$config->design."/amxbans.css")) {
 	$smarty->assign("design",$config->design);

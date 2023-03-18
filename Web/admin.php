@@ -20,7 +20,7 @@
 
 */
 
-session_start();
+require_once("include/init_session.php");
 
 require_once("include/config.inc.php");
 require_once("include/access.inc.php");
@@ -86,6 +86,7 @@ $smarty->assign("version_web",$config->v_web);
 $smarty->assign("banner",$config->banner);
 $smarty->assign("banner_url",$config->banner_url);
 
+$smarty->assign("design", "");
 // amxbans.css available in design? if not, take default one.
 if(file_exists("templates/".$config->design."/amxbans.css")) {
 	$smarty->assign("design",$config->design);
@@ -103,6 +104,7 @@ if($modul_exists) {
 	$smarty->assign("site",$admin_site);
 }
 
+$smarty->assign("true", true);
 $smarty->display('main_header.tpl');
 $smarty->display('admin_index.tpl');
 if($modul_exists) {

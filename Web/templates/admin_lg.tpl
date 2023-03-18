@@ -88,12 +88,12 @@
 							<td width="1%" align="center"><nobr>{"_ACTION"|lang}</nobr></td>
 							<td>{"_REMARKS"|lang}</td>
 						</tr>
-						{foreach from=$logs item=logs}
+						{foreach from=$logs item=log}
 							<tr class="list">
-								<td width="1%"><nobr>{$logs.timestamp|date_format:"%d.%m.%Y - %T"}</nobr></td>
-								<td width="1%" align="center">{$logs.username|escape}</td>
-								<td width="1%" align="center"><nobr>{$logs.action|escape}</nobr></td>
-								<td>{$logs.remarks|escape}</td>
+								<td width="1%"><nobr>{$log.timestamp|date_format:"%d.%m.%Y - %T"}</nobr></td>
+								<td width="1%" align="center">{$log.username|escape}</td>
+								<td width="1%" align="center"><nobr>{$log.action|escape}</nobr></td>
+								<td>{$log.remarks|escape}</td>
 							</tr>
 						{/foreach}
 					</table>

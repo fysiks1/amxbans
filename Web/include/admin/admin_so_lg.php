@@ -27,6 +27,10 @@ if(!$_SESSION["loggedin"]) {
 $admin_site="lg";
 $title2 ="_TITLELOGS";
 
+$filter = "";
+$username = "";
+$action = "";
+
 //delete logs
 if(isset($_POST["delall"]) && $_SESSION["loggedin"]) {
 	$query = $mysql->query("DELETE FROM `".$config->db_prefix."_logs`") or die ($mysql->error);
@@ -43,26 +47,24 @@ if(isset($_POST["delolder"]) && $_SESSION["loggedin"]) {
 if(isset($_POST["username"]) && $_POST["username"]!="---" && $_SESSION["loggedin"]) {
 	$username=$mysql->escape_string($_POST["username"]);
 	$filter="`username`='".$username."'";
-	$smarty->assign("username_checked",$username);
 }
 if(isset($_POST["action"]) && $_POST["action"]!="---" && $_SESSION["loggedin"]) {
 	$action=$mysql->escape_string($_POST["action"]);
 	$filter.=($filter)?" AND ":"";
 	$filter.="`action`='".$action."'";
-	$smarty->assign("action_checked",$action);
 }
 $logs=sql_get_logs($filter);
 $smarty->assign("logs",$logs);
 
 //get all usernames
-	$query = $mysql->query("SELECT * FROM `".$config->db_prefix."_logs` GROUP BY `username` ORDER BY `id`") or die ($mysql->error);
+	$query = $mysql->query("SELECT * FROM `".$config->db_prefix."_logs` ORDER BY `id`") or die ($mysql->error);
 	$usernames["---"]="---";
 	while($result = $query->fetch_object()) {
 		if($result->username <> "") $usernames[html_safe($result->username)]=html_safe($result->username);
 	}
 	$smarty->assign("usernames",$usernames);
 //get all actions
-	$query = $mysql->query("SELECT * FROM `".$config->db_prefix."_logs` GROUP BY `action` ORDER BY `id`") or die ($mysql->error);
+	$query = $mysql->query("SELECT * FROM `".$config->db_prefix."_logs` ORDER BY `id`") or die ($mysql->error);
 	$actions["---"]="---";
 	while($result = $query->fetch_object()) {
 		if($result->action <> "") $actions[html_safe($result->action)]=html_safe($result->action);
@@ -70,6 +72,8 @@ $smarty->assign("logs",$logs);
 	$smarty->assign("actions",$actions);
 
 
+$smarty->assign("username_checked",$username);
+$smarty->assign("action_checked",$action);
 
 
 

@@ -65,24 +65,24 @@
 				</tr> 
 			</thead> 
 			<tbody>
-				{foreach from=$servers item=servers}
+				{foreach from=$servers item=server}
 					<form method="post">
-						<input type="hidden" name="server" value="{$servers.id}" />
-						{if $servers.mod}
+						<input type="hidden" name="server" value="{$server.id}" />
+						{if $server.mod}
 							<tr> 
-								<td><form method="post"><input type="hidden" name="server" value="{$servers.id}"/><input class="button" type="submit" value="{"_VIEWSETTINGS"|lang}"/></form></td>
-								<td class="_center"><img alt="{$servers.mod}" title="{$servers.mod}" src="templates/{$design}_gfx/games/{$servers.mod}.gif" /></td> 
-								<td class="_center"><img alt="{$servers.os}" title="{$servers.os}" src="templates/{$design}_gfx/os/{$servers.os}.png" /></td> 
+								<td><form method="post"><input type="hidden" name="server" value="{$server.id}"/><input class="button" type="submit" value="{"_VIEWSETTINGS"|lang}"/></form></td>
+								<td class="_center"><img alt="{$server.mod}" title="{$server.mod}" src="templates/{$design}_gfx/games/{$server.mod}.gif" /></td> 
+								<td class="_center"><img alt="{$server.os}" title="{$server.os}" src="templates/{$design}_gfx/os/{$server.os}.png" /></td> 
 								<td class="_center"><img alt="{"_VAC_ALT"|lang}" title="{"_VAC_ALT"|lang}" src="templates/{$design}_gfx/acheat/vac.png" /></td> 
-								<td>{$servers.hostname}</td> 
+								<td>{$server.hostname}</td> 
 								<td class="_center">
-									{if $servers.bot_players}
-										{$servers.cur_players-$servers.bot_players} ({$servers.cur_players})
+									{if $server.bot_players}
+										{$server.cur_players-$server.bot_players} ({$server.cur_players})
 									{else}
-										{$servers.cur_players}
+										{$server.cur_players}
 									{/if} 
-									 / {$servers.max_players}</td> 
-								<td>{$servers.map}</td> 
+									 / {$server.max_players}</td> 
+								<td>{$server.map}</td> 
 							</tr>						
 						{else}
 							<tr class="offline"> 
@@ -90,7 +90,7 @@
 								<td class="_center">{"_NA"|lang}</td> 
 								<td class="_center">{"_NA"|lang}</td> 
 								<td class="_center">{"_NA"|lang}</td> 
-								<td>{$servers.hostname}</td> 
+								<td>{$server.hostname}</td> 
 								<td class="_center">{"_NA"|lang}</td> 
 								<td>{"_NA"|lang}</td> 
 							</tr>
@@ -160,23 +160,23 @@
 				<tbody> 
 					<!-- Users Online -->
 					{if $playerscount}
-						{foreach from=$players item=players}
-							<tr {if $smarty.session.bans_add!="yes"  || $players.status == 1 || $players.immunity != 0}class="offline"{/if}> 
+						{foreach from=$players item=player}
+							<tr {if $smarty.session.bans_add!="yes"  || $player.status == 1 || $player.immunity != 0}class="offline"{/if}> 
 								<td class="_center">{counter}.</td> 
-								<td>{$players.name}</td> 
-								<td>{$players.steamid}</td> 
-								<td>{$players.ip}</td> 
-								<td class="_center">#{$players.userid}</td> 
-								<td class="_center">{$players.statusname|lang}</td> 
+								<td>{$player.name}</td> 
+								<td>{$player.steamid}</td> 
+								<td>{$player.ip}</td> 
+								<td class="_center">#{$player.userid}</td> 
+								<td class="_center">{$player.statusname|lang}</td> 
 								<td class="_center">
-									<input type="submit" class="button" name="ban" onclick="LiveBanCopyVars('{$players.name}','{$players.steamid}','{$players.ip}','{$players.userid}');
+									<input type="submit" class="button" name="ban" onclick="LiveBanCopyVars('{$player.name}','{$player.steamid}','{$player.ip}','{$player.userid}');
 									return confirm('{"_BANPLAYER"|lang}');"
-									value="{"_BAN"|lang}" {if $smarty.session.bans_add!="yes"  || $players.status == 1 || $players.immunity != 0}disabled="disabled"{/if} />
+									value="{"_BAN"|lang}" {if $smarty.session.bans_add!="yes"  || $player.status == 1 || $player.immunity != 0}disabled="disabled"{/if} />
 								</td> 
 								<td class="_center">
-									<input type="submit" class="button" name="kick" onclick="LiveBanCopyVars('{$players.name}','{$players.steamid}','{$players.ip}','{$players.userid}');
+									<input type="submit" class="button" name="kick" onclick="LiveBanCopyVars('{$player.name}','{$player.steamid}','{$player.ip}','{$player.userid}');
 									return confirm('{"_KICKPLAYER"|lang}');"
-									value="{"_KICK"|lang}" {if $players.immunity != 0}disabled="disabled"{/if} />
+									value="{"_KICK"|lang}" {if $player.immunity != 0}disabled="disabled"{/if} />
 								</td> 
 							</tr>
 						{/foreach}

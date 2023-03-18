@@ -23,8 +23,8 @@
 		</table>
 	<br />
 	{if $validate}
-		{foreach from=$validate item=validate}
-			<div class="error">{$validate|lang}</div>
+		{foreach from=$validate item=val}
+			<div class="error">{$val|lang}</div>
 		{/foreach}
 	{/if}
 	{if $msg}

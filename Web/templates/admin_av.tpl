@@ -64,29 +64,29 @@
 						<td align="center">{"_NICKNAME"|lang}</td>
 						<td>&nbsp;</td>
 					</tr>
-					{foreach from=$admins item=admins}
+					{foreach from=$admins item=admin}
 						<form method="POST">
-							<input type="hidden" name="aid" value="{$admins.aid}" />
-							<input type="hidden" name="created" value="{$admins.created}" />
+							<input type="hidden" name="aid" value="{$admin.aid}" />
+							<input type="hidden" name="created" value="{$admin.created}" />
 							<tr class="settings_line">
-								<td align="center" width="10%"><input size="15" type="text" name="username" value="{$admins.username}" /></td>
-								<td align="center" width="10%"><input size="15" type="password" name="password" value="{$admins.password}" /></td>
+								<td align="center" width="10%"><input size="15" type="text" name="username" value="{$admin.username}" /></td>
+								<td align="center" width="10%"><input size="15" type="password" name="password" value="{$admin.password}" /></td>
 								<td align="center" width="10%" nowrap>
-									<input type="text" id="acc{$admins.aid}" name="access" size="25" value="{$admins.access}" />
+									<input type="text" id="acc{$admin.aid}" name="access" size="25" value="{$admin.access}" />
 									<img src="images/server_key.png" alt="{"_ACCESSFLAGS"|lang}" style="cursor:pointer;" 
-										onClick="window.open('include/amxxhelper.php?id=acc'+{$admins.aid},'Link','width=510,height=670,dependent=yes,resizable=yes');return false;" />
+										onClick="window.open('include/amxxhelper.php?id=acc'+{$admin.aid},'Link','width=510,height=670,dependent=yes,resizable=yes');return false;" />
 								</td>
-								<td align="center" width="5%"><input size="6" type="text" name="flags" value="{$admins.flags}" /></td>
-								<td align="center" width="10%"><input type="text" name="steamid" value="{$admins.steamid}" /></td>
-								<td align="center" width="10%"><input size="15" type="text" name="nickname" value="{$admins.nickname}" /></td>
+								<td align="center" width="5%"><input size="6" type="text" name="flags" value="{$admin.flags}" /></td>
+								<td align="center" width="10%"><input type="text" name="steamid" value="{$admin.steamid}" /></td>
+								<td align="center" width="10%"><input size="15" type="text" name="nickname" value="{$admin.nickname}" /></td>
 									<td align="center"><nobr>
-												<img src="images/{if $admins.expired<>0 && $admins.expired<=$smarty.now}warning{else}success{/if}.gif" />
-												<input type="button" class="button" name="settings" value="{"_SETTINGS"|lang}" onClick="NewToggleLayer('layer_{$admins.aid}');" />
+												<img src="images/{if $admin.expired<>0 && $admin.expired<=$smarty.now}warning{else}success{/if}.gif" />
+												<input type="button" class="button" name="settings" value="{"_SETTINGS"|lang}" onClick="NewToggleLayer('layer_{$admin.aid}');" />
 												<input type="submit" class="button" name="save" value="{"_SAVE"|lang}" {if $smarty.session.amxadmins_edit !== "yes"}disabled{/if} />
 												<input type="submit" class="button" name="del" value="{"_DELETE"|lang}" onclick="return confirm('{"_DELADMIN"|lang}{"_DATALOSS"|lang}');" {if $smarty.session.amxadmins_edit !== "yes"}disabled{/if} />
 									</nobr></td>
 							</tr>
-							<tr id="layer_{$admins.aid}" style="display: none">
+							<tr id="layer_{$admin.aid}" style="display: none">
 								<td class="admin_list" colspan="7"><div style="display: none">
 										<table class="admin_list" width="70%">
 												<tr class="htable">
@@ -94,16 +94,16 @@
 												</tr>
 												<tr class="settings_line">
 													<td width="40%">{"_SHOWINADMINLIST"|lang}:</td>
-													<td>{html_options name=ashow values=$ashow output=$ashow_output|lang selected=$admins.ashow}</td>
+													<td>{html_options name=ashow values=$ashow output=$ashow_output|lang selected=$admin.ashow}</td>
 												</tr>
 												<tr class="settings_line">
 													<td>{"_ADMINVALIDITY"|lang}:</td>
-													<td><nobr><input size="5" type="text" name="days" value="{$admins.days}" /> {"_DAYS"|lang}</nobr></td>
+													<td><nobr><input size="5" type="text" name="days" value="{$admin.days}" /> {"_DAYS"|lang}</nobr></td>
 												</tr>
 												<tr class="settings_line">
 													<td valign="top">{"_ADMINEXPIRATION"|lang}:</td>
-													<td>{if $admins.expired == 0}<i>{"_EVER"|lang}</i>
-														{else}{$admins.expired|date_format:"%d. %b %Y - %T"}<br />{"_EXTENDWITH"|lang} 
+													<td>{if $admin.expired == 0}<i>{"_EVER"|lang}</i>
+														{else}{$admin.expired|date_format:"%d. %b %Y - %T"}<br />{"_EXTENDWITH"|lang} 
 															<input size="5" type="text" name="moredays" value="{$input.moredays}" /> {"_DAYS"|lang} {"_OR"|lang} 
 															<input type="checkbox" name="noend" value="" /> {"_EVER"|lang}
 														{/if}
@@ -111,7 +111,7 @@
 												</tr>
 												<tr class="settings_line">
 													<td>{"_CREATED"|lang}:</td>
-													<td>{$admins.created|date_format:"%d. %b %Y - %T"}</td>
+													<td>{$admin.created|date_format:"%d. %b %Y - %T"}</td>
 													<td rowspan="5" width="1%" valign="bottom">
 														<input type="submit" class="button" name="save" value="{"_SAVE"|lang}" {if $smarty.session.amxadmins_edit !== "yes"}disabled{/if} />
 													</td>
@@ -169,7 +169,7 @@
 					</form>
 				{/if}
 				<br />
-				{if $msg}{foreach from=$msg item=msg}<div class="notice">{$msg|lang}</div>{/foreach}{/if}
+				{if $msg}{foreach from=$msg item=msgi}<div class="notice">{$msgi|lang}</div>{/foreach}{/if}
 					{include file="info_amxaccess.tpl"}
 			{else}
 				<center><div class="admin_msg">{"_NOACCESS"|lang}</div></center>

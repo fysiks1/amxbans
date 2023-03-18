@@ -37,8 +37,8 @@ html {
 }
 
 body {
-	background: #FFF;
-	color: #334;
+	background: rgb(228, 228, 228);
+	color: rgb(39, 39, 44);
 	font: normal 75% sans-serif;
 	line-height: 1.5;
 }
@@ -879,7 +879,7 @@ span.errored {
 }
 
 .pager a {
-	background:none repeat scroll 0 0 #F7F7F7;
+	background:none repeat scroll 0 0 #ffffff00;
 }
 
 .pager a:hover {

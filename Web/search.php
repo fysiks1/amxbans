@@ -20,7 +20,7 @@
 
 */
 
-session_start();
+require_once("include/init_session.php");
 
 require_once("include/config.inc.php");
 require_once("include/access.inc.php");
@@ -45,6 +45,12 @@ $servers=sql_get_search_servers();
 //$reasons=sql_get_search_reasons();
 
 $msg = "";
+$search_done = 0;
+$count_aktiv = 0;
+$count_exp = 0;
+$ban_list_aktiv = array();
+$ban_list_exp = array();
+$search_query = "";
 
 if ((isset($_POST['nick'])) || (isset($_POST['steamid'])) || (isset($_POST['ip'])) || (isset($_POST['reason'])) || (isset($_POST['date'])) || (isset($_POST['timesbanned'])) || (isset($_POST['admin'])) || (isset($_POST['server']))) {
 	
@@ -145,12 +151,16 @@ if ((isset($_POST['nick'])) || (isset($_POST['steamid'])) || (isset($_POST['ip']
 		
 	}
 	//echo "DEBUG: ".$count_aktiv."/".$count_exp.":".$search_query;
-	$smarty->assign("ban_list_aktiv",$ban_list_aktiv);
-	$smarty->assign("ban_list_aktiv_count",$count_aktiv);
-	$smarty->assign("ban_list_exp",$ban_list_exp);
-	$smarty->assign("ban_list_exp_count",$count_exp);
-	$smarty->assign("search_done",1);
+	$search_done = 1;
 }
+
+$smarty->assign("ban_list_aktiv",$ban_list_aktiv);
+$smarty->assign("ban_list_aktiv_count",$count_aktiv);
+$smarty->assign("ban_list_exp",$ban_list_exp);
+$smarty->assign("ban_list_exp_count",$count_exp);
+
+$smarty->assign("search_done",$search_done);
+$smarty->assign("true", true);
 
 $smarty->assign("amxadmins",$amxadmins);
 $smarty->assign("admins",$admins);
@@ -159,6 +169,8 @@ $smarty->assign("servers",$servers);
 $smarty->assign("meta","");
 $smarty->assign("title",$title);
 $smarty->assign("version_web",$config->v_web);
+
+$smarty->assign("design", "");
 // amxbans.css available in design? if not, take default one.
 if(file_exists("templates/".$config->design."/amxbans.css")) {
 	$smarty->assign("design",$config->design);

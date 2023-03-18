@@ -83,13 +83,13 @@
 						<form method="post" name="form_admin" style="display:inline;">
 							<select name="admin" size="1">
 								<optgroup label="{"_AMXADMINS"|lang}">
-									{foreach from=$amxadmins item=amxadmins}
-										<option value="{$amxadmins.steam}">{$amxadmins.nick}</option>
+									{foreach from=$amxadmins item=amxadmin}
+										<option value="{$amxadmin.steam}">{$amxadmin.nick}</option>
 									{/foreach}
 								</optgroup>
 								<optgroup label="{"_OTHER"|lang} {"_ADMINS"|lang}">
-									{foreach from=$admins item=admins}
-										<option value="{$admins.steam}">{$admins.nick}</option>
+									{foreach from=$admins item=admin}
+										<option value="{$admin.steam}">{$admin.nick}</option>
 									{/foreach}
 								</optgroup>
 							</select>
@@ -132,19 +132,19 @@
 				<td class="fat" width="24%">{"_REASON"|lang}</td>
 				<td class="fat" width="1%">{"_LENGHT"|lang}</td>
 			</tr>
-			{foreach from=$ban_list_aktiv item=ban_list_aktiv}
+			{foreach from=$ban_list_aktiv item=active_ban}
 				<form name="details" method="POST" action="ban_list.php">
-				<tr class="list" style="cursor:pointer;" onClick="NewToggleLayer('layer_{$ban_list_aktiv.bid}');">
-					<td>{$ban_list_aktiv.ban_created|date_format:"%d.%m.%Y"}</td>
-					<td>{$ban_list_aktiv.player_nick}</td>
-					<td>{$ban_list_aktiv.player_id}</td>
-					<td>{$ban_list_aktiv.admin_nick}</td>
-					<td>{$ban_list_aktiv.ban_reason}</td>
-					<td nowrap>{if $ban_list_aktiv.ban_length>0}{$ban_list_aktiv.ban_length*60|date2word:true}{else}{"_PERMANENT"|lang}{/if}</td>
+				<tr class="list" style="cursor:pointer;" onClick="NewToggleLayer('layer_{$active_ban.bid}');">
+					<td>{$active_ban.ban_created|date_format:"%d.%m.%Y"}</td>
+					<td>{$active_ban.player_nick}</td>
+					<td>{$active_ban.player_id}</td>
+					<td>{$active_ban.admin_nick}</td>
+					<td>{$active_ban.ban_reason}</td>
+					<td nowrap>{if $active_ban.ban_length>0}{($active_ban.ban_length*60)|date2word:true}{else}{"_PERMANENT"|lang}{/if}</td>
 				</tr>
-				<tr id="layer_{$ban_list_aktiv.bid}" style="display: none">
+				<tr id="layer_{$active_ban.bid}" style="display: none">
 					<td colspan=10><div style="display: none">
-							<input type="hidden" name="bid" value="{$ban_list_aktiv.bid}" />
+							<input type="hidden" name="bid" value="{$active_ban.bid}" />
 							<table width="90%" class="table_details" cellspacing="0">
 								<tr>
 									<td class="table_details_head" width="20%"><b>{"_BANDETAILS"|lang}</b></td>
@@ -152,34 +152,34 @@
 										<input name="details" type="image" src="images/page.png" border="0" title="{"_DETAILS"|lang}"/>
 									</td>
 								</tr>
-								<tr><td width="15%"><b>{"_NICKNAME"|lang}:</b></td><td>{$ban_list_aktiv.player_nick}</td></tr>
-								<tr><td><b>{"_STEAMID"|lang}:</b></td><td>{if $ban_list_aktiv.player_id <> ""}{$ban_list_aktiv.player_id}{else}{"_NOSTEAMID"|lang}{/if}</td></tr>
+								<tr><td width="15%"><b>{"_NICKNAME"|lang}:</b></td><td>{$active_ban.player_nick}</td></tr>
+								<tr><td><b>{"_STEAMID"|lang}:</b></td><td>{if $active_ban.player_id <> ""}{$active_ban.player_id}{else}{"_NOSTEAMID"|lang}{/if}</td></tr>
 								<tr><td><b>{"_STEAMCOMID"|lang}:</b></td><td>
-									{if $ban_list_aktiv.player_id <> ""}
-										<a href="http://steamcommunity.com/profiles/{$ban_list_aktiv.player_comid}" target="_blank">{$ban_list_aktiv.player_comid}</a>
+									{if $active_ban.player_id <> ""}
+										<a href="http://steamcommunity.com/profiles/{$active_ban.player_comid}" target="_blank">{$active_ban.player_comid}</a>
 									{else}
 										{"_NOTAVAILABLE"|lang}
 									{/if}</td></tr>
 								<tr><td><b>{"_IP"|lang}:</b></td><td>
 									{if $smarty.session.ip_view=="yes"}
-										{if $ban_list_aktiv.player_ip}{$ban_list_aktiv.player_ip}{else}<i>{"_NOTAVAILABLE"|lang}</i>{/if}
+										{if $active_ban.player_ip}{$active_ban.player_ip}{else}<i>{"_NOTAVAILABLE"|lang}</i>{/if}
 									{else}<i>{"_HIDDEN"|lang}</i>
 									{/if}</td></tr>
-								<tr><td><b>{"_BANTYPE"|lang}:</b></td><td>{if $ban_list_aktiv.ban_type=="S"}{"_STEAMID"|lang}
-									{elseif $ban_list_aktiv.ban_type=="SI"}{"_STEAMID&IP"|lang}
+								<tr><td><b>{"_BANTYPE"|lang}:</b></td><td>{if $active_ban.ban_type=="S"}{"_STEAMID"|lang}
+									{elseif $active_ban.ban_type=="SI"}{"_STEAMID&IP"|lang}
 									{else}{"_NOTAVAILABLE"|lang}{/if}
 								</td></tr>
-								<tr><td><b>{"_REASON"|lang}:</b></td><td>{$ban_list_aktiv.ban_reason}</td></tr>
-								<tr><td><b>{"_INVOKED"|lang}:</b></td><td>{$ban_list_aktiv.ban_created|date_format:"%d. %b %Y - %T"}</td></tr>
-								<tr><td><b>{"_BANLENGHT"|lang}:</b></td><td>{if $ban_list_aktiv.ban_length==0}{"_PERMANENT"|lang}{else}{$ban_list_aktiv.ban_length} {"_MINS"|lang}{/if}</td></tr>
+								<tr><td><b>{"_REASON"|lang}:</b></td><td>{$active_ban.ban_reason}</td></tr>
+								<tr><td><b>{"_INVOKED"|lang}:</b></td><td>{$active_ban.ban_created|date_format:"%d. %b %Y - %T"}</td></tr>
+								<tr><td><b>{"_BANLENGHT"|lang}:</b></td><td>{if $active_ban.ban_length==0}{"_PERMANENT"|lang}{else}{$active_ban.ban_length} {"_MINS"|lang}{/if}</td></tr>
 								<tr><td><b>{"_EXPIRES"|lang}:</b></td><td>
-									{if $ban_list_aktiv.ban_length==0}<i>{"_NOTAPPLICABLE"|lang}</i>{else}{$ban_list_aktiv.ban_end|date_format:"%d. %b %Y - %T"}
-										{if $ban_list_aktiv.ban_end < $smarty.now} ({"_ALREADYEXP"|lang}){/if}
+									{if $active_ban.ban_length==0}<i>{"_NOTAPPLICABLE"|lang}</i>{else}{$active_ban.ban_end|date_format:"%d. %b %Y - %T"}
+										{if $active_ban.ban_end < $smarty.now} ({"_ALREADYEXP"|lang}){/if}
 									{/if}
 								</td></tr>
-								<tr><td><b>{"_BANBY"|lang}:</b></td><td>{$ban_list_aktiv.admin_nick}</td></tr>
-								<tr><td><b>{"_BANON"|lang}:</b></td><td>{if $ban_list_aktiv.server_name == "website"}{"_WEB"|lang}{else}{$ban_list_aktiv.server_name}{/if}</td></tr>
-								<tr><td><b>{"_TOTALEXPBANS"|lang}:</b></td><td>{$ban_list_aktiv.bancount}</td></tr>
+								<tr><td><b>{"_BANBY"|lang}:</b></td><td>{$active_ban.admin_nick}</td></tr>
+								<tr><td><b>{"_BANON"|lang}:</b></td><td>{if $active_ban.server_name == "website"}{"_WEB"|lang}{else}{$active_ban.server_name}{/if}</td></tr>
+								<tr><td><b>{"_TOTALEXPBANS"|lang}:</b></td><td>{$active_ban.bancount}</td></tr>
 							</table>
 					</div></td>
 					
@@ -199,19 +199,19 @@
 				<td class="fat" width="24%">{"_REASON"|lang}</td>
 				<td class="fat" width="1%" nowrap>{"_LENGHT"|lang}</td>
 			</tr>
-			{foreach from=$ban_list_exp item=ban_list_exp}
+			{foreach from=$ban_list_exp item=expired_ban}
 				<form name="details" method="POST" action="ban_list.php">
-				<tr class="list"  style="cursor:pointer;" onClick="NewToggleLayer('layer_{$ban_list_exp.bid}');">
-					<td>{$ban_list_exp.ban_created|date_format:"%d.%m.%Y"}</td>
-					<td>{$ban_list_exp.player_nick}</td>
-					<td>{$ban_list_exp.player_id}</td>
-					<td>{$ban_list_exp.admin_nick}</td>
-					<td>{$ban_list_exp.ban_reason}</td>
-					<td nowrap>{if $ban_list_exp.ban_length>0}{$ban_list_exp.ban_length*60|date2word:true}{else}{"_PERMANENT"|lang}{/if}</td>
+				<tr class="list"  style="cursor:pointer;" onClick="NewToggleLayer('layer_{$expired_ban.bid}');">
+					<td>{$expired_ban.ban_created|date_format:"%d.%m.%Y"}</td>
+					<td>{$expired_ban.player_nick}</td>
+					<td>{$expired_ban.player_id}</td>
+					<td>{$expired_ban.admin_nick}</td>
+					<td>{$expired_ban.ban_reason}</td>
+					<td nowrap>{if $expired_ban.ban_length>0}{($expired_ban.ban_length*60)|date2word:true}{else}{"_PERMANENT"|lang}{/if}</td>
 				</tr>
-				<tr id="layer_{$ban_list_exp.bid}" style="display: none">
+				<tr id="layer_{$expired_ban.bid}" style="display: none">
 					<td class="table_list" colspan=10><div style="display: none">
-							<input type="hidden" name="bid" value="{$ban_list_exp.bid}" />
+							<input type="hidden" name="bid" value="{$expired_ban.bid}" />
 							<table width="90%" class="table_details" cellspacing="0">
 								<tr>
 									<td class="table_details_head" width="20%"><b>{"_BANDETAILS"|lang}</b></td>
@@ -219,31 +219,31 @@
 										<input name="details" type="image" src="images/page.png" border="0" title="{"_DETAILS"|lang}"/>
 									</td>
 								</tr>
-								<tr><td width="15%"><b>{"_NICKNAME"|lang}:</b></td><td>{$ban_list_exp.player_nick}</td></tr>
-								<tr><td><b>{"_STEAMID"|lang}:</b></td><td>{if $ban_list_exp.player_id <> ""}{$ban_list_exp.player_id}{else}{"_NOSTEAMID"|lang}{/if}</td></tr>
+								<tr><td width="15%"><b>{"_NICKNAME"|lang}:</b></td><td>{$expired_ban.player_nick}</td></tr>
+								<tr><td><b>{"_STEAMID"|lang}:</b></td><td>{if $expired_ban.player_id <> ""}{$expired_ban.player_id}{else}{"_NOSTEAMID"|lang}{/if}</td></tr>
 								<tr><td><b>{"_STEAMCOMID"|lang}:</b></td><td>
-									{if $ban_list_exp.player_id <> ""}
-										<a href="http://steamcommunity.com/profiles/{$ban_list_exp.player_comid}" target="_blank">{$ban_list_exp.player_comid}</a>
+									{if $expired_ban.player_id <> ""}
+										<a href="http://steamcommunity.com/profiles/{$expired_ban.player_comid}" target="_blank">{$expired_ban.player_comid}</a>
 									{else}
 										{"_NOTAVAILABLE"|lang};
 									{/if}</td></tr>
 								
-								<tr><td><b>{"_IP"|lang}:</b></td><td>{if $smarty.session.ip_view=="yes"}{$ban_list_exp.player_ip}{else}<i>{"_HIDDEN"|lang}</i>{/if}</td></tr>
-								<tr><td><b>{"_BANTYPE"|lang}:</b></td><td>{if $ban_list_exp.ban_type=="S"}{"_STEAMID"|lang}
-									{elseif $ban_list_exp.ban_type=="SI"}{"_STEAMID&IP"|lang}
+								<tr><td><b>{"_IP"|lang}:</b></td><td>{if $smarty.session.ip_view=="yes"}{$expired_ban.player_ip}{else}<i>{"_HIDDEN"|lang}</i>{/if}</td></tr>
+								<tr><td><b>{"_BANTYPE"|lang}:</b></td><td>{if $expired_ban.ban_type=="S"}{"_STEAMID"|lang}
+									{elseif $expired_ban.ban_type=="SI"}{"_STEAMID&IP"|lang}
 									{else}{"_NOTAVAILABLE"|lang}{/if}
 								</td></tr>
-								<tr><td><b>{"_REASON"|lang}:</b></td><td>{$ban_list_exp.ban_reason}</td></tr>
-								<tr><td><b>{"_INVOKED"|lang}:</b></td><td>{$ban_list_exp.ban_created|date_format:"%d. %b %Y - %T"}</td></tr>
-								<tr><td><b>{"_BANLENGHT"|lang}:</b></td><td>{if $ban_list_exp.ban_length==0}{"_PERMANENT"|lang}{else}{$ban_list_exp.ban_length} {"_MINS"|lang}{/if}</td></tr>
+								<tr><td><b>{"_REASON"|lang}:</b></td><td>{$expired_ban.ban_reason}</td></tr>
+								<tr><td><b>{"_INVOKED"|lang}:</b></td><td>{$expired_ban.ban_created|date_format:"%d. %b %Y - %T"}</td></tr>
+								<tr><td><b>{"_BANLENGHT"|lang}:</b></td><td>{if $expired_ban.ban_length==0}{"_PERMANENT"|lang}{else}{$expired_ban.ban_length} {"_MINS"|lang}{/if}</td></tr>
 								<tr><td><b>{"_EXPIRES"|lang}:</b></td><td>
-									{if $ban_list_exp.ban_length==0}<i>{"_NOTAPPLICABLE"|lang}</i>{else}{$ban_list_exp.ban_end|date_format:"%d. %b %Y - %T"}
-										{if $ban_list_exp.ban_end < $smarty.now} ({"_ALREADYEXP"|lang}){/if}
+									{if $expired_ban.ban_length==0}<i>{"_NOTAPPLICABLE"|lang}</i>{else}{$expired_ban.ban_end|date_format:"%d. %b %Y - %T"}
+										{if $expired_ban.ban_end < $smarty.now} ({"_ALREADYEXP"|lang}){/if}
 									{/if}
 								</td></tr>
-								<tr><td><b>{"_BANBY"|lang}:</b></td><td>{$ban_list_exp.admin_nick}</td></tr>
-								<tr><td><b>{"_BANON"|lang}:</b></td><td>{if $ban_list_exp.server_name == "website"}{"_WEB"|lang}{else}{$ban_list_exp.server_name}{/if}</td></tr>
-								<tr><td><b>{"_TOTALEXPBANS"|lang}:</b></td><td>{$ban_list_exp.bancount}</td></tr>
+								<tr><td><b>{"_BANBY"|lang}:</b></td><td>{$expired_ban.admin_nick}</td></tr>
+								<tr><td><b>{"_BANON"|lang}:</b></td><td>{if $expired_ban.server_name == "website"}{"_WEB"|lang}{else}{$expired_ban.server_name}{/if}</td></tr>
+								<tr><td><b>{"_TOTALEXPBANS"|lang}:</b></td><td>{$expired_ban.bancount}</td></tr>
 							</table>
 					</div></td>
 				</tr></form>

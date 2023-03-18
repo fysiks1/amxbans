@@ -61,61 +61,61 @@
 						<td width="1%" align="center">{"_VERSION"|lang}</td>
 						<td width="1%" align="center">{"_LASTSEEN"|lang}</td>
 					</tr>
-					{foreach from=$servers item=servers}
+					{foreach from=$servers item=server}
 						
-						<tr class="list" style="cursor:pointer;"onClick="NewToggleLayer('layer_{$servers.sid}');">
-							<td align="center"><img src="images/mods/{$servers.gametype}.gif" /></td>
-							<td align="center">{$servers.address}</td>
-							<td align="center">{$servers.hostname}</td>
-							<td align="center">{$servers.amxban_version}</td>
-							<td align="center"><nobr>{$servers.timestamp|date_format:"%d. %b %Y - %T"}</nobr></td>
+						<tr class="list" style="cursor:pointer;"onClick="NewToggleLayer('layer_{$server.sid}');">
+							<td align="center"><img src="images/mods/{$server.gametype}.gif" /></td>
+							<td align="center">{$server.address}</td>
+							<td align="center">{$server.hostname}</td>
+							<td align="center">{$server.amxban_version}</td>
+							<td align="center"><nobr>{$server.timestamp|date_format:"%d. %b %Y - %T"}</nobr></td>
 						</tr>
-						<tr id="layer_{$servers.sid}" {if $servers.sid != $server_activ}style="display: none"{/if}>
+						<tr id="layer_{$server.sid}" {if $server.sid != $server_activ}style="display: none"{/if}>
 							<td class="admin_list" colspan="5"><div style="display:none">
-								<fieldset><legend>{"_SERVERSETTINGS"|lang} {$servers.hostname}</legend>
+								<fieldset><legend>{"_SERVERSETTINGS"|lang} {$server.hostname}</legend>
 									<table class="table_details" width="95%">
-									<form name="rcon_{$servers.sid}" method="POST">
+									<form name="rcon_{$server.sid}" method="POST">
 										<tr class="htable">
 											<td colspan="4">{"_SERVERSETTINGS"|lang}</td>
 										</tr>
 										<tr class="settings_line">
 											<td>{"_RCONPW"|lang}:</td>
 											<td width="1%">{if $smarty.session.servers_edit == "yes"}
-												<input type="password" name="rcon" value="{$servers.rcon}" />
+												<input type="password" name="rcon" value="{$server.rcon}" />
 												{else}
 												<i>{"_HIDDEN"|lang}</i>
 												{/if}
 											</td>
 											<td>&nbsp;</td>
 											<td rowspan="5" width="1%" valign="bottom">
-												<input type="hidden" name="sid" value="{$servers.sid}" />
-												<input type="hidden" name="sidname" value="{$servers.hostname}" />
+												<input type="hidden" name="sid" value="{$server.sid}" />
+												<input type="hidden" name="sidname" value="{$server.hostname}" />
 												<input type="submit" class="button" name="save" value="{"_SAVE"|lang}" {if $smarty.session.servers_edit !== "yes"}disabled{/if} />
 												<input type="submit" class="button" name="del" value="{"_DEL"|lang}" onclick="return confirm('{"_DELSERVER"|lang}{"_DATALOSS"|lang}');" {if $smarty.session.servers_edit !== "yes"}disabled{/if} />
 											</td>
 										</tr>
 										<tr class="settings_line">
 											<td>{"_MOTDURL"|lang}:</td>
-											<td><input type="text" size="70" name="amxban_motd" id="{$servers.sid}" value="{$servers.amxban_motd}" /></td>
-											<td><input type="button" class="button" value="{"_AUTO"|lang}" onclick="document.getElementById('{$servers.sid}').value='{$motd_url}';" /></td>
+											<td><input type="text" size="70" name="amxban_motd" id="{$server.sid}" value="{$server.amxban_motd}" /></td>
+											<td><input type="button" class="button" value="{"_AUTO"|lang}" onclick="document.getElementById('{$server.sid}').value='{$motd_url}';" /></td>
 										</tr>
 										<tr class="settings_line">
 											<td>{"_MOTDDELAY"|lang}:</td>
-											<td>{html_options name=motd_delay values=$delay_choose output=$delay_choose selected=$servers.motd_delay} {"_SECS"|lang}</td>
+											<td>{html_options name=motd_delay values=$delay_choose output=$delay_choose selected=$server.motd_delay} {"_SECS"|lang}</td>
 										</tr>
 <!--										<tr class="settings_line">
 											<td>{"_SERVERMENU"|lang}</td>
-											<td>{html_options name=amxban_menu values=$menu_choose output=$menu_choose selected=$servers.amxban_menu}</td>
+											<td>{html_options name=amxban_menu values=$menu_choose output=$menu_choose selected=$server.amxban_menu}</td>
 										</tr>
 -->											<tr class="settings_line">
 											<td>{"_REASONSSET"|lang}:</td>
-											<td>{html_options name=reasons values=$reasons_values output=$reasons_choose selected=$servers.reasons}</td>
+											<td>{html_options name=reasons values=$reasons_values output=$reasons_choose selected=$server.reasons}</td>
 										</tr>
 										<tr class="settings_line">
 											<td>{"_TIMEZONEFIXX"|lang}:</td>
-											<td>{html_options name=timezone_fixx values=$timezone_values output=$timezone_output selected=$servers.timezone_fixx} {"_HOURS"|lang}</td>
+											<td>{html_options name=timezone_fixx values=$timezone_values output=$timezone_output selected=$server.timezone_fixx} {"_HOURS"|lang}</td>
 										</tr>
-										{if $servers.rcon}
+										{if $server.rcon}
 											<tr class="settings_line"><td colspan="4">&nbsp;</td></tr>
 											<tr class="htable">
 												<td colspan="4">{"_SERVERRCON"|lang}</td>
@@ -143,8 +143,8 @@
 											</tr>
 											<tr class="settings_line">
 												<td>{"_RCON_USERDEFINED"|lang}:</td>
-												<td><input type="test" size="70" name="rconuser" onkeyup="document.rcon_{$servers.sid}.rconuserstart_{$servers.sid}.disabled=(this.value=='');" /></td>
-												<td><input type="submit" class="button" name="rconuserstart_{$servers.sid}" value="{"_RCON_SEND"|lang}" disabled /></td>
+												<td><input type="test" size="70" name="rconuser" onkeyup="document.rcon_{$server.sid}.rconuserstart_{$server.sid}.disabled=(this.value=='');" /></td>
+												<td><input type="submit" class="button" name="rconuserstart_{$server.sid}" value="{"_RCON_SEND"|lang}" disabled /></td>
 											</tr>
 											{else}
 												<tr class="settings_line"><td class="admin_msg">{"_NOACCESS"|lang} !!</td></tr>

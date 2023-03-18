@@ -27,8 +27,11 @@
 	
 	$admin_site="sv";
 	$title2 ="_TITLESERVER";
+	$smsg = "";
+	$denied = false;
+	$hide_response = false;
 	
-	$sid=(int)$_POST["sid"];
+	$sid = isset($_POST["sid"]) ? (int)$_POST["sid"] : 0;
 	
 	//rcon function to send and receive
 	function rcon_send($command,$sid,$max_response_pages=0) {

@@ -2,6 +2,7 @@
 {assign var="lang" value=$true|getlanguage}
 {assign var="select_lang" value=$true|selectlang:"session"}
 {assign var="default_lang" value=$true|selectlang:"config"}
+{assign var="title2" value=""}
 <html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">
 
 <head>
@@ -27,20 +28,20 @@
 				<li>
 					<form method="post" action="" style="padding:5px 8px 0 0;margin:0;">
 						<select name="newlang" style="padding:0;margin:0;" onchange="this.form.submit()">
-						{foreach from=$lang item="lang"}
-							<option value="{$lang|escape}" {if empty($select_lang) && $default_lang == $lang}selected="selected"{/if} {if $select_lang == $lang}selected="selected"{/if}>{$lang|escape}</option>
+						{foreach from=$lang item="langname"}
+							<option value="{$langname|escape}" {if empty($select_lang) && $default_lang == $langname}selected="selected"{/if} {if $select_lang == $langname}selected="selected"{/if}>{$langname|escape}</option>
 						{/foreach}
 						</select>
 					</form>
 				</li>
-				{foreach from=$menu item=menu}
+				{foreach from=$menu item=menuitem}
 					{if $smarty.session.loggedin == "true"}
-						{if $menu.lang_key2}<li><a href="{$menu.url2}">{$menu.lang_key2|lang}</a></li>{/if}
+						{if $menuitem.lang_key2}<li><a href="{$menuitem.url2}">{$menuitem.lang_key2|lang}</a></li>{/if}
 					{else}
-						{if $menu.lang_key}<li><a href="{$menu.url}">{$menu.lang_key|lang}</a></li>{/if}
+						{if $menuitem.lang_key}<li><a href="{$menuitem.url}">{$menuitem.lang_key|lang}</a></li>{/if}
 					{/if}
 				{/foreach}
-      		</ul>
+			</ul>
 		</div>
 		<div class="right">
 			

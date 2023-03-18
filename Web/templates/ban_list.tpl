@@ -110,46 +110,46 @@
 
 				<!-- Banlist -->
 
-					{foreach from=$ban_list item=ban_list}
+					{foreach from=$ban_list item=ban_entry}
 
-						{if $ban_list.ban_length>0 && $ban_list.ban_end < $smarty.now}
+						{if $ban_entry.ban_length>0 && $ban_entry.ban_end < $smarty.now}
 
-							<tr onclick="NewToggleLayer('layer_{$ban_list.bid}')" style="background: #DBF4D7" class='list'>
+							<tr onclick="NewToggleLayer('layer_{$ban_entry.bid}')" style="background: #DBF4D7" class='list'>
 
 						{else}
 
-							<tr onclick="NewToggleLayer('layer_{$ban_list.bid}')" class="list">
+							<tr onclick="NewToggleLayer('layer_{$ban_entry.bid}')" class="list">
 
 						{/if}
 
-						<td class="_center"><img alt="{if $ban_list.mod == "html"}{"_WEB"|lang}{else}{$ban_list.mod|lang}{/if}" title="{if $ban_list.mod == "html"}{"_WEB"|lang}{else}{$ban_list.mod|lang}{/if}" src="templates/{$design}_gfx/games/{$ban_list.mod}.gif" /></td>
+						<td class="_center"><img alt="{if $ban_entry.mod == "html"}{"_WEB"|lang}{else}{$ban_entry.mod|lang}{/if}" title="{if $ban_entry.mod == "html"}{"_WEB"|lang}{else}{$ban_entry.mod|lang}{/if}" src="templates/{$design}_gfx/games/{$ban_entry.mod}.gif" /></td>
 
-						<td>{$ban_list.ban_created|date_format:"%Y-%m-%d"}</td>
+						<td>{$ban_entry.ban_created|date_format:"%Y-%m-%d"}</td>
 
-						<td> {$ban_list.player_nick}</td>
+						<td> {$ban_entry.player_nick}</td>
 
-						<td>{$ban_list.admin_nick}</td>
+						<td>{$ban_entry.admin_nick}</td>
 
-						<td>{$ban_list.ban_reason}</td>
+						<td>{$ban_entry.ban_reason}</td>
 
-						<td>{if $ban_list.ban_length>0}
-								{$ban_list.ban_length*60|date2word:true}
+						<td>{if $ban_entry.ban_length>0}
+								{($ban_entry.ban_length*60)|date2word:true}
 							{else}
 								{"_PERMANENT"|lang}
 							{/if}
 						</td>
 
-						{if $ban_page.show_comments == 1 && $vars.use_comment == 1}<td class="_center">{$ban_list.comment_count}</td>{/if}
+						{if $ban_page.show_comments == 1 && $vars.use_comment == 1}<td class="_center">{$ban_entry.comment_count}</td>{/if}
 
-						{if $ban_page.show_demos == 1 && $vars.use_demo == 1}<td class="_center">{$ban_list.demo_count}</td>{/if}
+						{if $ban_page.show_demos == 1 && $vars.use_demo == 1}<td class="_center">{$ban_entry.demo_count}</td>{/if}
 
-						{if $ban_page.show_kicks == 1}<td class="_center">{$ban_list.kick_count}</td>{/if}
+						{if $ban_page.show_kicks == 1}<td class="_center">{$ban_entry.kick_count}</td>{/if}
 
 					</tr>
 
 
 
-					<tr id="layer_{$ban_list.bid}" style="display:none;">
+					<tr id="layer_{$ban_entry.bid}" style="display:none;">
 
 
 
@@ -169,7 +169,7 @@
 
 											<form method="post" action="" style="display:inline;">
 
-												<input type="hidden" name="bid" value="{$ban_list.bid}" />
+												<input type="hidden" name="bid" value="{$ban_entry.bid}" />
 
 												<input type="hidden" name="site" value="{$ban_page.current}" />
 
@@ -182,9 +182,7 @@
 
 												<input class="img_input" name="del_ban" type="image" src="templates/{$design}_gfx/page_delete.png" onclick="return confirm('{"_DELBAN"|lang}{"_DATALOSS"|lang}');" border="0" title="{"_TIP_DEL"|lang}" />
 
-												<input type="hidden" name="site" value="{$site}" />
-
-												<input type="hidden" name="bid" value="{$ban_list.bid}" />
+												<input type="hidden" name="bid" value="{$ban_entry.bid}" />
 
 												<input type="hidden" name="details_x" value="1" />
 
@@ -205,7 +203,7 @@
 
 										<td class="fat">{"_NICKNAME"|lang}</td>
 
-										<td>{$ban_list.player_nick}</td>
+										<td>{$ban_entry.player_nick}</td>
 
 									</tr>
 
@@ -213,7 +211,7 @@
 
 										<td class="fat">{"_STEAMID"|lang}</td>
 
-										<td>{if $ban_list.player_id <> ""}{$ban_list.player_id}{else}<span style='font-style:italic;font-weight:bold;'>{"_NOSTEAMID"|lang}</span>{/if}</td>
+										<td>{if $ban_entry.player_id <> ""}{$ban_entry.player_id}{else}<span style='font-style:italic;font-weight:bold;'>{"_NOSTEAMID"|lang}</span>{/if}</td>
 
 									</tr>
 
@@ -223,9 +221,9 @@
 
 										<td>
 
-											{if $ban_list.player_id <> ""}
+											{if $ban_entry.player_id <> ""}
 
-												<a target="_blank" href="http://steamcommunity.com/profiles/{$ban_list.player_comid}">{$ban_list.player_comid}</a>
+												<a target="_blank" href="http://steamcommunity.com/profiles/{$ban_entry.player_comid}">{$ban_entry.player_comid}</a>
 
 											{else}
 
@@ -245,9 +243,9 @@
 
 											{if $smarty.session.ip_view=="yes"}
 
-												{if $ban_list.player_ip}
+												{if $ban_entry.player_ip}
 
-													{$ban_list.player_ip}
+													{$ban_entry.player_ip}
 
 												{else}
 
@@ -271,11 +269,11 @@
 
 										<td>
 
-											{if $ban_list.ban_type=="S"}
+											{if $ban_entry.ban_type=="S"}
 
 												{"_STEAMID"|lang}
 
-											{elseif $ban_list.ban_type=="SI"}
+											{elseif $ban_entry.ban_type=="SI"}
 
 												{"_STEAMID&IP"|lang}
 
@@ -293,7 +291,7 @@
 
 										<td class="fat">{"_REASON"|lang}</td>
 
-										<td>{$ban_list.ban_reason}</td>
+										<td>{$ban_entry.ban_reason}</td>
 
 									</tr>
 
@@ -301,7 +299,7 @@
 
 										<td class="fat">{"_INVOKED"|lang}</td>
 
-										<td>{$ban_list.ban_created|date_format:"%d %b %Y - %T"}</td>
+										<td>{$ban_entry.ban_created|date_format:"%d %b %Y - %T"}</td>
 
 									</tr>
 
@@ -311,21 +309,21 @@
 
 										<td>
 
-											{if $ban_list.ban_length==0}
+											{if $ban_entry.ban_length==0}
 
 												<span style='font-style:italic;font-weight:bold;color:red'>{"_NOTAPPLICABLE"|lang}</span>
 
 											{else}
 
-												{$ban_list.ban_end|date_format:"%d %b %Y - %T"}
+												{$ban_entry.ban_end|date_format:"%d %b %Y - %T"}
 
-												{if $ban_list.ban_end < $smarty.now}
+												{if $ban_entry.ban_end < $smarty.now}
 
 													({"_ALREADYEXP"|lang})
 
 												{else}
 
-													<i>({$ban_list.ban_end-$smarty.now|date2word} {"_REMAINING"|lang})</i>
+													<i>({($ban_entry.ban_end-$smarty.now)|date2word} {"_REMAINING"|lang})</i>
 
 												{/if}
 
@@ -339,7 +337,7 @@
 
 										<td class="fat">{"_BANBY"|lang}</td>
 
-										<td>{$ban_list.admin_nick}{if $ban_list.nickname}<i>({$ban_list.nickname})</i>{/if}</td>
+										<td>{$ban_entry.admin_nick}{if $ban_entry.nickname}<i>({$ban_entry.nickname})</i>{/if}</td>
 
 									</tr>
 
@@ -347,7 +345,7 @@
 
 										<td class="fat">{"_BANON"|lang}</td>
 
-										<td>{if $ban_list.server_name == "website"}{"_WEB"|lang}{else}{$ban_list.server_name}{/if}</td>
+										<td>{if $ban_entry.server_name == "website"}{"_WEB"|lang}{else}{$ban_entry.server_name}{/if}</td>
 
 									</tr>
 
@@ -355,7 +353,7 @@
 
 										<td class="fat">{"_TOTALEXPBANS"|lang}</td>
 
-										<td>{$ban_list.bancount-1}</td>
+										<td>{$ban_entry.bancount-1}</td>
 
 									</tr>
 

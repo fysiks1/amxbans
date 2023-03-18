@@ -26,8 +26,10 @@
 
 	$admin_site="sa";
 	$title2 ="_TITLESERVERADMINS";
+
+	$editadmins = array("sidname"=>"","sid"=>0);
 	
-	$sid=(int)$_POST["sid"];
+	$sid = isset($_POST["sid"]) ? (int)$_POST["sid"] : 0;
 	
 	if(isset($_POST["save"]) && $_SESSION["loggedin"]) {
 		$aktiv=$_POST["aktiv_new"];
@@ -58,7 +60,6 @@
 	}
 	if(isset($_POST["admins_edit"]) && $_SESSION["loggedin"]) {
 		$editadmins=array("sidname"=>html_safe($_POST["sidname"]),"sid"=>$sid);
-		$smarty->assign("editadmins",$editadmins);
 		
 		$admins=sql_get_amxadmins_server($sid);
 		$smarty->assign("admins",$admins);
@@ -66,6 +67,7 @@
 	//Servers holen
 	$servers=sql_get_server();
 	
+	$smarty->assign("editadmins",$editadmins);
 	$delay_choose=array(1,2,5,10);
 	$yesno_choose=array("yes","no");
 	$yesno_output=array("_YES","_NO");
@@ -74,7 +76,5 @@
 	$smarty->assign("delay_choose",$delay_choose);
 	$smarty->assign("yesno_choose",$yesno_choose);
 	$smarty->assign("yesno_output",$yesno_output);
-	$smarty->assign("reasons_choose",$reasons_choose);
-	$smarty->assign("reasons_values",$reasons_values);
 	$smarty->assign("servers",$servers);
 ?>

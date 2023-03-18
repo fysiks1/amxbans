@@ -23,8 +23,8 @@
 		<form method="POST" style="display:inline;">
 			<input type="hidden" name="site" value="{$sitenr}" />
 			<select name="newlang" onchange="this.form.submit()">
-				{foreach from=$lang item="lang"}
-					<option value="{$lang|escape}" {if empty($select_lang) && $default_lang == $lang}selected{/if}{if $select_lang == $lang}selected{/if}>{$lang|escape}</option>
+				{foreach from=$lang item="langitem"}
+					<option value="{$langitem|escape}" {if empty($select_lang) && $default_lang == $langitem}selected{/if}{if $select_lang == $langitem}selected{/if}>{$langitem|escape}</option>
 				{/foreach}
 			</select>
 		</form>

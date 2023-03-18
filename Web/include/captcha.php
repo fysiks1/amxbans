@@ -22,19 +22,19 @@
 
 
 // Session starten
-session_start();
+require_once("init_session.php");
 
-// Größe des Bildes
+// Grï¿½ï¿½e des Bildes
 $size_x = 160;
 $size_y = 40;
 
-// Zufallszahl der Session-Variablen übergeben
+// Zufallszahl der Session-Variablen ï¿½bergeben
 $zufallszahl = $_SESSION["captcha_code"];
 
-// Erstelle das Bild mit der angegebenen Größe!
+// Erstelle das Bild mit der angegebenen Grï¿½ï¿½e!
 $bild = imageCreate($size_x, $size_y);
 
-// Erstelle einen weißen Hintergrund
+// Erstelle einen weiï¿½en Hintergrund
 imageColorAllocate($bild, 255, 255, 255);
 
 // Zufallsfarbe (RGB) erstellen
@@ -76,6 +76,6 @@ header("Content-Type: image/png");
 // Sende das Bild zum Browser
 echo imagePNG($bild);
 
-// Lösche das Bild
+// Lï¿½sche das Bild
 imageDestroy($bild);
 ?>

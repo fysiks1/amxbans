@@ -28,7 +28,7 @@ function sql_set_websettings() {
 	$result = $query->fetch_object();
 
 	$config->cookie=$result->cookie;
-	$config->bans_per_page=($result->bans_per_page)<1 ? 1:$result->bans_per_page;
+	$config->bans_per_page=($result->bans_per_page)<1 ? 1:(int)$result->bans_per_page;
 	$config->design = $result->design;
 	$config->banner = $result->banner;
 	$config->banner_url = $result->banner_url;
@@ -506,9 +506,9 @@ function sql_get_files($bid,&$count) {
 }
 function sql_get_search_amxadmins(&$amxadmins,&$nickadmins) {
 	global $config, $mysql;
-	$query = $mysql->query("SELECT `admin_id`,`admin_nick` FROM `".$config->db_prefix."_bans` GROUP BY `admin_id` ORDER BY `admin_nick`") or die ($mysql->error);	
+	$query = $mysql->query("SELECT `admin_id`,`admin_nick` FROM `".$config->db_prefix."_bans` GROUP BY `admin_id`, `admin_nick` ORDER BY `admin_nick`") or die ($mysql->error);	
 	while($result = $query->fetch_object()) {
-		$checkQry = $mysql->query("SELECT * FROM `".$config->db_prefix."_amxadmins` WHERE `steamid`='".$result->admin_id."' GROUP BY `steamid`") or die ($mysql->error);
+		$checkQry = $mysql->query("SELECT * FROM `".$config->db_prefix."_amxadmins` WHERE `steamid`='".$result->admin_id."'") or die ($mysql->error);
 		if( $checkQry->num_rows > 0 ) {
 			//-- Is Found
 			if($result->admin_id <> "")	$amxadmins[]=array("steam"=>$result->admin_id,"nick"=>html_safe($result->admin_nick));
@@ -521,7 +521,7 @@ function sql_get_search_amxadmins(&$amxadmins,&$nickadmins) {
 function sql_get_search_servers() {
 	global $config, $mysql;
 	$servers = array();
-	$query = $mysql->query("SELECT `server_ip`,`server_name` FROM `".$config->db_prefix."_bans` GROUP BY `server_ip` ORDER BY `server_name`") or die ($mysql->error);
+	$query = $mysql->query("SELECT `server_ip`,`server_name` FROM `".$config->db_prefix."_bans` GROUP BY `server_ip`,`server_name` ORDER BY `server_name`") or die ($mysql->error);
 	//Array aufbereiten
 	while($result = $query->fetch_object()) {
 		if($result->server_name=="website") {
@@ -606,6 +606,7 @@ function sql_get_bans_count($activ_only = TRUE) {
 }
 function sql_get_logs($filter) {
 	global $config, $mysql;
+	$where = "";
 	if($filter) $where="WHERE ".$filter;
 	$query = $mysql->query("SELECT * FROM `".$config->db_prefix."_logs` ".$where." ORDER BY `timestamp` DESC") or die ($mysql->error);
 	//Array aufbereiten

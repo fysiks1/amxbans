@@ -20,7 +20,7 @@
 
 */
 
-session_start();
+require_once("include/init_session.php");
 
 //check for existing config file
 // if(file_exists("include/db.config.inc.php")) {
@@ -31,12 +31,12 @@ require_once("install/functions.inc");
 require_once("include/functions.inc.php");
 
 $config = (object)array();
-$config->v_web = "6.14.4";
+$config->v_web = "6.14.4fy";
 
 
 //installation are 6 sites
 $sitenrall=6;
-$sitenr=(int)$_POST["site"];
+$sitenr = isset($_POST['site']) ? (int)$_POST["site"] : 0;
 
 if($sitenr==7 && isset($_POST["check7"])) {
 	$sitenrall=7;
@@ -95,7 +95,27 @@ class dynamicPage extends Smarty {
 }
 $smarty = new dynamicPage;
 
+$msg = "";
+$validate = "";
+
+$smarty->assign("db", array("","","","",""));
 $smarty->assign("next",false);
+$smarty->assign("true", true);
+$smarty->assign("checkvalue","_REFRESH");
+$smarty->assign("prevs", "");
+$smarty->assign("admin",array("", ""));
+$smarty->assign("validate", array());
+$smarty->assign("adminpass", "");
+
+if( !isset($_SESSION["dbhost"]) ) $_SESSION["dbhost"] = "";
+if( !isset($_SESSION["dbuser"]) ) $_SESSION["dbuser"] = "";
+if( !isset($_SESSION["dbpass"]) ) $_SESSION["dbpass"] = "";
+if( !isset($_SESSION["dbdb"]) ) $_SESSION["dbdb"] = "";
+if( !isset($_SESSION["dbprefix"]) ) $_SESSION["dbprefix"] = "";
+if( !isset($_SESSION["adminuser"]) ) $_SESSION["adminuser"] = "";
+if( !isset($_SESSION["adminemail"]) ) $_SESSION["adminemail"] = "";
+if( !isset($_SESSION["adminpass"]) ) $_SESSION["adminpass"]="";
+if( !isset($_SESSION["adminpass2"]) ) $_SESSION["adminpass2"]="";
 
 if($sitenr==1) {
 	$smarty->assign("next",true);
@@ -106,7 +126,7 @@ if($sitenr==2) {
 	$php_settings=array(
 			"display_errors"=>(ini_get('display_errors')=="")?"off":ini_get('display_errors'),
 			"register_globals"=>(ini_get('register_globals')==1 || ini_get('register_globals')=="on")?"_ON":"_OFF",
-			"magic_quotes_gpc"=>(get_magic_quotes_gpc()==true)?"_ON":"_OFF", #(ini_get('magic_quotes_gpc')=="0")?"off":"on",
+			"magic_quotes_gpc"=>"_OFF",
 			"safe_mode"=>(ini_get('safe_mode')==1 || ini_get('safe_mode')=="on")?"_ON":"_OFF",
 			"post_max_size"=>ini_get('post_max_size')." (".return_bytes(ini_get('post_max_size'))." bytes)",
 			"upload_max_filesize"=>ini_get('upload_max_filesize')." (".return_bytes(ini_get('upload_max_filesize'))." bytes)",
@@ -254,7 +274,6 @@ if($sitenr==5 && isset($_POST["check5"])) {
 		$smarty->assign("next",true);
 		
 	}
-	$smarty->assign("validate",$validate);
 }
 if($sitenr==5) $smarty->assign("checkvalue","_ADMINCHECK");
 #if($sitenr==5 && $_SESSION["admincheck"]==true) $smarty->assign("next",true);
@@ -322,7 +341,7 @@ $content="<?php
 }
 if($sitenr==7 && isset($_POST["check7"])) {
 	//clear smarty cache
-	$smarty->clear_compiled_tpl();
+	$smarty->clearAllCache();
 	//delete setup info
 	//@unlink("setup.php");
 	//@rmdir("install");
@@ -330,6 +349,7 @@ if($sitenr==7 && isset($_POST["check7"])) {
 	exit;
 }
 
+$smarty->assign("validate",$validate);
 
 $_SESSION["path_root"] = $config->path_root;
 $_SESSION["document_root"] = $config->document_root;

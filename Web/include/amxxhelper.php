@@ -20,7 +20,7 @@
 
 */
 
-session_start();
+require_once("init_session.php");
 if(!$_SESSION["loggedin"]) {
 	echo "No Access!";
 	exit;

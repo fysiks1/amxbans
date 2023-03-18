@@ -20,7 +20,7 @@
 
 */
 
-session_start();
+require_once("../include/init_session.php");
 
 require_once("include/config.inc.php");
 require_once("include/access.inc.php");

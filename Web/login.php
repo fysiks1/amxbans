@@ -20,7 +20,7 @@
 
 */
 
-session_start();
+require_once("include/init_session.php");
 
 if($_SESSION["loggedin"]) {
 	header("Location:admin.php");
@@ -31,7 +31,11 @@ require_once("include/functions.inc.php");
 
 $max_trys=3;		//max trys to login before the user is blocked
 $max_trys_block=10;	//minutes to block login after max_trys wrong logins
- 
+
+$msg = "";
+$loginblocked = false;
+$loginfailed = false;
+
 if(isset($_POST["action"])) {
 	global $config;
 	
@@ -157,13 +161,12 @@ $smarty->assign("dir",$config->document_root);
 $smarty->assign("this",$_SERVER['PHP_SELF']);
 $smarty->assign("menu",$menu);
 $smarty->assign("msg",$msg);
+$smarty->assign("true",true);
 
-if($loginblocked) {
-	$smarty->assign("block_left",$block_left);
-} else if($loginfailed) {
-	$smarty->assign("try",$try);
-}
+$smarty->assign("block_left", $loginblocked ? $block_left : 0);
+$smarty->assign("try", $loginfailed ? $try : 0);
 
+$smarty->assign("design", "");
 // amxbans.css available in design? if not, take default one.
 if(file_exists("templates/".$config->design."/amxbans.css")) {
 	$smarty->assign("design",$config->design);

@@ -62,43 +62,43 @@
 						<td width="1%">{"_EMAIL"|lang}<td align="center" width="1%">{"_LASTLOGIN"|lang}</td>
 						<td width="1%"><b>&nbsp;</b></td>
 					</tr>
-					{foreach from=$users item=users}
-						<form method="POST" name="{$users.uid}">
-							<input type="hidden" name="uid" value="{$users.uid}" />
-							<input type="hidden" name="newpw" id="newpw{$users.uid}" value="" />
+					{foreach from=$users item=user}
+						<form method="POST" name="{$user.uid}">
+							<input type="hidden" name="uid" value="{$user.uid}" />
+							<input type="hidden" name="newpw" id="newpw{$user.uid}" value="" />
 							<tr class="settings_line">
 								<td align="center">
 									{if $smarty.session.webadmins_edit == "yes"}
-										<input type="text" name="name" value="{$users.name}"/>
+										<input type="text" name="name" value="{$user.name}"/>
 									{else}
-										<input type="hidden" name="name" value="{$users.name}"/>
-										<b>{$users.name}</b>
+										<input type="hidden" name="name" value="{$user.name}"/>
+										<b>{$user.name}</b>
 									{/if}
 								</td>
 								<td align="center" width="1%">
 									{if $smarty.session.webadmins_edit == "yes"}
-										{html_options name=level values=$levels output=$levels selected=$users.level}
+										{html_options name=level values=$levels output=$levels selected=$user.level}
 									{else}
-										<input type="hidden" name="level" value="{$users.level}"/>
-										{$users.level}
+										<input type="hidden" name="level" value="{$user.level}"/>
+										{$user.level}
 									{/if}
 								</td>
-								<td align="center"><input type="text" size="40" name="email" value="{$users.email}" {if !($smarty.session.uname == $users.name || $smarty.session.webadmins_edit == "yes")}disabled{/if}/></td>
+								<td align="center"><input type="text" size="40" name="email" value="{$user.email}" {if !($smarty.session.uname == $user.name || $smarty.session.webadmins_edit == "yes")}disabled{/if}/></td>
 								<td align="center"><nobr>
-									{if $users.last_action}
-										{$users.last_action|date_format:"%d. %b %Y - %T"}
+									{if $user.last_action}
+										{$user.last_action|date_format:"%d. %b %Y - %T"}
 									{else}
 										<i>{"_NEVER"|lang}</i>
 									{/if}
 								</nobr></td>
 								<td align="center"><nobr>
-											<input type="submit" class="button" name="save" value="{"_SAVE"|lang}" {if !($smarty.session.uname == $users.name || $smarty.session.webadmins_edit == "yes")}disabled{/if} />
+											<input type="submit" class="button" name="save" value="{"_SAVE"|lang}" {if !($smarty.session.uname == $user.name || $smarty.session.webadmins_edit == "yes")}disabled{/if} />
 											&nbsp;
 											<input type="submit" class="button" name="del" value="{"_DELETE"|lang}" onclick="return confirm('{"_DELADMIN"|lang}');" {if $smarty.session.webadmins_edit !== "yes"}disabled{/if} />
 											&nbsp;
 											<input type="submit" class="button" name="setnewpw" value="{"_NEWPASSWORD"|lang}" 
-												onclick="{if $smarty.session.uname == $users.name}alert('{"_YOURPASSWORD"|lang}');{/if}return SetNewPassword('newpw{$users.uid}','{"_ENTERPASSWORD"|lang}','{"_PASSWORD2"|lang}','{"_PASSWORDNOTMATCH"|lang}');" 
-													{if !($smarty.session.uname == $users.name || $smarty.session.webadmins_edit == "yes")}disabled{/if} />
+												onclick="{if $smarty.session.uname == $user.name}alert('{"_YOURPASSWORD"|lang}');{/if}return SetNewPassword('newpw{$user.uid}','{"_ENTERPASSWORD"|lang}','{"_PASSWORD2"|lang}','{"_PASSWORDNOTMATCH"|lang}');" 
+													{if !($smarty.session.uname == $user.name || $smarty.session.webadmins_edit == "yes")}disabled{/if} />
 								
 								</nobr></td>
 							</tr>
@@ -129,7 +129,7 @@
 			{else}
 				<center><div class="admin_msg">{"_NOACCESS"|lang}</div></center>
 			{/if}
-			{if $msg}{foreach from=$msg item=msg}<br /><div class="notice">{$msg|lang}</div>{/foreach}{/if}
+			{if $msg}{foreach from=$msg item=msg_i}<br /><div class="notice">{$msg_i|lang}</div>{/foreach}{/if}
 			</td></tr></table>
 		</td>
 	</tr>

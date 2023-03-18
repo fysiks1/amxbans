@@ -1,4 +1,4 @@
-<?php session_start(); if(@$_SESSION["loggedin"]) { ?>
+<?php require_once("../../include/init_session.php"); if(@$_SESSION["loggedin"]) { ?>
 function LiveBanCopyVars (name,steamid,ip,userid) {
 	document.getElementById('player_name').value = name;
 	document.getElementById('player_uid').value = userid;

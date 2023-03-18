@@ -49,8 +49,8 @@
 		}
 	}
 	
-	$rsid=(int)$_POST["rsid"];
-	$rid=(int)$_POST["rid"];
+	$rsid = isset($_POST["rsid"]) ? (int)$_POST["rsid"] : 0;
+	$rid = isset($_POST["rid"]) ? (int)$_POST["rid"] : 0;
 	
 	//delete set
 	if(isset($_POST["delset"]) && $_SESSION["loggedin"]) {

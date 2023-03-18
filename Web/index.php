@@ -21,7 +21,7 @@
 */
 
 
-session_start();
+require_once("include/init_session.php");
 
 //check for existing config file
 if(!file_exists("include/db.config.inc.php")) {

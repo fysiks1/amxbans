@@ -20,7 +20,7 @@
 
 */
 
-	session_start();
+	require_once("include/init_session.php");
 
 
 	include("include/config.inc.php");
@@ -39,7 +39,7 @@
 	
 	$temp=$_SESSION["lang"];
 	session_destroy();
-	session_start();
+	require_once("include/init_session.php");
 	$_SESSION["lang"]=$temp;
 	
 	header("Location:index.php");

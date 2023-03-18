@@ -30,10 +30,10 @@
 		<fieldset>
 			<legend>{"_DBPREVILEGES"|lang}</legend>
 			<table width="100%" cellpadding="2">
-				{foreach from=$prevs item=prevs}
+				{foreach from=$prevs item=prev}
 					<tr class="settings_line">
-						<td><b>{$prevs.name}</b></td>
-						<td width="1%"><img src="images/{if $prevs.value==1}success.gif{else}cross.png{/if}" /></td>
+						<td><b>{$prev.name}</b></td>
+						<td width="1%"><img src="images/{if $prev.value==1}success.gif{else}cross.png{/if}" /></td>
 					</tr>
 				{/foreach}
 			</table>

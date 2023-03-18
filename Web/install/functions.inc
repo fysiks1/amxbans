@@ -20,27 +20,35 @@
 
 */
 
-function return_bytes($val) {
-	$val = trim($val);
-	$last = strtolower($val[strlen($val)-1]);
-	switch($last) {
-		// The 'G' modifier is available since PHP 5.1.0
-		case 'g':
-			$val *= 1024;
-		case 'm':
-			$val *= 1024;
-		case 'k':
-			$val *= 1024;
+function return_bytes($val)
+{
+	$val = strtolower(trim($val));
+	preg_match("/([\d\.]+)([gmk])/", $val, $matches);
+
+	$retVal = 0;
+	if( $matches )
+	{
+		$retVal = (int)$matches[1];
+		switch($matches[2])
+		{
+			// The 'G' modifier is available since PHP 5.1.0
+			case 'g':
+				$retVal *= 1024;
+			case 'm':
+				$retVal *= 1024;
+			case 'k':
+				$retVal *= 1024;
+		}
 	}
 
-	return $val;
+	return $retVal;
 }
 
 function is__writable($path) {
 //will work in despite of Windows ACLs bug
 //NOTE: use a trailing slash for folders!!!
 
-    if ($path{strlen($path)-1}=='/') // recursively return a temporary file path
+    if ($path[strlen($path)-1]=='/') // recursively return a temporary file path
         return is__writable($path.uniqid(mt_rand()).'.tmp');
     else if (is_dir($path))
         return is__writable($path.'/'.uniqid(mt_rand()).'.tmp');

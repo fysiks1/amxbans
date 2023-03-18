@@ -31,6 +31,27 @@ ob_start();
 $modul_site="iexport";
 $title2="_TITLEIEXPORT";
 
+// Initialize Template Variables
+$dbdata = array(
+	"host" => "",
+	"user" => "",
+	"pass" => "",
+	"database" => "",
+	"table" => "",
+	"onlyperm" => false,
+	"dellocal" => false
+);
+$status = array(
+	"imported" => 0,
+	"failed" => 0,
+	"exported" => 0
+);
+$dbcheck="";
+$delcount = 0;
+$updatecount = 0;
+$backups = array();
+
+
 //download eines backups
 if(isset($_POST["dbdownfile"]) && $_SESSION["loggedin"]) {
 	$file=basename($_POST["localfile"]);
@@ -174,7 +195,6 @@ if(isset($_POST["bancfgupl"]) && $_SESSION["loggedin"]) {
 				fclose($handle);
 				//del temp file
 				unlink("temp/".$file);
-				$smarty->assign("status",$status);
 			} 
 		}
 	}
@@ -198,7 +218,6 @@ if(isset($_POST["bancfgexp"]) && $_SESSION["loggedin"]) {
 		};
 		fclose($handle);
 		$user_msg="_EXPORTSUCCESS";
-		$smarty->assign("statusexport",$status);
 		if(file_exists($file) && $download) {
 			if(ini_get('zlib.output_compression')) 
 				ini_set('zlib.output_compression', 'Off');
@@ -234,8 +253,6 @@ if(isset($_POST["bandbcheck"]) && $_SESSION["loggedin"]) {
 		$user_msg="_DBDATAOK";
 		$dbcheck="OK";
 	}
-	$smarty->assign("dbdata",$dbdata);
-	$smarty->assign("dbcheck",$dbcheck);
 }
 //import amxbans 5.x from db
 if(isset($_POST["bandbimp"]) && $_SESSION["loggedin"]) {
@@ -318,21 +335,19 @@ if(isset($_POST["bandbimp"]) && $_SESSION["loggedin"]) {
 			if($query) $status["imported"]++;
 
 		}
-		$smarty->assign("status",$status);
 	}
-	$smarty->assign("dbdata",$dbdata);
 }
 //del all imported bans
 if(isset($_POST["delimport"]) && $_SESSION["loggedin"]) {
 	$count=-1;
 	$query = $mysql->query("DELETE FROM `".$config->db_prefix."_bans` WHERE `imported`=1") or die ($mysql->error);
-	$smarty->assign("delcount",$mysql->affected_rows);
+	$delcount = $mysql->affected_rows;
 }
 //set all to not imported
 if(isset($_POST["setnotimported"]) && $_SESSION["loggedin"]) {
 	$count=-1;
 	$query = $mysql->query("UPDATE `".$config->db_prefix."_bans` SET `imported`=0 WHERE `imported`=1") or die ($mysql->error);
-	$smarty->assign("updatecount",$mysql->affected_rows);
+	$updatecount = $mysql->affected_rows;
 }
 //search backups
 $d=opendir($config->path_root."/include/backup/");
@@ -353,6 +368,13 @@ $smarty->assign("importcount",$query->num_rows);
 
 $smarty->assign("backups",$backups);
 $smarty->assign("count",$count);
+
+$smarty->assign("dbdata",$dbdata);
+$smarty->assign("status",$status);
+$smarty->assign("statusexport",$status);
+$smarty->assign("dbcheck",$dbcheck);
+$smarty->assign("delcount",$delcount);
+$smarty->assign("updatecount",$updatecount);
 
 ob_end_flush();
 ?>

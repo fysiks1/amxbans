@@ -27,7 +27,13 @@ require_once("include/rcon_hl_net.inc");
 
 	$admin_site="ban_add_online";
 	$title2 = "_TITLEBANADDONLINE";
-	
+	$smsg = "";
+	$user_msg = "";
+	$server_msg = "";
+	$playerscount = 0;
+	$count = 0;
+	$players = array();
+
 	if(isset($_POST["server"])) {
 		$sid=(int)$_POST["server"];
 	} else {
@@ -54,16 +60,33 @@ require_once("include/rcon_hl_net.inc");
 				"hostname"	=> $result->hostname,
 				"address"	=> $result->address,
 				"rcon"		=> $result->rcon,
-				"map"         => $infos[map],
-				"mod"        	=> $infos[mod],
-				"os"		=> ($infos[os]=="l")?"Linux":"Windows",
-				"cur_players"	=> $infos[activeplayers], 
-				"max_players"	=> $infos[maxplayers],
-				"bot_players"	=> $infos[botplayers]
+				"map"         => $infos['map'],
+				"mod"        	=> $infos['mod'],
+				"os"		=> ($infos['os']=="l")?"Linux":"Windows",
+				"cur_players"	=> $infos['activeplayers'], 
+				"max_players"	=> $infos['maxplayers'],
+				"bot_players"	=> $infos['botplayers']
 			);
 		}
 		$servers_array[] = $servers_info;
 	}
+
+	if( count($servers_array) == 0 )
+	{
+		$servers_array[] = array(
+			"id"		=> 0,
+			"hostname"	=> "",
+			"address"	=> "",
+			"rcon"		=> "",
+			"map"         => "",
+			"mod"        	=> "",
+			"os"		=> "n/a",
+			"cur_players"	=> 0,
+			"max_players"	=> 0,
+			"bot_players"	=> 0
+		);
+	}
+
 	//address for $sid exists?
 	if(!isset($servers_array[$sid]["address"])) $sid=0;
 	$hostname=$servers_array[$sid]["hostname"];
@@ -195,8 +218,7 @@ require_once("include/rcon_hl_net.inc");
 						$count++;
 						$players[]=$player;
 					}
-					$smarty->assign("playerscount",$count);
-					$smarty->assign("players",$players);
+					$playerscount = $count;
 					$smarty->assign("players_sid",$sid);
 				} else {
 					$smsg="_WRONGRCON";
@@ -209,6 +231,8 @@ require_once("include/rcon_hl_net.inc");
 	}
 	//close connection
 	
+	$smarty->assign("playerscount",$count);
+	$smarty->assign("players",$players);
 	$smarty->assign("smsg",$smsg);
 	$smarty->assign("user_msg",$user_msg);
 	$smarty->assign("server_msg",$server_msg);

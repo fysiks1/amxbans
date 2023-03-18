@@ -152,7 +152,7 @@
 
 						{else}
 
-							{$ban_detail.ban_length*60|date2word:true} ({$ban_detail.ban_length} {"_MINS"|lang})
+							{($ban_detail.ban_length*60)|date2word:true} ({$ban_detail.ban_length} {"_MINS"|lang})
 
 						{/if}
 
@@ -180,7 +180,7 @@
 
 							{else}
 
-								<i>({$ban_detail.ban_end-$smarty.now|date2word} {"_REMAINING"|lang})</i>
+								<i>({($ban_detail.ban_end-$smarty.now)|date2word} {"_REMAINING"|lang})</i>
 
 							{/if}
 
@@ -242,7 +242,7 @@
 
 				</tr>
 
-				{if $banedit_error!=""}<br /><div class="_center"><span class="error">{"_ERROR"|lang}: {foreach from=$banedit_error item=banedit_error}{$banedit_error|lang}{/foreach}</span></div><br />{/if}
+				{if $banedit_error!=""}<br /><div class="_center"><span class="error">{"_ERROR"|lang}: {foreach from=$banedit_error item=banedit_error_i}{$banedit_error_i|lang}{/foreach}</span></div><br />{/if}
 
 			</tbody> 
 
@@ -284,7 +284,7 @@
 
 {if  $vars.use_demo == 1}
 
-		{if $upload_error!=""}<div class="_center"><span class="error">{"_ERROR"|lang}: {foreach from=$upload_error item=upload_error}{$upload_error|lang}{/foreach}</span></div><br />{/if}
+		{if $upload_error!=""}<div class="_center"><span class="error">{"_ERROR"|lang}: {foreach from=$upload_error item=upload_error_i}{$upload_error_i|lang}{/foreach}</span></div><br />{/if}
 
 		{if $msg_demo}<div class="_center"><span class="success">{$msg_demo|lang}</span></div><br />{/if}
 
@@ -326,7 +326,7 @@
 
 			<tbody> 
 
-				{foreach from=$demos item=demos}
+				{foreach from=$demos item=demo}
 
 					<form method="post">
 
@@ -334,41 +334,41 @@
 
 						<input type="hidden" name="site" value="{$site}" />
 
-						<input type="hidden" name="did" value="{$demos.id}" />
+						<input type="hidden" name="did" value="{$demo.id}" />
 
 						<input type="hidden" name="details_x" value="1" />
 
 						<tr>
 
-							<td>{$demos.upload_time|date_format:"%d. %b %Y - %T"}</td> 
+							<td>{$demo.upload_time|date_format:"%d. %b %Y - %T"}</td> 
 
-							<td>{$demos.demo_real}</td> 
+							<td>{$demo.demo_real}</td> 
 
-							<td>{$demos.file_size|file_size}</td> 
+							<td>{$demo.file_size|file_size}</td> 
 
-							<td>{if $demos.comment}{$demos.comment|bbcode2html}{else}{"_NOCOMMENT"|lang}{/if}</td> 
+							<td>{if $demo.comment}{$demo.comment|bbcode2html}{else}{"_NOCOMMENT"|lang}{/if}</td> 
 
-							<td>{$demos.name}</td> 
+							<td>{$demo.name}</td> 
 
-							<td>{if $smarty.session.ip_view=="yes"}{$demos.addr}{/if}</td> 
+							<td>{if $smarty.session.ip_view=="yes"}{$demo.addr}{/if}</td> 
 
-							<td class="_center">{$demos.down_count}</td> 
+							<td class="_center">{$demo.down_count}</td> 
 
 							<td class="_right">
 
 									<form method="POST" style="display:inline;">
 
-										<a href="mailto:{$demos.email}"><img src="images/email_go.png" border="0" title="{"_TIP_SENDMAIL"|lang}" /></a>
+										<a href="mailto:{$demo.email}"><img src="images/email_go.png" border="0" title="{"_TIP_SENDMAIL"|lang}" /></a>
 
 										<input name="down_demo" type="image" src="images/disk.png" border="0" title="{"_TIP_DOWNLOAD"|lang}" />
 
-										{if $smarty.session.bans_edit=="yes" || ($smarty.session.bans_edit=="own" && $smarty.session.uname == $demos.name)}
+										{if $smarty.session.bans_edit=="yes" || ($smarty.session.bans_edit=="own" && $smarty.session.uname == $demo.name)}
 
-											<img src="images/page_edit.png" border="0" onClick="NewToggleLayer('demedit_{$demos.id}');" title="{"_TIP_EDIT"|lang}" style="cursor:pointer;"/>
+											<img src="images/page_edit.png" border="0" onClick="NewToggleLayer('demedit_{$demo.id}');" title="{"_TIP_EDIT"|lang}" style="cursor:pointer;"/>
 
 										{/if}
 
-										{if $smarty.session.bans_delete=="yes" || ($smarty.session.bans_delete=="own" && $smarty.session.uname == $demos.name)}
+										{if $smarty.session.bans_delete=="yes" || ($smarty.session.bans_delete=="own" && $smarty.session.uname == $demo.name)}
 
 											<input name="del_demo" type="image" src="templates/{$design}_gfx/page_delete.png" border="0" onclick="return confirm('{"_DELDEMO"|lang}{"_DATALOSS"|lang}');" title="{"_TIP_DEL"|lang}" />
 
@@ -386,7 +386,7 @@
 
 						</tr>
 
-						<tr id="demedit_{$demos.id}" style="display: none">
+						<tr id="demedit_{$demo.id}" style="display: none">
 
 							{include file="layer_demedit.tpl"}
 
@@ -436,7 +436,7 @@
 
 	{if  $vars.use_comment == 1}
 
-		{if $comment_error!=""}<div class="_center"><span class="error">{"_ERROR"|lang}: {foreach from=$comment_error item=comment_error}{$comment_error|lang}{/foreach}</span></div><br />{/if}
+		{if $comment_error!=""}<div class="_center"><span class="error">{"_ERROR"|lang}: {foreach from=$comment_error item=comment_error_i}{$comment_error_i|lang}{/foreach}</span></div><br />{/if}
 
 		{if $msg_comment}<div class="_center"><span class="success">{$msg_comment|lang}</span></div><br />{/if}
 
@@ -472,7 +472,7 @@
 
 		</table>
 
-		{foreach from=$comments item=comments}
+		{foreach from=$comments item=comment}
 
 			<form method="POST">
 
@@ -480,7 +480,7 @@
 
 				<input type="hidden" name="site" value="{$site}" />
 
-				<input type="hidden" name="cid" value="{$comments.id}" />
+				<input type="hidden" name="cid" value="{$comment.id}" />
 
 				<input type="hidden" name="details_x" value="1" />
 
@@ -492,19 +492,19 @@
 
 							<tr> 
 
-								<td style="width:130px;">{$comments.date|date_format:"%d. %b %Y - %T"}</td> 
+								<td style="width:130px;">{$comment.date|date_format:"%d. %b %Y - %T"}</td> 
 
-								<td>{$comments.comment|bbcode2html}</td> 
+								<td>{$comment.comment|bbcode2html}</td> 
 
-								<td style="width:100px;">{$comments.name}</td> 
+								<td style="width:100px;">{$comment.name}</td> 
 
-								<td style="width:150px;">{if $smarty.session.ip_view=="yes"}{$comments.addr}{else}<span style='font-style:italic;font-weight:bold'>{"_HIDDEN"|lang}</span>{/if}</td> 
+								<td style="width:150px;">{if $smarty.session.ip_view=="yes"}{$comment.addr}{else}<span style='font-style:italic;font-weight:bold'>{"_HIDDEN"|lang}</span>{/if}</td> 
 
 								<td class="_right" style="width:80px;">
 
 									{if $smarty.session.bans_edit=="yes"}
 
-										<img src="images/page_edit.png" title="{"_EDIT"|lang}" border="0" style="cursor:pointer;" onClick="NewToggleLayer('comedit_{$comments.id}');" />
+										<img src="images/page_edit.png" title="{"_EDIT"|lang}" border="0" style="cursor:pointer;" onClick="NewToggleLayer('comedit_{$comment.id}');" />
 
 										<input name="del_comment" type="image" src="templates/{$design}_gfx/page_delete.png" border="0" onclick="return confirm('{"_DELCOMMENT"|lang}{"_DATALOSS"|lang}');" title="{"_DELETE"|lang}" />
 
@@ -554,7 +554,7 @@
 
 			</div>
 
-			<tr id="comedit_{$comments.id}" style="display: none">
+			<tr id="comedit_{$comment.id}" style="display: none">
 
 				{include file="layer_comedit.tpl"}
 

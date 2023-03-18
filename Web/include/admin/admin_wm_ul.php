@@ -27,7 +27,7 @@
 	$admin_site="ul";
 	$title2 ="_TITLEUSERLEVEL";
 	
-	$lid=(int)$_POST["lid"];
+	$lid = isset($_POST["lid"]) ? (int)$_POST["lid"] : 0;
 	//Level add
 	if(isset($_POST["new"]) && $_SESSION["loggedin"]) {
 		$query = $mysql->query("SELECT COUNT(level) FROM `".$config->db_prefix."_levels`") or die ($mysql->error);

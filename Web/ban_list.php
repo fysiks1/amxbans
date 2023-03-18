@@ -14,7 +14,7 @@
     If not, see <http://creativecommons.org/licenses/by-nc-sa/2.0/>.
 */
  
-session_start();
+require_once("include/init_session.php");
 require_once("include/config.inc.php");
 require_once("include/access.inc.php");
 require_once("include/menu.inc.php");
@@ -42,9 +42,20 @@ if(isset($_POST["bid"])) {
         }
 }
 //create default ban list and show it
-$ban_page = "";
+$ban_page=array(
+        "current"       => 0,            //current site
+        "max_page"      => 0,      //last site
+        "per_page"      => 0,    //bans per page
+        "first_ban"     => 0,            //+1: LIMIT 0 is the first ban
+        "max_ban"       => 0,                  //count activ bans
+        "all_ban"       => 0,                     //count all bans
+        "show_comments" => 0,
+        "show_demos" => 0,
+        "show_kicks" => 0
+);
+
 if(!$user_site) {
-	$page = "";
+	$page = 0;
         //count activ bans
         $query = $mysql->query("SELECT COUNT(bid) FROM `".$config->db_prefix."_bans` WHERE `expired`=0") or die ($mysql->error);
         $ban_count[0]=$query->fetch_row()[0];
@@ -63,14 +74,13 @@ if(!$user_site) {
         //calc mysql limits from current site
         $min=($config->bans_per_page * $ban_page_curr)-$config->bans_per_page;
         //build array with site info
-        $ban_page=array(
-                "current"       => $ban_page_curr,            //current site
-                "max_page"      => ($ban_page_max)? $ban_page_max:1,      //last site
-                "per_page"      => $config->bans_per_page,    //bans per page
-                "first_ban"     => ($ban_count[0])? $min + 1:$min,            //+1: LIMIT 0 is the first ban
-                "max_ban"       => $ban_count[0],                  //count activ bans
-                "all_ban"       => $ban_count[1]                     //count all bans
-        );
+        $ban_page["current"] = $ban_page_curr;            //current site
+        $ban_page["max_page"] = ($ban_page_max)? $ban_page_max:1;      //last site
+        $ban_page["per_page"] = $config->bans_per_page;    //bans per page
+        $ban_page["first_ban"] = ($ban_count[0])? $min + 1:$min;            //+1: LIMIT 0 is the first ban
+        $ban_page["max_ban"] = $ban_count[0];                  //count activ bans
+        $ban_page["all_ban"] = $ban_count[1];                     //count all bans
+
         //get bans for current page
         $query  = $mysql->query("SELECT ba.*, se.gametype,se.timezone_fixx, aa.nickname FROM `".$config->db_prefix."_bans` AS ba
                                 LEFT JOIN `".$config->db_prefix."_serverinfo` AS se ON ba.server_ip=se.address
@@ -78,6 +88,7 @@ if(!$user_site) {
                                 WHERE ba.expired=0 ORDER BY ban_created DESC LIMIT ".$min.",".$config->bans_per_page) or die($mysql->error);
 
         //build ban list array
+        $ban_list = array();
         while($result = $query->fetch_object()) {
                 if($result->expired==1) continue;
                 $steamid="";
@@ -102,7 +113,8 @@ if(!$user_site) {
                         "ban_end"              => ($result->ban_created + ($result->ban_length * 60) + ($result->timezone_fixx * 60 * 60)),
                         "server_ip"     => $result->server_ip,
                         "server_name"   => html_safe($result->server_name),
-						"expired"		=> $result->expired,
+                        "expired" => $result->expired,
+                        "nickname" => ""
                 );
                 // get previous offences if any
 				$query2   = $mysql->query("SELECT count(player_id) as ban_count FROM `".$config->db_prefix."_bans` WHERE player_id = '".$result->player_id."'") or die($mysql->error);
@@ -153,6 +165,7 @@ if(!$user_site) {
                 $ban_list[]=$ban_row;
         }
         $smarty->assign("ban_list",$ban_list);
+        $smarty->assign("error", count($ban_list) ? false : true);
         $smarty->assign("ban_page",$ban_page);
 }
 //ban delete
@@ -184,6 +197,8 @@ if(isset($_POST["del_ban_x"]) && isset($_POST["bid"]) && $_SESSION["loggedin"]) 
 $smarty->assign("meta","");
 $smarty->assign("title",$title);
 $smarty->assign("version_web",$config->v_web);
+
+$smarty->assign("design", "");
 // amxbans.css included in the design? if not use it from default
 if(file_exists("templates/".$config->design."/amxbans.css")) {
         $smarty->assign("design",$config->design);
@@ -196,7 +211,8 @@ $smarty->assign("bbcodes",$bbcodes);
 $smarty->assign("menu",$menu);
 $smarty->assign("banner",$config->banner);
 $smarty->assign("banner_url",$config->banner_url);
-$smarty->assign("pagenav", construct_vb_page_nav(@$ban_page['current'], @$ban_page['max_page'], 3, array(10, 50, 100, 500, 1000)));
+$smarty->assign("pagenav", construct_vb_page_nav($ban_page['current'], $ban_page['max_page'], 3, array(10, 50, 100, 500, 1000)));
+$smarty->assign("true", true);
 $smarty->display('main_header.tpl');
 //load main page, currently ban list or ban details/edit
 if($user_site !== "") {

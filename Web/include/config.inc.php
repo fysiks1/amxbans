@@ -21,13 +21,48 @@
 */
 
 // setting version - DO NOT EDIT THIS
-@$config->v_web = "6.14.4";
 
 // if necessary - calling install procedure
 if(file_exists("setup.php") && !file_exists("include/db.config.inc.php")) {
 	header("Location: setup.php");
 	exit;
 }
+
+class configObj
+{
+	public $document_root;
+	public $path_root;
+	public $db_host;
+	public $db_user;
+	public $db_pass;
+	public $db_db;
+	public $db_prefix;
+	public $v_web;
+	public $templatedir;
+	public $langfiles;
+	public $langfilesdir;
+	public $default_lang;
+	public $importdir;
+	public $design;
+	public $banner;
+	public $banner_url;
+	public $start_page;
+	public $show_kick_count;
+	public $show_comment_count;
+	public $show_demo_count;
+	public $demo_all;
+	public $max_file_size;
+	public $file_type;
+	public $comment_all;
+	public $use_capture;
+	public $auto_prune;
+	public $max_offences;
+	public $max_offences_reason;
+	public $use_demo;
+	public $use_comment;
+}
+
+$config = new configObj();
 
 //start counter for page load time
 $page_starttime=explode(" ",microtime());
@@ -36,11 +71,10 @@ $page_starttime=explode(" ",microtime());
 function stripslashes_recursive($var) {
 	return is_array($var) ? array_map('stripslashes_recursive', $var) : stripslashes($var);
 }
-if (get_magic_quotes_gpc()) {
-	$_GET = stripslashes_recursive($_GET);
-	$_POST = stripslashes_recursive($_POST);
-	$_COOKIE = stripslashes_recursive($_COOKIE);
-}
+$_GET = stripslashes_recursive($_GET);
+$_POST = stripslashes_recursive($_POST);
+$_COOKIE = stripslashes_recursive($_COOKIE);
+
 
 require_once("sql.inc.php");
 require_once("db.config.inc.php");
@@ -71,6 +105,7 @@ try {
 $config->importdir		= $config->path_root."/tmp";
 $config->templatedir	= $config->path_root."/templates";
 $config->langfilesdir	= $config->path_root."/language/";
+$config->v_web = "6.14.4fy";
 
 
 //get websettings

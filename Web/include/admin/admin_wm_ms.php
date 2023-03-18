@@ -66,7 +66,7 @@
 	if(isset($_POST["save"]) && $_SESSION["loggedin"]) {
 		$update_query="`cookie`='".sql_safe($_POST["cookie"])."'";
 		$update_query.=",`design`='".(sql_safe($_POST["design"])=="---" ? "":sql_safe($_POST["design"]))."'";
-		$update_query.=",`bans_per_page`=".((is_numeric($_POST["bans_per_page"]) && $_POST["bans_per_page"] > 1)?(int)$_POST["bans_per_page"]:10);
+		$update_query.=",`bans_per_page`=".((isset($_POST["bans_per_page"]) && is_numeric($_POST["bans_per_page"]) && $_POST["bans_per_page"] > 1)?(int)$_POST["bans_per_page"]:10);
 		$update_query.=",`banner`='".(sql_safe($_POST["banner"])=="---" ? "":sql_safe($_POST["banner"]))."'";
 		$update_query.=",`banner_url`='".sql_safe(trim($_POST["banner_url"]))."'";
 		$update_query.=",`default_lang`='".sql_safe($_POST["language"])."'";
@@ -80,8 +80,8 @@
 		$update_query.=",`comment_all`=".(int)$_POST["comment_all"];
 		$update_query.=",`use_capture`=".(int)$_POST["use_capture"];
 		$update_query.=",`auto_prune`=".(int)$_POST["auto_prune"];
-		$update_query.=",`max_offences`=".((is_numeric($_POST["max_offences"]) && $_POST["max_offences"] > 1)?(int)$_POST["max_offences"]:10);
-		$update_query.=",`max_offences_reason`='".(sql_safe($_POST["max_offences_reason"])=="" ? "max offences reached":sql_safe($_POST["max_offences_reason"]))."'";
+		$update_query.=",`max_offences`=".((isset($_POST["max_offences"]) && is_numeric($_POST["max_offences"]) && $_POST["max_offences"] > 1)?(int)$_POST["max_offences"]:10);
+		$update_query.=",`max_offences_reason`='". (isset($_POST["max_offences_reason"]) ? sql_safe($_POST["max_offences_reason"]) : "max offences reached") . "'";
 		$update_query.=",`max_file_size`=".(int)$_POST["max_file_size"];
 		$update_query.=",`file_type`='".(sql_safe($_POST["file_type"]))."'";
 		

@@ -19,6 +19,18 @@
 function smarty_modifier_lang($lang) {
 	//langkeys must start with "_", if not return unformated
 	//added for beta6
+	
+	if( is_array($lang) )
+	{
+		$retVal = array();
+		foreach( $lang as $langKey )
+		{
+			$retVal[] = smarty_modifier_lang($langKey);
+		}
+		return $retVal;
+	}
+	
+	
 	if(substr($lang,0,1)!="_") return $lang;
 	
 	global $config;
@@ -28,7 +40,7 @@ function smarty_modifier_lang($lang) {
 	$language = $_SESSION['lang'];
 	
 	//load lang keys to array if language changed
-	if($langkeys["current_language"]!=$language) {
+	if(!isset($langkeys["current_language"]) || $langkeys["current_language"]!=$language) {
 		//get all current langfiles
 		$all_lang_files=array();
 		chdir($lang_files_dir);
@@ -72,8 +84,11 @@ function load_keys($item,$key) {
 		for ($i=0;$i<$int;$i++) {
 			$s_lang[$i] = str_replace ("\n","",$s_lang[$i]);
 			$test = explode("\"",$s_lang[$i]);
-			$langkeys[$test[1]]=$test[3];
-		}	
+			if( isset($test[0]) && $test[0] == "define(" )
+			{
+				$langkeys[$test[1]]=$test[3];
+			}
+		}
 	}
 	@setlocale(LC_ALL, $langkeys["_LOCALE"]);
 }

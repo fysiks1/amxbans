@@ -28,6 +28,9 @@
 	$admin_site="ban_add";
 	$title2 = "_TITLEBANADD";
 
+	$inputs=array("name"=>'',"steamid"=>'',"ip"=>'',"reason"=>'',"reason_custom"=>0,"length"=>0,"type"=>'');
+	$reason_custom = 0;
+
 	//save ban
 	if(isset($_POST["save"]) && $_SESSION["loggedin"]) {
 		if(isset($_POST["reasoncheck"])=="yes") {
@@ -78,10 +81,11 @@
 			log_to_db("Add ban","playernick: ".$name." / time: ".$ban_length);	
 		} else {
 			$inputs=array("name"=>$name,"steamid"=>$steamid,"ip"=>$ip,"reason"=>$reason,"reason_custom"=>$reason_custom,"length"=>$ban_length,"type"=>$ban_type);
-			$smarty->assign("inputs",$inputs);
 		}
 	}
-	
+
+	$smarty->assign("inputs",$inputs);
+
 	//get reasons
 	$reasons=sql_get_reasons_list();
 	$smarty->assign("reasons",$reasons);

@@ -45,7 +45,6 @@ while($result = $query->fetch_object()) {
 $smarty->assign("server_count",$server_count);
 $smarty->assign("version_server",$version_server);
 //get versions from update url
-$smarty->assign("version_latest", file_get_contents($update_url));
-
-//$smarty->assign("error",($error? $error));
+$smarty->assign("version_latest", "");
+// $smarty->assign("version_latest", file_get_contents($update_url));
 ?>

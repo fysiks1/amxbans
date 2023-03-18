@@ -20,6 +20,8 @@
 
 */
 
+$menu = array();
+
 //get usermenu from db
 $query = $mysql->query("SELECT * FROM `".$config->db_prefix."_usermenu` WHERE `activ`=1 ORDER BY `pos` ASC") or die ($mysql->error);
 while($result = $query->fetch_object()) {

@@ -20,7 +20,7 @@ function smarty_modifier_selectlang($true,$type)
 {
 	global $config;
   // If a user selected a new language from a pulldown box on any page, process it here
-  $newlang = $_REQUEST['newlang'];
+  $newlang = isset($_REQUEST['newlang']) ? $_REQUEST['newlang'] : null;
   if (!empty($newlang)) {
 	$_SESSION['lang'] = $newlang;
 	#echo"<meta http-equiv=\"refresh\" content=\"0;url='http://".$_SERVER["HTTP_HOST"].$_SERVER['PHP_SELF']."'\">";

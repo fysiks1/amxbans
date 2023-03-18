@@ -13,18 +13,18 @@
 			</thead> 
 			<tbody> 
 				<!-- Start Loop -->
-				{foreach from=$admins item=admins}
+				{foreach from=$admins item=admin}
 					<tr class="list"> 
-						<td><a href="http://steamcommunity.com/profiles/{$admins.comid}" target="_blank"><img src="templates/{$design}_gfx/Steam.png" alt="{"_OPENSTEAMCOMSITE"|lang}"/></a>&nbsp;</td>
-						<td>{$admins.nickname}</td> 
-						<td>{$admins.steamid}</td> 
-						<td>{$admins.access}</td> 
-						<td>{$admins.created|date_format:"%d. %b %Y - %T"}</td> 
+						<td><a href="http://steamcommunity.com/profiles/{$admin.comid}" target="_blank"><img src="templates/{$design}_gfx/Steam.png" alt="{"_OPENSTEAMCOMSITE"|lang}"/></a>&nbsp;</td>
+						<td>{$admin.nickname}</td> 
+						<td>{$admin.steamid}</td> 
+						<td>{$admin.access}</td> 
+						<td>{$admin.created|date_format:"%d. %b %Y - %T"}</td> 
 						<td><em>
-							{if $admins.expired=="0"}
+							{if $admin.expired=="0"}
 								<i>{"_UNLIMITED"|lang}</i>
 							{else}
-								{$admins.expired|date_format:"%d. %b %Y - %T"}
+								{$admin.expired|date_format:"%d. %b %Y - %T"}
 							{/if}
 						</em></td> 
 					</tr> 

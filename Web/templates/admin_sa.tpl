@@ -62,14 +62,14 @@
 						<td>{"_HOSTNAME"|lang}</td>
 						<td width="1%">&nbsp;</td>
 					</tr>
-					{foreach from=$servers item=servers}
+					{foreach from=$servers item=server}
 						<form method="POST">
-							<input type="hidden" name="sid" value="{$servers.sid}" />
-							<input type="hidden" name="sidname" value="{$servers.hostname}" />
+							<input type="hidden" name="sid" value="{$server.sid}" />
+							<input type="hidden" name="sidname" value="{$server.hostname}" />
 							<tr class="list">
-								<td><img src="images/mods/{$servers.gametype}.gif"></td>
-								<td>{$servers.address}</td>
-								<td>{$servers.hostname}</td>
+								<td><img src="images/mods/{$server.gametype}.gif"></td>
+								<td>{$server.address}</td>
+								<td>{$server.hostname}</td>
 								<td><input type="submit" class="button" name="admins_edit" value="{"_EDITADMINS"|lang}" /></td>
 							</tr>
 						</form>
@@ -93,31 +93,31 @@
 						<td width="1%" align="center"><nobr>{"_STATICBANTIME"|lang}</nobr></td>
 						<td width="1%">{"_ACTIV"|lang}</td>
 					</tr>
-					{foreach from=$admins item=admins}
+					{foreach from=$admins item=admin}
 					<tr class="settings_line">
-						<td align="center">{$admins.username}</td>
-						<td align="center">{$admins.nickname}</td>
-						<td align="center">{$admins.steamid}</td>
-						<td align="center">{$admins.access}</td>
-						<td align="center">{$admins.flags}</td>
+						<td align="center">{$admin.username}</td>
+						<td align="center">{$admin.nickname}</td>
+						<td align="center">{$admin.steamid}</td>
+						<td align="center">{$admin.access}</td>
+						<td align="center">{$admin.flags}</td>
 						<td align="center">
-							<div id="cf{$admins.aid}" {if $admins.aktiv!=1}style="visibility:hidden"{/if} nowrap>
-								<input type="text" name="custom_flags[]" id="cftxt{$admins.aid}" size="22" value="{$admins.custom_flags}"/>
+							<div id="cf{$admin.aid}" {if $admin.aktiv!=1}style="visibility:hidden"{/if} nowrap>
+								<input type="text" name="custom_flags[]" id="cftxt{$admin.aid}" size="22" value="{$admin.custom_flags}"/>
 								<img src="images/server_key.png" alt="{"_ACCESSFLAGS"|lang}" style="cursor:pointer;" 
-									onClick="window.open('include/amxxhelper.php?id=cftxt'+{$admins.aid},'Link','width=510,height=670,dependent=yes,resizable=yes');return false;" />
+									onClick="window.open('include/amxxhelper.php?id=cftxt'+{$admin.aid},'Link','width=510,height=670,dependent=yes,resizable=yes');return false;" />
 							</div>
 						</td>
 						<td align="center">
-							<div id="usb{$admins.aid}" {if $admins.aktiv!=1}style="visibility:hidden"{/if}>
-								<select name="use_static_bantime[]">{html_options values=$yesno_choose output=$yesno_output|lang selected=$admins.use_static_bantime}</select>
+							<div id="usb{$admin.aid}" {if $admin.aktiv!=1}style="visibility:hidden"{/if}>
+								<select name="use_static_bantime[]">{html_options values=$yesno_choose output=$yesno_output|lang selected=$admin.use_static_bantime}</select>
 							</div>
 						</td>
 						<td align="center">
 							<input type="hidden" name="sid" value="{$editadmins.sid}" />
 							<input type="hidden" name="sidname" value="{$editadmins.sidname}" />
-							<input type="hidden" name="hid_uid[]" value="{$admins.aid}" />
-							<select name="aktiv_new[]" onchange="document.getElementById('cf{$admins.aid}').style.visibility=(this.value == 1)?'visible':'hidden';
-									document.getElementById('usb{$admins.aid}').style.visibility=(this.value == 1)?'visible':'hidden';">{html_options values=$onetwo_choose output=$yesno_output|lang selected=$admins.aktiv}
+							<input type="hidden" name="hid_uid[]" value="{$admin.aid}" />
+							<select name="aktiv_new[]" onchange="document.getElementById('cf{$admin.aid}').style.visibility=(this.value == 1)?'visible':'hidden';
+									document.getElementById('usb{$admin.aid}').style.visibility=(this.value == 1)?'visible':'hidden';">{html_options values=$onetwo_choose output=$yesno_output|lang selected=$admin.aktiv}
 							</select>
 						</td>
 					</tr>

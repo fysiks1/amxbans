@@ -20,21 +20,25 @@
 
 */
 
-session_start();
+require_once("include/init_session.php");
 
 require_once("include/config.inc.php");
 require_once("include/amxx_langs.inc.php");
 require_once("include/functions.inc.php");
 
-#$bid=(int)$_GET["bid"];
-$sid=htmlspecialchars($_GET["sid"]);
-$show_admin=(int)$_GET["adm"];
+$bid = false;
+$is_steamid = false;
+$sid = isset($_GET["sid"]) ? htmlspecialchars($_GET["sid"]) : "";
+$show_admin = isset($_GET["adm"]) ? (int)$_GET["adm"] : 0;
 
 //get language for player from url
-$lang=$_GET["lang"];
-if($amxx_langs[$lang]) {
+$lang = isset($_GET["lang"]) ? $_GET["lang"] : "";
+if( isset($amxx_langs[$lang]) )
+{
 	$_SESSION['lang']=$amxx_langs[$lang];
-} else {
+}
+else
+{
 	$_SESSION['lang']="english";
 }
 //check GET bid
@@ -56,13 +60,19 @@ $smarty->assign("show_admin",$show_admin);
 
 
 // Get ban details
-if($bid) {
+if($bid)
+{
 	$ban=sql_get_ban_details($bid);
 	$smarty->assign("ban_detail",$ban);
 }
+else
+{
+	$smarty->assign("ban_detail", "");
+}
 
 // Get ban details history with steam
-if($is_steamid===true) {
+if( $is_steamid === true )
+{
 	$count=0;
 	$exp_bans=sql_get_ban_details_motd_exp($sid,$count);
 	
@@ -70,6 +80,11 @@ if($is_steamid===true) {
 	$smarty->assign("exp_bans",$exp_bans);
 	$smarty->assign("history",1);
 }
+else
+{
+	$smarty->assign("history", 0);
+}
+
 //no valid bid
 if(!$sid) {
 	echo "no valid data";
@@ -83,6 +98,7 @@ if(!$sid) {
 
 $title = "Bandetails";
 
+$smarty->assign("design", "");
 if(file_exists("templates/".$config->design."/amxbans.css")) {
 	$smarty->assign("design",$config->design);
 }

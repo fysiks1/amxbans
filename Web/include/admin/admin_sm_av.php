@@ -25,11 +25,25 @@
 		#exit;
 	}
 
-    $admin_site="av";
+	$admin_site="av";
 	$title2 ="_TITLEAMXADMINS";
 	$user_msg=array();
+
+	$input=array(
+		"username"=>'',
+		"password"=>'',
+		"access"=>'',
+		"flags"=>'',
+		"steamid"=>'',
+		"nickname"=>'',
+		"ashow"=>0,
+		"days"=>'',
+		"moredays"=>0,
+		"noend"=>0
+		);
+
 	
-	$aid=(int)$_POST["aid"];
+	$aid = isset($_POST["aid"]) ? (int)$_POST["aid"] : 0;
 	
 	//amxadmin delete
 	if(isset($_POST["del"]) && $_SESSION["loggedin"]) {
@@ -155,10 +169,9 @@
 				"nickname"=>html_safe($nickname),
 				"ashow"=>(int)$_POST["ashow"],
 				"days"=>$_POST["days"],
-				"moredays"=>(int)$_POST["moredays"],
+				"moredays"=>isset($_POST["moredays"]) ? (int)$_POST["moredays"] : 0,
 				"noend"=>(isset($_POST["noend"])?1:0)
 				);
-			$smarty->assign("input",$input);
 		}
 	}
 	//amxadmins holen
@@ -166,6 +179,8 @@
 	
 	//server holen
 	$servers=sql_get_server();
+	$svalues = array();
+	$soutput = array();
 	if(is_array($servers)) {
 		foreach($servers as $k => $v) {
 			$svalues[]=$v["sid"];
@@ -173,6 +188,7 @@
 		}
 	}
 	
+	$smarty->assign("input",$input);
 	$smarty->assign("yesno_choose",array("yes","no"));
 	$smarty->assign("yesno_output",array("_YES","_NO"));
 	$smarty->assign("ashow_output",array("_NO","_YES"));

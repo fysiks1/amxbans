@@ -20,7 +20,7 @@
 
 */
 
-session_start();
+require_once("include/init_session.php");
 	
 if(!isset($_POST["bid"]) && !is_numeric($_POST["bid"])) {
 	header("Location:index.php");
@@ -28,9 +28,13 @@ if(!isset($_POST["bid"]) && !is_numeric($_POST["bid"])) {
 }
 $title2 = "_TITLEBANDETAIL";
 
-$bid=(int)$_POST["bid"];
-$site=(int)$_POST["site"];
-if(!$site) $site=1;
+$msg_banedit = "";
+$msg_demo = "";
+$msg_comment = "";
+$error = array();
+
+$bid = isset($_POST["bid"]) ? (int)$_POST["bid"] : 0;
+$site = isset($_POST["site"]) ? (int)$_POST["site"] : 1;
 
 //generate captcha
 function new_captcha() {
@@ -52,7 +56,7 @@ if(!(isset($_POST["add_comment"]) || isset($_POST["add_demo"]))){
 //ban edit
 if(isset($_POST["edit_ban"]) && isset($_POST["bid"]) && $_SESSION["loggedin"]) {
 	//unban checkbox?
-	$unban=($_POST["unban"] == "on") ? true : false;
+	$unban=(isset($_POST["unban"]) && $_POST["unban"] == "on") ? true : false;
 
 	$ban_length_old=(int)$_POST["ban_length_old"];
 	$player_nick=sql_safe($_POST["player_nick"]);
@@ -72,7 +76,7 @@ if(isset($_POST["edit_ban"]) && isset($_POST["bid"]) && $_SESSION["loggedin"]) {
 		if(!validate_value($player_ip,"ip",$msg) && $ban_type=="SI") $error[]=$msg;
 		if(!validate_value($ban_reason,"name",$msg,1,100,"REASON")) $error[]=$msg;
 	}
-	if(!validate_value($edit_reason,"name",$msg,1,255,"COMMENT")) $error[]=_NOEDITREASON;
+	if(!validate_value($edit_reason,"name",$msg,1,255,"COMMENT")) $error[]="_NOEDITREASON";
 	if($unban) $edit_reason="Unban: ".$edit_reason;
 	
 	#if($player_nick=="" || $ban_reason=="" || ($player_id=="" || $player_ip=="")) $error[]="_NOREQUIREDFIELDS";
@@ -111,7 +115,11 @@ if(isset($_POST["edit_ban"]) && isset($_POST["bid"]) && $_SESSION["loggedin"]) {
 		$msg_banedit="_BANEDITED";
 		log_to_db("Ban edit",(($unban)?"Unban":"Edited ban").": ID ".$bid." (<".sql_safe($player_nick)."> <".sql_safe($player_id).">)");
 	}
-	$smarty->assign("banedit_error",$error);
+	$smarty->assign("banedit_error",$error ? $error : "");
+}
+else
+{
+	$smarty->assign("banedit_error","");
 }
 //ban delete
 if(isset($_POST["del_ban_x"]) && isset($_POST["bid"]) && $_SESSION["loggedin"]) {
@@ -167,7 +175,12 @@ if(isset($_POST["add_comment"]) && $bid) {
 	}
 	new_captcha();
 	$smarty->assign("comment_layer",1);
-	$smarty->assign("comment_error",$error);
+	$smarty->assign("comment_error",$error ? $error : "");
+}
+else
+{
+	$smarty->assign("comment_layer",0);
+	$smarty->assign("comment_error","");
 }
 //comment edit
 if(isset($_POST["edit_comment"]) && isset($_POST["cid"]) && $_SESSION["loggedin"]) {
@@ -177,7 +190,11 @@ if(isset($_POST["edit_comment"]) && isset($_POST["cid"]) && $_SESSION["loggedin"
 				) or die ($mysql->error);
 		$msg_comment="_COMEDITED";
 	}
-	$smarty->assign("comment_error",$error);
+	$smarty->assign("comment_error",$error ? $error : "");
+}
+else
+{
+	$smarty->assign("comment_error","");
 }
 //file delete
 if(isset($_POST["del_demo_x"]) && isset($_POST["did"]) && $_SESSION["loggedin"]) {
@@ -207,7 +224,11 @@ if(isset($_POST["edit_demo"]) && isset($_POST["did"]) && $_SESSION["loggedin"]) 
 				) or die ($mysql->error);
 		$msg_demo="_FILEEDITED";
 	}
-	$smarty->assign("upload_error",$error);
+	$smarty->assign("upload_error",$error ? $error : "");
+}
+else
+{
+	$smarty->assign("upload_error","");
 }
 //file add
 if(isset($_POST["add_demo"]) && isset($_FILES['filename']['tmp_name']) && ($config->demo_all || $_SESSION["loggedin"])) {
@@ -246,8 +267,13 @@ if(isset($_POST["add_demo"]) && isset($_FILES['filename']['tmp_name']) && ($conf
 		$msg_demo="_FILEUPLOADSUCCESS";
 	}
 	new_captcha();
-	$smarty->assign("upload_error",$error);
+	$smarty->assign("upload_error",$error ? $error : "");
 	$smarty->assign("demo_layer",1);
+}
+else
+{
+	$smarty->assign("upload_error","");
+	$smarty->assign("demo_layer",0);
 }
 //download file
 if(isset($_POST["down_demo_x"]) && isset($_POST["did"])) {
@@ -285,7 +311,11 @@ if(isset($_POST["down_demo_x"]) && isset($_POST["did"])) {
 	
 		unset($_POST["down_demo_x"]);
 	}
-	$smarty->assign("upload_error",$error);
+	$smarty->assign("upload_error",$error ? $error : "");
+}
+else
+{
+	$smarty->assign("upload_error","");
 }
 
 //get ban details
@@ -298,6 +328,8 @@ $exp_count=0;
 $ban_details_exp=sql_get_ban_details_exp($ban_details["player_id"],$exp_count,$bid);
 //ban edits holen
 $query=$mysql->query("SELECT * FROM ".$config->db_prefix."_bans_edit WHERE bid=".$bid);
+$ban_details_edits = array();
+$edit_count = 0;
 while($row=$query->fetch_assoc()) {
 	$edit_count++;
 	$ban_details_edits[]=$row;
@@ -326,6 +358,7 @@ $smarty->assign("comments_count",$comments_count);
 
 //get files
 $demos_count=0;
+$files_count=0;
 $demos=sql_get_files($bid,$files_count);
 $smarty->assign("demos",$demos);
 $smarty->assign("demos_count",$files_count);
