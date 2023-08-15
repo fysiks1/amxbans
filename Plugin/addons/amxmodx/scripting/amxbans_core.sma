@@ -36,7 +36,7 @@
 
 #define PLUGINNAME "AMXBans Core"
 #define PLUGINAUTHOR "YamiKaitou"
-new const PLUGINVERSION[] = "6.13";
+new const PLUGINVERSION[] = "6.13-dbg";
 
 #include <amxmodx>
 #include <amxmisc>
@@ -80,6 +80,12 @@ enum MFHANDLE_TYPES {
 new MFHandle[MFHANDLE_TYPES]
 
 new Handle:info
+
+#define DEBUG
+#if defined DEBUG
+new g_bClanMatchActive = false;
+new const g_szLogFile[] = "amxbans_debug_log.txt"
+#endif
 
 public plugin_init()
 {
@@ -135,6 +141,16 @@ public plugin_init()
 	server_cmd("exec %s/amxx.cfg", configsDir)	// Execute main configuration file
 	server_cmd("exec %s/sql.cfg", configsDir)
 	//server_cmd("exec %s/amxbans.cfg", configsDir)
+
+#if defined DEBUG
+	g_bClanMatchActive = get_cvar_num("mp_clan_match");
+	if( g_bClanMatchActive )
+	{
+		log_to_file(g_szLogFile, "core:plugin_init:  Clan Match is running")
+		set_task(15.0, "forceReloadAdmins");
+	}
+	g_bClanMatchActive = true; // Force logging when clan match isn't active
+#endif
 
 }
 
@@ -268,7 +284,12 @@ loadSettings(szFilename[])
 			admins_push(AuthData,Password,read_flags(Access),read_flags(Flags));
 			ArrayPushString(g_AdminNick, Name);
 			ArrayPushCell(g_AdminUseStaticBantime, str_to_num(Static));
-			
+
+#if defined DEBUG
+		if( g_bClanMatchActive )
+			log_to_file(g_szLogFile, "core:loadSettings:  Admin (%s) added", AuthData)
+#endif
+
 			AdminCount++;
 		}
 		
@@ -296,7 +317,12 @@ public adminSql()
 	SQL_SetAffinity("mysql")
 	info = SQL_MakeStdTuple()
 	new Handle:sql = SQL_Connect(info, errno, error, 127)
-	
+
+#if defined DEBUG
+	if( g_bClanMatchActive )
+		log_to_file(g_szLogFile, "core:adminSql:  SQL Handle is %s", sql == Empty_Handle ? "Empty" : "Good")
+#endif
+
 	get_cvar_string("amx_sql_table", table, 31)	
 	
 	//sql error or amxbans_use_admins_file == 1
@@ -392,6 +418,11 @@ public adminSql()
 			if(equal(Access,"")) SQL_ReadResult(query, qcolAccess, Access, sizeof(Access)-1);
 			
 			admins_push(AuthData,Password,read_flags(Access),read_flags(Flags));
+
+#if defined DEBUG
+			if( g_bClanMatchActive )
+				log_to_file(g_szLogFile, "core:adminSql:  Admin (%s) added", AuthData)
+#endif
 			
 			//save nick
 			ArrayPushString(g_AdminNick,Nick)
@@ -436,14 +467,31 @@ public plugin_end()
 	if(info != Empty_Handle) SQL_FreeHandle(info)
 }
 
+#if defined DEBUG
+public forceReloadAdmins()
+{
+	log_to_file(g_szLogFile, "core:forceReloadAdmins:  Reloading Admins")
+
+	remove_user_flags(0, read_flags("z"))
+
+	AdminCount = 0
+	adminSql()
+}
+#endif
+
 public cmdReload(id, level, cid)
 {
 	if (!cmd_access(id, level, cid, 1))
 		return PLUGIN_HANDLED
 
+#if defined DEBUG
+	if( g_bClanMatchActive )
+		log_to_file(g_szLogFile, "core:cmdReload:  Reloading Admins")
+#endif
+
 	//strip original flags (patch submitted by mrhunt)
 	remove_user_flags(0, read_flags("z"))
-	
+
 	AdminCount = 0
 	adminSql()
 
@@ -470,6 +518,11 @@ getAccess(id, name[], authid[], ip[], password[])
 	static Password[32];
 	
 	g_CaseSensitiveName[id] = false;
+
+#if defined DEBUG
+	if( g_bClanMatchActive )
+		log_to_file(g_szLogFile, "core:getAccess:  Check access for %s", authid)
+#endif
 
 	Count=admins_num();
 	for (new i = 0; i < Count; ++i)
@@ -549,6 +602,13 @@ getAccess(id, name[], authid[], ip[], password[])
 		ArrayGetString(g_AdminNick,index,g_szAdminNick[id],31)
 		g_iAdminUseStaticBantime[id]=ArrayGetCell(g_AdminUseStaticBantime,index)
 //
+#if defined DEBUG
+		if( g_bClanMatchActive )
+		{
+			new szFlags[32]; get_flags(Access, szFlags, charsmax(szFlags));
+			log_to_file(g_szLogFile, "core:getAccess:  Access flags:  %s", szFlags)
+		}
+#endif
 
 		if (Flags & FLAG_NOPASS)
 		{
@@ -647,7 +707,12 @@ accessUser(id, name[] = "")
 	get_user_info(id, passfield, password, 31)
 	
 	new result = getAccess(id, username, userauthid, userip, password)
-	
+
+#if defined DEBUG
+		if( g_bClanMatchActive )
+			log_to_file(g_szLogFile, "core:accessUser:  Access result for %s is %d", userauthid, result)
+#endif
+
 	if (result & 1)
 	{
 		client_cmd(id, "echo ^"* %L^"", id, "INV_PAS")
