@@ -84,6 +84,7 @@ new Handle:info
 #define DEBUG
 #if defined DEBUG
 new g_bClanMatchActive = false;
+new g_bLogAlways = true;
 new const g_szLogFile[] = "amxbans_debug_log.txt"
 #endif
 
@@ -144,12 +145,15 @@ public plugin_init()
 
 #if defined DEBUG
 	g_bClanMatchActive = get_cvar_num("mp_clan_match");
-	if( g_bClanMatchActive )
+	if( g_bClanMatchActive || g_bLogAlways )
 	{
-		log_to_file(g_szLogFile, "core:plugin_init:  Clan Match is running")
-		set_task(15.0, "forceReloadAdmins");
+		log_to_file(g_szLogFile, "core:plugin_init:  Clan Match is %s", g_bClanMatchActive ? "running" : "not running");
+		
+		if( g_bClanMatchActive )
+		{
+			set_task(15.0, "forceReloadAdmins");
+		}
 	}
-	g_bClanMatchActive = true; // Force logging when clan match isn't active
 #endif
 
 }
@@ -286,7 +290,7 @@ loadSettings(szFilename[])
 			ArrayPushCell(g_AdminUseStaticBantime, str_to_num(Static));
 
 #if defined DEBUG
-		if( g_bClanMatchActive )
+		if( g_bClanMatchActive || g_bLogAlways )
 			log_to_file(g_szLogFile, "core:loadSettings:  Admin (%s) added", AuthData)
 #endif
 
@@ -319,7 +323,7 @@ public adminSql()
 	new Handle:sql = SQL_Connect(info, errno, error, 127)
 
 #if defined DEBUG
-	if( g_bClanMatchActive )
+	if( g_bClanMatchActive || g_bLogAlways )
 		log_to_file(g_szLogFile, "core:adminSql:  SQL Handle is %s", sql == Empty_Handle ? "Empty" : "Good")
 #endif
 
@@ -420,7 +424,7 @@ public adminSql()
 			admins_push(AuthData,Password,read_flags(Access),read_flags(Flags));
 
 #if defined DEBUG
-			if( g_bClanMatchActive )
+			if( g_bClanMatchActive || g_bLogAlways )
 				log_to_file(g_szLogFile, "core:adminSql:  Admin (%s) added", AuthData)
 #endif
 			
@@ -485,7 +489,7 @@ public cmdReload(id, level, cid)
 		return PLUGIN_HANDLED
 
 #if defined DEBUG
-	if( g_bClanMatchActive )
+	if( g_bClanMatchActive || g_bLogAlways )
 		log_to_file(g_szLogFile, "core:cmdReload:  Reloading Admins")
 #endif
 
@@ -520,7 +524,7 @@ getAccess(id, name[], authid[], ip[], password[])
 	g_CaseSensitiveName[id] = false;
 
 #if defined DEBUG
-	if( g_bClanMatchActive )
+	if( g_bClanMatchActive || g_bLogAlways )
 		log_to_file(g_szLogFile, "core:getAccess:  Check access for %s", authid)
 #endif
 
@@ -603,7 +607,7 @@ getAccess(id, name[], authid[], ip[], password[])
 		g_iAdminUseStaticBantime[id]=ArrayGetCell(g_AdminUseStaticBantime,index)
 //
 #if defined DEBUG
-		if( g_bClanMatchActive )
+		if( g_bClanMatchActive || g_bLogAlways )
 		{
 			new szFlags[32]; get_flags(Access, szFlags, charsmax(szFlags));
 			log_to_file(g_szLogFile, "core:getAccess:  Access flags:  %s", szFlags)
@@ -709,7 +713,7 @@ accessUser(id, name[] = "")
 	new result = getAccess(id, username, userauthid, userip, password)
 
 #if defined DEBUG
-		if( g_bClanMatchActive )
+		if( g_bClanMatchActive || g_bLogAlways )
 			log_to_file(g_szLogFile, "core:accessUser:  Access result for %s is %d", userauthid, result)
 #endif
 
