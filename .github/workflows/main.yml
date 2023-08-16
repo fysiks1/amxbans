@@ -51,4 +51,6 @@ jobs:
         with:
           artifacts: "$ARTIFACTS_DIR/*.amxx"
           draft: true
+          tag: "test_compile"
+          commit: "github-action-compile"
 
