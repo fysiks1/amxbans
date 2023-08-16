@@ -1,0 +1,49 @@
+on: workflow_dispatch
+
+jobs:
+  compile_plugin:
+    runs-on: ubuntu-latest
+    env:
+      AMXX_MOD_PACKAGE: ""
+      AMXX_VERSION: "1.9"
+      REPO_SCRIPTING_DIR: "scripting"
+      ARTIFACTS_DIR: ${{ github.workspace }}/artifacts
+
+    name: Compile Plugin
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: Download AMX Mod X Base Files
+        run: |
+          wget "https://www.amxmodx.org/latest.php?version=$AMXX_VERSION&os=linux&package=base" -O amxmodx-base-linux.tar.gz
+          tar -zxvf amxmodx-base-linux.tar.gz
+
+      - name: Download AMX Mod X Mod Files
+        if: ${{ env.AMXX_MOD_PACKAGE }}
+        run: |
+          wget "https://www.amxmodx.org/latest.php?version=$AMXX_VERSION&os=linux&package=$AMXX_MOD_PACKAGE" -O "amxmodx-$AMXX_MOD_PACKAGE-linux.tar.gz"
+          tar -zxvf "amxmodx-$AMXX_MOD_PACKAGE-linux.tar.gz"
+
+      - name: Prepare files for compilation
+        run: cp -r -v $REPO_SCRIPTING_DIR addons/amxmodx/
+
+      - name: Compile Plugin(s)
+        run: |
+          mkdir $ARTIFACTS_DIR
+          cd addons/amxmodx/scripting/
+
+          # Compile all plugins inside scripting folder
+          # List of files to compile generated from the original checked out files
+          for file in $GITHUB_WORKSPACE/scripting/*.sma
+          do
+            amxfile="`echo $file | sed -e 's/\.sma$/\.amxx/'`"
+            echo -e "\nCompiling $(basename $file)..."
+            ./amxxpc $(basename $file) -o$ARTIFACTS_DIR/$(basename "$amxfile")
+          done
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: plugin_binaries
+          path: ${{ env.ARTIFACTS_DIR }}/*
