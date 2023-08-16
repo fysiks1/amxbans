@@ -2,10 +2,13 @@ on: push
 
 jobs:
   compile_plugin:
+    strategy:
+      matrix:
+        version: ["1.9", "1.10"]
     runs-on: ubuntu-latest
     env:
       AMXX_MOD_PACKAGE: ""
-      AMXX_VERSION: "1.9"
+      AMXX_VERSION: ${{ matrix.version }}
       REPO_SCRIPTING_DIR: "Plugin/addons/amxmodx/scripting"
       ARTIFACTS_DIR: ${{ github.workspace }}/artifacts
 
@@ -45,12 +48,12 @@ jobs:
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: plugin_binaries
+          name: plugin_binaries_${{ matrix.version }}
           path: ${{ env.ARTIFACTS_DIR }}/*
-      - uses: ncipollo/release-action@v1
-        with:
-          artifacts: "${{ env.ARTIFACTS_DIR }}/*.amxx"
-          draft: true
-          tag: "test_compile"
-          commit: "github-action-compile"
+      # - uses: ncipollo/release-action@v1
+      #   with:
+      #     artifacts: "${{ env.ARTIFACTS_DIR }}/*.amxx"
+      #     draft: true
+      #     tag: "test_compile"
+      #     commit: "github-action-compile"
 
