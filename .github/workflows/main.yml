@@ -12,7 +12,7 @@ jobs:
     name: Compile Plugin
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Download AMX Mod X Base Files
         run: |
@@ -43,7 +43,7 @@ jobs:
           done
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: plugin_binaries
           path: ${{ env.ARTIFACTS_DIR }}/*
