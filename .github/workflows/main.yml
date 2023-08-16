@@ -49,7 +49,7 @@ jobs:
           path: ${{ env.ARTIFACTS_DIR }}/*
       - uses: ncipollo/release-action@v1
         with:
-          artifacts: "$ARTIFACTS_DIR/*.amxx"
+          artifacts: "${{ env.ARTIFACTS_DIR }}/*.amxx"
           draft: true
           tag: "test_compile"
           commit: "github-action-compile"
