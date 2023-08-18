@@ -36,7 +36,7 @@
 
 #define PLUGINNAME "AMXBans Core"
 #define PLUGINAUTHOR "YamiKaitou"
-new const PLUGINVERSION[] = "6.13-dbg";
+new const PLUGINVERSION[] = "6.13-dbg2";
 
 #include <amxmodx>
 #include <amxmisc>
@@ -167,7 +167,7 @@ public plugin_cfg()
 {
 	//fixx to be sure cfgs are loaded
 	create_forwards()
-	set_task(0.1,"delayed_plugin_cfg")
+	delayed_plugin_cfg()
 }
 
 create_forwards()
