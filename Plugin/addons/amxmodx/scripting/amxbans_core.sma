@@ -36,7 +36,7 @@
 
 #define PLUGINNAME "AMXBans Core"
 #define PLUGINAUTHOR "YamiKaitou"
-new const PLUGINVERSION[] = "6.13-dbg2";
+new const PLUGINVERSION[] = "6.13-dbg3";
 
 #include <amxmodx>
 #include <amxmisc>
@@ -81,7 +81,7 @@ new MFHandle[MFHANDLE_TYPES]
 
 new Handle:info
 
-#define DEBUG
+// #define DEBUG
 #if defined DEBUG
 new g_bClanMatchActive = false;
 new g_bLogAlways = true;
