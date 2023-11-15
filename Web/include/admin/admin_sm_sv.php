@@ -107,7 +107,6 @@
 					`rcon`='".sql_safe($_POST["rcon"])."',
 					`amxban_motd`='".sql_safe($_POST["amxban_motd"])."',
 					`motd_delay`='".(int)$_POST["motd_delay"]."',
-					`amxban_menu`='".(int)$_POST["amxban_menu"]."',
 					`reasons`='".(int)$_POST["reasons"]."',
 					`timezone_fixx`='".(int)$_POST["timezone_fixx"]."'
 					WHERE `id`=".$sid." LIMIT 1") or die ($mysql->error);
