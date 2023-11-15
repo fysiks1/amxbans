@@ -64,7 +64,7 @@ $config->default_lang = "english";
 if(empty($_SESSION["lang"])) $_SESSION["lang"]="english";
 //debug
 if(!is__writable($config->path_root."/include/smarty/templates_c/")) {
-	echo '<div style="text-align: center; margin-top: 10%; color: #c04040;font-width=bold;font-size=18px;"><img src="images/warning.gif" /> <u>Directory include/smarty/templates_c is not writable !!</u></div>';
+	echo '<div style="text-align: center; margin-top: 10%; color: #c04040;font-width=bold;font-size=18px;"><img src="images/warning.gif" /> <u>Directory include/smarty/templates_c is not writable or doesn\'t exist!!  Create and/or set the permissions appropriately.</u></div>';
 	exit;
 }
 
