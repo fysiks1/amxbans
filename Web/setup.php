@@ -297,14 +297,14 @@ if($sitenr==7 && $_SESSION["dbcheck"]==true && $_SESSION["admincheck"]==true && 
 	//write db.config.inc.php
 $content="<?php
 
-	\$config->document_root = \"".$_SESSION["document_root"]."\";
-	\$config->path_root = \"".$_SESSION["path_root"]."\";
+	\$config->document_root = \"" . addslashes($_SESSION["document_root"]) . "\";
+	\$config->path_root = \"" . addslashes($_SESSION["path_root"]) . "\";
 
-	\$config->db_host = \"".$_SESSION["dbhost"]."\";
-	\$config->db_user = \"".$_SESSION["dbuser"]."\";
-	\$config->db_pass = \"".$_SESSION["dbpass"]."\";
-	\$config->db_db = \"".$_SESSION["dbdb"]."\";
-	\$config->db_prefix = \"".$_SESSION["dbprefix"]."\";
+	\$config->db_host = \"" . addslashes($_SESSION["dbhost"]) . "\";
+	\$config->db_user = \"" . addslashes($_SESSION["dbuser"]) . "\";
+	\$config->db_pass = \"" . addslashes($_SESSION["dbpass"]) . "\";
+	\$config->db_db = \"" . addslashes($_SESSION["dbdb"]) . "\";
+	\$config->db_prefix = \"" . addslashes($_SESSION["dbprefix"]) . "\";
 	
 ?>";
 	$msg=write_cfg_file($config->path_root."/include/db.config.inc.php",$content);
