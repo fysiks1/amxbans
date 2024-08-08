@@ -143,8 +143,8 @@ public plugin_init()
 	//server_cmd("exec %s/amxbans.cfg", configsDir)
 
 	// Temporary Admin/VIP
-	register_concmd( "amx_addtemp" , "AddTempAdmin" , ADMIN_BAN , "<name/steamid> <days> 'vip'/'admin'" );
-	register_concmd( "amx_RemoveTempAdmin" , "RemoveTempAdmin" , ADMIN_BAN , "<name/steamid>" );
+	register_concmd("amx_addtemp", "AddTempAdmin", ADMIN_BAN, "<name/steamid> <days> 'vip'/'admin'");
+	register_concmd("amx_RemoveTempAdmin", "RemoveTempAdmin", ADMIN_BAN, "<name/steamid>");
 	g_pCvarTempAdminFlags = register_cvar("temp_admin_flags", "hijklmno");
 	g_pCvarTempVipFlags = register_cvar("temp_vip_flags", "abcde");
 
@@ -791,22 +791,22 @@ public native_amxbans_static_bantime()
 	return g_iAdminUseStaticBantime[id]
 }
 
-public AddTempAdmin( id )
+public AddTempAdmin(id)
 {
-	new iPlayer , szPlayer[34] , iDays , szDays[4] , szLevel[7] , bool:bAddingBySteamID;
+	new iPlayer, szPlayer[34], iDays, szDays[4], szLevel[7], bool:bAddingBySteamID;
 	new szAuthId[33];
 	
-	read_argv( 1 , szPlayer , charsmax( szPlayer ) );
-	bAddingBySteamID = IsSteamID( szPlayer );
+	read_argv(1, szPlayer, charsmax(szPlayer));
+	bAddingBySteamID = IsSteamID(szPlayer);
 	
-	if ( !bAddingBySteamID && !( iPlayer = cmd_target( id , szPlayer , CMDTARGET_ALLOW_SELF ) ) )
+	if( !bAddingBySteamID && !( iPlayer = cmd_target(id, szPlayer, CMDTARGET_ALLOW_SELF) ) )
 		return PLUGIN_HANDLED;
 	
-	read_argv( 2 , szDays , charsmax( szDays ) );
-	read_argv( 3 , szLevel , charsmax( szLevel ) );
-	iDays = str_to_num( szDays );
+	read_argv(2, szDays, charsmax(szDays));
+	read_argv(3, szLevel, charsmax(szLevel));
+	iDays = str_to_num(szDays);
 	
-	if ( iDays && ( equali( szLevel , "admin" ) || equali( szLevel , "vip" ) ) )
+	if( iDays && ( equali(szLevel, "admin") || equali(szLevel, "vip") ) )
 	{
 		if( bAddingBySteamID )
 		{
@@ -817,34 +817,34 @@ public AddTempAdmin( id )
 			get_user_authid(iPlayer, szAuthId, charsmax(szAuthId));
 		}
 		
-		nvault_set( g_pTempAdminVault , szAuthId, szLevel );
-		nvault_touch( g_pTempAdminVault , szAuthId, get_systime() + ( iDays * SECONDSPERDAY ) );
+		nvault_set(g_pTempAdminVault, szAuthId, szLevel);
+		nvault_touch(g_pTempAdminVault, szAuthId, get_systime() + ( iDays * SECONDSPERDAY ));
 			
-		if ( !bAddingBySteamID )
+		if( !bAddingBySteamID )
 		{
 			new szFlags[27];
-			get_pcvar_string(equali( szLevel , "admin" ) ? g_pCvarTempAdminFlags : g_pCvarTempVipFlags, szFlags, charsmax(szFlags));
+			get_pcvar_string(equali(szLevel, "admin") ? g_pCvarTempAdminFlags : g_pCvarTempVipFlags, szFlags, charsmax(szFlags));
 
-			remove_user_flags( iPlayer , ADMIN_USER );
-			set_user_flags( iPlayer , read_flags( szFlags ) );
-			client_print( iPlayer , print_chat , "* You have been given admin for %d days" , iDays );
+			remove_user_flags(iPlayer, ADMIN_USER);
+			set_user_flags(iPlayer, read_flags(szFlags));
+			client_print(iPlayer, print_chat, "* You have been given admin for %d days", iDays);
 		}
 		
-		console_print( id , "* Added [%s] as %s for %d days" , szAuthId, szLevel , iDays );
+		console_print(id, "* Added [%s] as %s for %d days", szAuthId, szLevel, iDays);
 	}
 	
 	return PLUGIN_HANDLED;
 }
 
-public RemoveTempAdmin( id )
+public RemoveTempAdmin(id)
 {
-	new iPlayer , szPlayer[ 34 ] , bool:bAddingBySteamID;
+	new iPlayer, szPlayer[34], bool:bAddingBySteamID;
 	new szAuthId[33];
 	
-	read_argv( 1 , szPlayer , charsmax( szPlayer ) );
-	bAddingBySteamID == IsSteamID( szPlayer );
+	read_argv(1, szPlayer, charsmax(szPlayer));
+	bAddingBySteamID == IsSteamID(szPlayer);
 
-	if ( !bAddingBySteamID && !( iPlayer = cmd_target( id , szPlayer , CMDTARGET_ALLOW_SELF ) ) )
+	if( !bAddingBySteamID && !( iPlayer = cmd_target(id, szPlayer, CMDTARGET_ALLOW_SELF) ) )
 		return PLUGIN_HANDLED;
 		
 	if( bAddingBySteamID )
@@ -856,8 +856,8 @@ public RemoveTempAdmin( id )
 		get_user_authid(iPlayer, szAuthId, charsmax(szAuthId));
 	}
 
-	nvault_remove( g_pTempAdminVault , szAuthId);
-	console_print( id , "* Removed [%s] from admin/vip" , szAuthId);
+	nvault_remove(g_pTempAdminVault, szAuthId);
+	console_print(id, "* Removed [%s] from admin/vip", szAuthId);
 	
 	return PLUGIN_HANDLED;
 }
