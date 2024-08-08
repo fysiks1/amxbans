@@ -482,6 +482,7 @@ getAccess(id, name[], authid[], ip[], password[])
 	static Access;
 	static AuthData[44];
 	static Password[32];
+	static szTempAdminLevel[7], iTempAdminExpiration;
 	
 	g_CaseSensitiveName[id] = false;
 
@@ -612,11 +613,27 @@ getAccess(id, name[], authid[], ip[], password[])
 			}
 		}
 	}
+	else if( nvault_lookup(g_pTempAdminVault, authid, szTempAdminLevel, charsmax(szTempAdminLevel), iTempAdminExpiration) )
+	{
+		if( iTempAdminExpiration > get_systime() )
+		{
+			new szFlags[27];
+			get_pcvar_string(equali(szTempAdminLevel, "admin") ? g_pCvarTempAdminFlags : g_pCvarTempVipFlags, szFlags, charsmax(szFlags));
+
+			set_user_flags(id, read_flags(szFlags));
+		}
+		else
+		{
+			nvault_remove(g_pTempAdminVault, authid);
+		}
+
+		result |= 8;
+	}
 	else if (get_pcvar_float(amx_mode) == 2.0)
 	{
 		result |= 2
-	} 
-	else 
+	}
+	else
 	{
 		new defaccess[32]
 		
