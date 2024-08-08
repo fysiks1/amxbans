@@ -36,7 +36,7 @@
 
 #define PLUGINNAME "AMXBans Core"
 #define PLUGINAUTHOR "YamiKaitou"
-new const PLUGINVERSION[] = "6.13";
+new const PLUGINVERSION[] = "6.13-fy";
 
 #include <amxmodx>
 #include <amxmisc>
