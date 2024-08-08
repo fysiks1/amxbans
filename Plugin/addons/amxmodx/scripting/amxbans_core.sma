@@ -41,6 +41,7 @@ new const PLUGINVERSION[] = "6.13";
 #include <amxmodx>
 #include <amxmisc>
 #include <sqlx>
+#include <nvault>
 
 new AdminCount;
 
@@ -80,6 +81,11 @@ enum MFHANDLE_TYPES {
 new MFHandle[MFHANDLE_TYPES]
 
 new Handle:info
+
+// Temporary Admin/VIP (Based on code by Bugsy)
+new g_pTempAdminVault, g_pCvarTempAdminFlags, g_pCvarTempVipFlags;
+#define IsSteamID(%1)    bool:!!((%1[5]=='_') && (%1[9]==':') && equal(%1,"STEAM_0:",8) && isdigit(%1[8]) && is_str_num(%1[10]))
+const SECONDSPERDAY = 86400;
 
 public plugin_init()
 {
@@ -136,6 +142,13 @@ public plugin_init()
 	server_cmd("exec %s/sql.cfg", configsDir)
 	//server_cmd("exec %s/amxbans.cfg", configsDir)
 
+	// Temporary Admin/VIP
+	register_concmd( "amx_addtemp" , "AddTempAdmin" , ADMIN_BAN , "<name/steamid> <days> 'vip'/'admin'" );
+	register_concmd( "amx_RemoveTempAdmin" , "RemoveTempAdmin" , ADMIN_BAN , "<name/steamid>" );
+	g_pCvarTempAdminFlags = register_cvar("temp_admin_flags", "hijklmno");
+	g_pCvarTempVipFlags = register_cvar("temp_vip_flags", "abcde");
+
+	g_pTempAdminVault = nvault_open("amxbans_temp_admin");
 }
 
 public client_connect(id)
@@ -434,6 +447,7 @@ public adminSql()
 public plugin_end()
 {
 	if(info != Empty_Handle) SQL_FreeHandle(info)
+	nvault_close(g_pTempAdminVault);
 }
 
 public cmdReload(id, level, cid)
@@ -758,4 +772,75 @@ public native_amxbans_static_bantime()
 	new id = get_param(1)
 	if(get_cvar_num("amxbans_debug") >= 3) log_amx("[AMXBans Core] Native static bantime: id: %d | result: %d",id,g_iAdminUseStaticBantime[id])
 	return g_iAdminUseStaticBantime[id]
+}
+
+public AddTempAdmin( id )
+{
+	new iPlayer , szPlayer[34] , iDays , szDays[4] , szLevel[7] , bool:bAddingBySteamID;
+	new szAuthId[33];
+	
+	read_argv( 1 , szPlayer , charsmax( szPlayer ) );
+	bAddingBySteamID = IsSteamID( szPlayer );
+	
+	if ( !bAddingBySteamID && !( iPlayer = cmd_target( id , szPlayer , CMDTARGET_ALLOW_SELF ) ) )
+		return PLUGIN_HANDLED;
+	
+	read_argv( 2 , szDays , charsmax( szDays ) );
+	read_argv( 3 , szLevel , charsmax( szLevel ) );
+	iDays = str_to_num( szDays );
+	
+	if ( iDays && ( equali( szLevel , "admin" ) || equali( szLevel , "vip" ) ) )
+	{
+		if( bAddingBySteamID )
+		{
+			copy(szAuthId, charsmax(szAuthId), szPlayer);
+		}
+		else
+		{
+			get_user_authid(iPlayer, szAuthId, charsmax(szAuthId));
+		}
+		
+		nvault_set( g_pTempAdminVault , szAuthId, szLevel );
+		nvault_touch( g_pTempAdminVault , szAuthId, get_systime() + ( iDays * SECONDSPERDAY ) );
+			
+		if ( !bAddingBySteamID )
+		{
+			new szFlags[27];
+			get_pcvar_string(equali( szLevel , "admin" ) ? g_pCvarTempAdminFlags : g_pCvarTempVipFlags, szFlags, charsmax(szFlags));
+
+			remove_user_flags( iPlayer , ADMIN_USER );
+			set_user_flags( iPlayer , read_flags( szFlags ) );
+			client_print( iPlayer , print_chat , "* You have been given admin for %d days" , iDays );
+		}
+		
+		console_print( id , "* Added [%s] as %s for %d days" , szAuthId, szLevel , iDays );
+	}
+	
+	return PLUGIN_HANDLED;
+}
+
+public RemoveTempAdmin( id )
+{
+	new iPlayer , szPlayer[ 34 ] , bool:bAddingBySteamID;
+	new szAuthId[33];
+	
+	read_argv( 1 , szPlayer , charsmax( szPlayer ) );
+	bAddingBySteamID == IsSteamID( szPlayer );
+
+	if ( !bAddingBySteamID && !( iPlayer = cmd_target( id , szPlayer , CMDTARGET_ALLOW_SELF ) ) )
+		return PLUGIN_HANDLED;
+		
+	if( bAddingBySteamID )
+	{
+		copy(szAuthId, charsmax(szAuthId), szPlayer);
+	}
+	else
+	{
+		get_user_authid(iPlayer, szAuthId, charsmax(szAuthId));
+	}
+
+	nvault_remove( g_pTempAdminVault , szAuthId);
+	console_print( id , "* Removed [%s] from admin/vip" , szAuthId);
+	
+	return PLUGIN_HANDLED;
 }
