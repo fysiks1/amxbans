@@ -804,7 +804,7 @@ public AddTempAdmin(id, level, cid)
 	read_argv(1, szPlayer, charsmax(szPlayer));
 	bAddingBySteamID = IsSteamID(szPlayer);
 	
-	if( !bAddingBySteamID && !( iPlayer = cmd_target(id, szPlayer, CMDTARGET_ALLOW_SELF) ) )
+	if( !bAddingBySteamID && !( iPlayer = cmd_target(id, szPlayer) ) )
 		return PLUGIN_HANDLED;
 
 	read_argv(2, szDays, charsmax(szDays));
@@ -859,7 +859,7 @@ public RemoveTempAdmin(id, level, cid)
 	read_argv(1, szPlayer, charsmax(szPlayer));
 	bAddingBySteamID == IsSteamID(szPlayer);
 
-	if( !bAddingBySteamID && !( iPlayer = cmd_target(id, szPlayer, CMDTARGET_ALLOW_SELF) ) )
+	if( !bAddingBySteamID && !( iPlayer = cmd_target(id, szPlayer) ) )
 		return PLUGIN_HANDLED;
 		
 	if( bAddingBySteamID )
