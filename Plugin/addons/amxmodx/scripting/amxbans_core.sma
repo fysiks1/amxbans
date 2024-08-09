@@ -806,13 +806,14 @@ public AddTempAdmin(id, level, cid)
 	
 	if( !bAddingBySteamID && !( iPlayer = cmd_target(id, szPlayer, CMDTARGET_ALLOW_SELF) ) )
 		return PLUGIN_HANDLED;
-	
+
 	read_argv(2, szDays, charsmax(szDays));
 	read_argv(3, szLevel, charsmax(szLevel));
-	iDays = str_to_num(szDays);
-	
-	if( iDays && ( equali(szLevel, "admin") || equali(szLevel, "vip") ) )
+
+	if( is_str_num(szDays) && equali(szLevel, "admin") || equali(szLevel, "vip") )
 	{
+		iDays = max(str_to_num(szDays), 1);
+
 		if( bAddingBySteamID )
 		{
 			copy(szAuthId, charsmax(szAuthId), szPlayer);
@@ -836,6 +837,10 @@ public AddTempAdmin(id, level, cid)
 		}
 		
 		console_print(id, "[AMXBans] Added %s as %s for %d days", szAuthId, szLevel, iDays);
+	}
+	else
+	{
+		cmd_access(id, level, cid, 100) // Trick AMX Mod X into outputting the usage info for this command
 	}
 	
 	return PLUGIN_HANDLED;
