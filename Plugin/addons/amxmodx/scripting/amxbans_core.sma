@@ -835,7 +835,7 @@ public AddTempAdmin(id, level, cid)
 			client_print(iPlayer, print_chat, "[AMXBans] You have been given %s for %d days", szLevel, iDays);
 		}
 		
-		console_print(id, "[AMXBans] Added [%s] as %s for %d days", szAuthId, szLevel, iDays);
+		console_print(id, "[AMXBans] Added %s as %s for %d days", szAuthId, szLevel, iDays);
 	}
 	
 	return PLUGIN_HANDLED;
