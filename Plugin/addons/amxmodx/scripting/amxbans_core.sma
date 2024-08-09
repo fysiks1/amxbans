@@ -145,6 +145,7 @@ public plugin_init()
 	// Temporary Admin/VIP
 	register_concmd("amx_addtemp", "AddTempAdmin", ADMIN_RCON, "<name/steamid> <days> <vip or admin> - Adds player as a temporary admin or VIP player");
 	register_concmd("amx_removetemp", "RemoveTempAdmin", ADMIN_RCON, "<name/steamid> - Removes temporary admin/vip from player");
+	register_clcmd("say /temp" , "ShowTemp");
 	g_pCvarTempAdminFlags = register_cvar("temp_admin_flags", "abcf");
 	g_pCvarTempVipFlags = register_cvar("temp_vip_flags", "ab");
 
@@ -912,6 +913,33 @@ public RemoveTempAdmin(id, level, cid)
 		{
 			console_print(id, "[AMXBans] %s was not on the temporary admin/vip list.", szAuthId);
 		}
+	}
+	
+	return PLUGIN_HANDLED;
+}
+
+public ShowTemp(id)
+{
+	new szAuthId[33], szTempAdminLevel[7], iTempAdminExpiration, Float:fDaysLeft;
+
+	get_user_authid(id, szAuthId, charsmax(szAuthId));
+	
+	if( nvault_lookup(g_pTempAdminVault, szAuthId, szTempAdminLevel, charsmax(szTempAdminLevel), iTempAdminExpiration) )
+	{
+		if( iTempAdminExpiration > get_systime())
+		{
+			fDaysLeft = float(iTempAdminExpiration - get_systime()) / float(SECONDSPERDAY);
+		
+			client_print(id, print_chat, "[AMXBans] You currently have %s and you have %0.1f days left.", szTempAdminLevel, fDaysLeft);
+		}
+		else
+		{
+			client_print(id, print_chat, "[AMXBans] Your %s has expired and will be removed when you disconnect.", szTempAdminLevel);
+		}
+	}
+	else
+	{
+		client_print(id, print_chat, "[AMXBans] You do not have any temporary admin or VIP flags.");
 	}
 	
 	return PLUGIN_HANDLED;
