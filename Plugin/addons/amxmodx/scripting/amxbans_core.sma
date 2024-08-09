@@ -871,8 +871,48 @@ public RemoveTempAdmin(id, level, cid)
 		get_user_authid(iPlayer, szAuthId, charsmax(szAuthId));
 	}
 
-	nvault_remove(g_pTempAdminVault, szAuthId);
-	console_print(id, "[AMXBans] Removed %s from admin/vip", szAuthId);
+	new szTempAdminLevel[8], iTempAdminExpiration;
+	if( nvault_lookup(g_pTempAdminVault, szAuthId, szTempAdminLevel, charsmax(szTempAdminLevel), iTempAdminExpiration) )
+	{
+		nvault_remove(g_pTempAdminVault, szAuthId);
+		console_print(id, "[AMXBans] Removed %s from admin/vip", szAuthId);
+
+		if( iPlayer )
+		{
+			new szDefaultFlags[32], szName[33]
+			get_pcvar_string(amx_default_access, szDefaultFlags, charsmax(szDefaultFlags));
+
+			if( !strlen(szDefaultFlags) )
+			{
+				copy(szDefaultFlags, charsmax(szDefaultFlags), "z");
+			}
+
+			remove_user_flags(iPlayer);
+			set_user_flags(iPlayer, read_flags(szDefaultFlags));
+
+			client_print(iPlayer, print_chat, "[AMXBans] You have been removed from temporary %s.", szTempAdminLevel);
+			
+			get_user_name(iPlayer, szName, charsmax(szName));
+			console_print(id, "[AMXBans] %s (%s) was removed from temporary %s.", szName, szAuthId, szTempAdminLevel);
+		}
+		else
+		{
+			console_print(id, "[AMXBans] %s was remove from temporary %s.", szAuthId, szTempAdminLevel);
+		}
+	}
+	else
+	{
+		if( iPlayer )
+		{
+			new szName[33];
+			get_user_name(id, szName, charsmax(szName));
+			console_print(id, "[AMXBans] %s (%s) was not on the temporary admin/vip list.", szName, szAuthId);
+		}
+		else
+		{
+			console_print(id, "[AMXBans] %s was not on the temporary admin/vip list.", szAuthId);
+		}
+	}
 	
 	return PLUGIN_HANDLED;
 }
