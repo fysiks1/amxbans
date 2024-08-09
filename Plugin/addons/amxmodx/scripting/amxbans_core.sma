@@ -143,8 +143,8 @@ public plugin_init()
 	//server_cmd("exec %s/amxbans.cfg", configsDir)
 
 	// Temporary Admin/VIP
-	register_concmd("amx_addtemp", "AddTempAdmin", ADMIN_RCON, "<name/steamid> <days> 'vip'/'admin'");
-	register_concmd("amx_removetemp", "RemoveTempAdmin", ADMIN_RCON, "<name/steamid>");
+	register_concmd("amx_addtemp", "AddTempAdmin", ADMIN_RCON, "<name/steamid> <days> <vip or admin> - Adds player as a temporary admin or VIP player");
+	register_concmd("amx_removetemp", "RemoveTempAdmin", ADMIN_RCON, "<name/steamid> - Removes temporary admin/vip from player");
 	g_pCvarTempAdminFlags = register_cvar("temp_admin_flags", "abcf");
 	g_pCvarTempVipFlags = register_cvar("temp_vip_flags", "ab");
 
