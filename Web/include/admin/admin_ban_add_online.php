@@ -115,8 +115,8 @@
 		$pl_ban_reason = sql_safe(isset($_POST["ban_reason"]) ? $_POST["ban_reason"] : "");
 		$pl_user_reason = sql_safe($_POST["user_reason"]);
 		$pl_ban_length = (int)(isset($_POST["ban_length"]) ? $_POST["ban_length"] : 0);
-		$pl_perm = ((isset($_POST["perm"]) ? $_POST["perm"] : "") == "on") ? true:false;
-		$pl_silent = ((isset($_POST["silent"]) ? $_POST["silent"] : "") == "on") ? false:true;
+		$pl_perm = ((isset($_POST["perm"]) ? $_POST["perm"] : "") == "on") ? true : false;
+		$pl_silent = ((isset($_POST["silent"]) ? $_POST["silent"] : "") == "on") ? false : true;
 		//some var checks
 		$steamid_valid = (preg_match("/^STEAM_0:(0|1):[0-9]{1,10}$/",$pl_steamid)) ? true : false;
 		$ip_valid = (preg_match("/^[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}$/",$pl_ip)) ? true : false;
@@ -127,40 +127,47 @@
 	}
 	
 	//ban a player
-	if(isset($_POST["ban"]) && $servers_array[$sid]["address"] != "" && !$user_msg) {
+	if( isset($_POST["ban"]) && $servers_array[$sid]["address"] != "" && !$user_msg )
+	{
 		//get bantime
-		$time=($pl_perm)?0:(($pl_ban_length >= 0) ? $pl_ban_length : 0);
+		$time = $pl_perm ? 0 : (($pl_ban_length >= 0) ? $pl_ban_length : 0);
 		//get and check the ban type
 		$type = $_POST["ban_type"];
 		
-		if(!$steamid_valid && $type=="S") $user_msg="_STEAMIDINVALID";
-		if(!$ip_valid && $type=="SI") $user_msg="_IPINVALID";
+		if( !$steamid_valid && $type == "S" ) $user_msg="_STEAMIDINVALID";
+		if( !$ip_valid && $type == "SI" ) $user_msg="_IPINVALID";
 		
-		if($pl_silent) {
+		if( $pl_silent )
+		{
 			//if banning silent, only add the ban to the db
-			if(!$user_msg) {
+			if( !$user_msg )
+			{
 				$query = $mysql->query("INSERT INTO `".$config->db_prefix."_bans` 
 						(`player_ip`,`player_id`,`player_nick`,`admin_nick`,`admin_id`,`ban_type`,`ban_reason`,`ban_created`,`ban_length`,`server_name`) 
 						VALUES 
 						('".$pl_ip."','".$pl_steamid."','".$pl_name."','".$_SESSION["uname"]."','".$_SESSION["uname"]."','".$type."','".$pl_reason."',UNIX_TIMESTAMP(),'".$pl_ban_length."','website')
 						") or die ($mysql->error);
-				$user_msg='_BANADDSUCCESS';
+				$user_msg = '_BANADDSUCCESS';
 				log_to_db("Add ban online","nick: ".$pl_name." <".$pl_steamid."><".$pl_ip."> banned for ".$pl_ban_length." minutes");	
 			}
-		} else {
-			if(!$user_msg) {
-				$server_address=explode(":",trim($servers_array[$sid]["address"]));
+		}
+		else
+		{
+			if( !$user_msg )
+			{
+				$server_address = explode(":", trim($servers_array[$sid]["address"]));
 				$server = new Rcon();
-				if($server->Connect($server_address[0],$server_address[1], $servers_array[$sid]["rcon"])) {
+				if( $server->Connect($server_address[0], $server_address[1], $servers_array[$sid]["rcon"]) )
+				{
 					//send ban cmd with rcon
 					$response = $server->RconCommand("amx_ban #".$pl_uid." ".$time." ".$pl_reason);
-					if(substr($response,1)!="") {
+					if( substr($response, 1) != "" )
+					{
 						$user_msg='_ADDBANSUCCESSKICK';
 						log_to_db("Add ban online","nick: ".$pl_name." <".$pl_steamid."><".$pl_ip."> banned for ".$pl_ban_length." minutes");
 					}
 					//$server_msg=substr($response,1); //for debug, shows the response from server
 					$server->Disconnect();
-					
 				}
 			}
 		}
@@ -170,17 +177,17 @@
 	if( isset($_POST["kick"]) && $servers_array[$sid]["address"] != "" )
 	{
 		$server_msg = "";
-		$server_address=explode(":",trim($servers_array[$sid]["address"]));
+		$server_address = explode(":", trim($servers_array[$sid]["address"]));
 		$server = new Rcon();
 		if( $server->Connect($server_address[0], $server_address[1], $servers_array[$sid]["rcon"]) )
 		{
 			$response = $server->RconCommand("kick #".$pl_uid." ".$pl_reason);
-			if( substr($response,1)!="" )
+			if( substr($response, 1) != "" )
 			{
 				$user_msg="_PLAYERKICKED";
 				log_to_db("Kick online","nick: ".$pl_name." <".$pl_steamid."><".$pl_ip."> kicked");
 			}
-			$server_msg=$servers_array[$sid]["address"]."<br>".substr($response,1); //for debug, shows the response from server
+			$server_msg=$servers_array[$sid]["address"]."<br>".substr($response, 1); //for debug, shows the response from server
 			$server->Disconnect();
 		}
 	}
