@@ -19,7 +19,7 @@
 	If not, see <http://creativecommons.org/licenses/by-nc-sa/2.0/>.
 
 */
-require_once("include/rcon_hl_net.inc");
+	require_once("include/rcon_hl_net.inc");
 	
 	if(!$_SESSION["loggedin"]) {
 		header("Location:index.php");
@@ -180,23 +180,38 @@ require_once("include/rcon_hl_net.inc");
 		
 	}
 	
-	if($servers_array[$sid]["mod"]) {
+	if($servers_array[$sid]["mod"])
+	{
 		//get player list sent by plugin
 		$server_address=explode(":",trim($servers_array[$sid]["address"]));
 		$server = new Rcon();
-		if($server->Connect($server_address[0],$server_address[1], $servers_array[$sid]["rcon"])) {
+		if( $server->Connect($server_address[0],$server_address[1], $servers_array[$sid]["rcon"]) )
+		{
 			$response = $server->ServerPlayers();
 
 			//explode packet and get infos
 			$re=explode("\x0A",$response);
 			
 			//there is a response from amxmodx plugin
-			if(strlen($response)) {
-				if ($re[0]!="Bad rcon_password." && $re[1]!="Bad rcon_password." && $re[2]!="Bad rcon_password.") {
-					foreach($re as $k=>$v) {
+			if( strlen($response) )
+			{
+				$badRcon = false;
+				foreach( $re as $resp )
+				{
+					if( str_contains(strtolower($resp), "bad") && str_contains(strtolower($resp), "rcon_password") )
+					{
+						$badRcon = true;
+					}
+				}
+				
+				if( !$badRcon )
+				{
+					foreach($re as $k=>$v)
+					{
 						$pl=explode("\xFC",$v);
 						if(!is_array($pl)) break;
-						switch ($pl[4]) {
+						switch ($pl[4])
+						{
 							case 0:
 								$statusname="_PLAYER";break;
 							case 1:
@@ -220,13 +235,17 @@ require_once("include/rcon_hl_net.inc");
 					}
 					$playerscount = $count;
 					$smarty->assign("players_sid",$sid);
-				} else {
+				}
+				else
+				{
 					$smsg="_WRONGRCON";
 				}
 			}
 			$server->Disconnect();
 		}
-	} else {
+	}
+	else
+	{
 		$smsg="_SERVEROFFLINE";
 	}
 	//close connection
