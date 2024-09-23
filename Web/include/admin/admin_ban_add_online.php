@@ -106,16 +106,17 @@
 	$smarty->assign("banby_values",$banby_values);
 	
 	//ban or kick a player, get the vars
-	if((isset($_POST["ban"]) || isset($_POST["kick"])) && $servers_array[$sid]["address"] != "") {
+	if( (isset($_POST["ban"]) || isset($_POST["kick"])) && $servers_array[$sid]["address"] != "" )
+	{
 		$pl_name = sql_safe($_POST["player_name"]);
 		$pl_uid = (int)$_POST["player_uid"];
 		$pl_steamid = sql_safe($_POST["player_steamid"]);
 		$pl_ip = sql_safe($_POST["player_ip"]);
-		$pl_ban_reason = sql_safe($_POST["ban_reason"]);
+		$pl_ban_reason = sql_safe(isset($_POST["ban_reason"]) ? $_POST["ban_reason"] : "");
 		$pl_user_reason = sql_safe($_POST["user_reason"]);
-		$pl_ban_length = (int)$_POST["ban_length"];
-		$pl_perm = ($_POST["perm"]=="on") ? true:false;
-		$pl_silent = ($_POST["silent"]=="on") ? false:true;
+		$pl_ban_length = (int)(isset($_POST["ban_length"]) ? $_POST["ban_length"] : 0);
+		$pl_perm = ((isset($_POST["perm"]) ? $_POST["perm"] : "") == "on") ? true:false;
+		$pl_silent = ((isset($_POST["silent"]) ? $_POST["silent"] : "") == "on") ? false:true;
 		//some var checks
 		$steamid_valid = (preg_match("/^STEAM_0:(0|1):[0-9]{1,10}$/",$pl_steamid)) ? true : false;
 		$ip_valid = (preg_match("/^[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}$/",$pl_ip)) ? true : false;
@@ -124,6 +125,7 @@
 		$pl_reason=($pl_user_reason) ? $pl_user_reason : $pl_ban_reason;
 		if(!$pl_reason) $user_msg="_NOREASON";
 	}
+	
 	//ban a player
 	if(isset($_POST["ban"]) && $servers_array[$sid]["address"] != "" && !$user_msg) {
 		//get bantime
@@ -163,22 +165,24 @@
 			}
 		}
 	}
+	
 	//kick a player
-	if(isset($_POST["kick"]) && $servers_array[$sid]["address"] != "") {
+	if( isset($_POST["kick"]) && $servers_array[$sid]["address"] != "" )
+	{
 		$server_msg = "";
 		$server_address=explode(":",trim($servers_array[$sid]["address"]));
 		$server = new Rcon();
-		if($server->Connect($server_address[0],$server_address[1], $servers_array[$sid]["rcon"])) {
+		if( $server->Connect($server_address[0], $server_address[1], $servers_array[$sid]["rcon"]) )
+		{
 			$response = $server->RconCommand("kick #".$pl_uid." ".$pl_reason);
-			if(substr($response,1)!="") {
+			if( substr($response,1)!="" )
+			{
 				$user_msg="_PLAYERKICKED";
 				log_to_db("Kick online","nick: ".$pl_name." <".$pl_steamid."><".$pl_ip."> kicked");
 			}
 			$server_msg=$servers_array[$sid]["address"]."<br>".substr($response,1); //for debug, shows the response from server
 			$server->Disconnect();
-			
 		}
-		
 	}
 	
 	if($servers_array[$sid]["mod"])
