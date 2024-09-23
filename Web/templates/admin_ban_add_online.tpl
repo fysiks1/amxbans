@@ -191,7 +191,7 @@
 			<div class="clearer">&nbsp;</div>
 		</div>
 	
-		<input type="hidden" name="server" value="0{$server.id}" /> 
+		<input type="hidden" name="server" value="{$server.id}" /> 
 		<input type="hidden" name="player_name" id="player_name" value="" /> 
 		<input type="hidden" name="player_uid" id="player_uid" value="" /> 
 		<input type="hidden" name="player_steamid" id="player_steamid" value="" /> 
