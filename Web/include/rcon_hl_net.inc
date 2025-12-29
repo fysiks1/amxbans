@@ -262,6 +262,13 @@ class Rcon
 		$command = "\xff\xff\xff\xffTSource Engine Query\x00";
 		$buffer = $this->Communicate($command);
 
+		// check for S2C_CHALLENGE
+		if( $buffer[0] == "\x41" )
+		{
+			$command = $command . substr($buffer, 1);
+			$buffer = $this->Communicate($command);
+		}
+		
 		//If no connection is open
 		if(trim($buffer) == "")
 		{
