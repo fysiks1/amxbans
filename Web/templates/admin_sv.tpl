@@ -103,11 +103,7 @@
 											<td>{"_MOTDDELAY"|lang}:</td>
 											<td>{html_options name=motd_delay values=$delay_choose output=$delay_choose selected=$server.motd_delay} {"_SECS"|lang}</td>
 										</tr>
-<!--										<tr class="settings_line">
-											<td>{"_SERVERMENU"|lang}</td>
-											<td>{html_options name=amxban_menu values=$menu_choose output=$menu_choose selected=$server.amxban_menu}</td>
-										</tr>
--->											<tr class="settings_line">
+										<tr class="settings_line">
 											<td>{"_REASONSSET"|lang}:</td>
 											<td>{html_options name=reasons values=$reasons_values output=$reasons_choose selected=$server.reasons}</td>
 										</tr>
