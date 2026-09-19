@@ -44,7 +44,7 @@
 							<input type="text" name="date" value="{$smarty.now|date_format:"%d-%m-%Y"}" style="width:200px;" />
 							&nbsp;<script language="javascript" src="calendar1.js"></script>
 							<a href="javascript:cal1.popup();">
-								<img src="templates/{$design}_gfx/calendar.png" width="16" height="16" border="0" alt="{"_PICK_DATE"|lang}" title="{"_PICK_DATE"|lang}"/>
+								<img src="templates/{$design}/_gfx/calendar.png" width="16" height="16" border="0" alt="{"_PICK_DATE"|lang}" title="{"_PICK_DATE"|lang}"/>
 							</a>
 						</td> 
 						<td><input type="submit" class="button" value="{"_SEARCH"|lang}"/></td> 

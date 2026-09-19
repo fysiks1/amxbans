@@ -15,7 +15,7 @@
 				<!-- Start Loop -->
 				{foreach from=$admins item=admin}
 					<tr class="list"> 
-						<td><a href="http://steamcommunity.com/profiles/{$admin.comid}" target="_blank"><img src="templates/{$design}_gfx/Steam.png" alt="{"_OPENSTEAMCOMSITE"|lang}"/></a>&nbsp;</td>
+						<td><a href="http://steamcommunity.com/profiles/{$admin.comid}" target="_blank"><img src="templates/{$design}/_gfx/Steam.png" alt="{"_OPENSTEAMCOMSITE"|lang}"/></a>&nbsp;</td>
 						<td>{$admin.nickname}</td> 
 						<td>{$admin.steamid}</td> 
 						<td>{$admin.access}</td> 

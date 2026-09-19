@@ -71,9 +71,9 @@
 						{if $server.mod}
 							<tr> 
 								<td><form method="post"><input type="hidden" name="server" value="{$server.id}"/><input class="button" type="submit" value="{"_VIEWSETTINGS"|lang}"/></form></td>
-								<td class="_center"><img alt="{$server.mod}" title="{$server.mod}" src="templates/{$design}_gfx/games/{$server.mod}.gif" /></td> 
-								<td class="_center"><img alt="{$server.os}" title="{$server.os}" src="templates/{$design}_gfx/os/{$server.os}.png" /></td> 
-								<td class="_center"><img alt="{"_VAC_ALT"|lang}" title="{"_VAC_ALT"|lang}" src="templates/{$design}_gfx/acheat/vac.png" /></td> 
+								<td class="_center"><img alt="{$server.mod}" title="{$server.mod}" src="templates/{$design}/_gfx/games/{$server.mod}.gif" /></td> 
+								<td class="_center"><img alt="{$server.os}" title="{$server.os}" src="templates/{$design}/_gfx/os/{$server.os}.png" /></td> 
+								<td class="_center"><img alt="{"_VAC_ALT"|lang}" title="{"_VAC_ALT"|lang}" src="templates/{$design}/_gfx/acheat/vac.png" /></td> 
 								<td>{$server.hostname}</td> 
 								<td class="_center">
 									{if $server.bot_players}

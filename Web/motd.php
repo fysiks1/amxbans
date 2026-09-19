@@ -99,10 +99,7 @@ if(!$sid) {
 $title = "Bandetails";
 
 $smarty->assign("design", "");
-if(file_exists("templates/".$config->design."/amxbans.css")) {
-	$smarty->assign("design",$config->design);
-}
-
+$smarty->assign("design",$config->design);
 $smarty->assign("title",$title);
 $smarty->assign("dir",$config->document_root);
 

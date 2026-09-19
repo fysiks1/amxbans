@@ -8,7 +8,7 @@
 	<meta name="author" content="" />
 	<meta http-equiv="pragma" content="no-cache" /> 
 	<meta http-equiv="cache-control" content="no-cache" />
-	<link rel="stylesheet" type="text/css" href="../_css/style_popup.css" />
+	<link rel="stylesheet" type="text/css" href="../<?php echo $config->design; ?>/_css/style_popup.css" />
 	<title>AMXBans 6.0 -//- Your Solution For Multiple Server Bans</title>
 	<script type="text/javascript"> 
 	<!--

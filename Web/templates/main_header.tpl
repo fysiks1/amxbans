@@ -12,7 +12,7 @@
 	<meta name="author" content="setoy, shorty, Sleepwalker, indianiso1" />
 	<meta http-equiv="pragma" content="no-cache" /> 
 	<meta http-equiv="cache-control" content="no-cache" />
-	<link rel="stylesheet" type="text/css" href="templates/{$design}_css/style.css" />
+	<link rel="stylesheet" type="text/css" href="templates/{$design}/_css/style.css" />
 	<title>AMXBans {$version_web} - {$title|lang}{if $title2} - {$title2|lang}{/if}</title>
 	<script type="text/javascript" src="templates/_js/amxbans.js.php"></script>
 	<script type="text/javascript" src="templates/_js/jquery.js"></script>

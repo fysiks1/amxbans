@@ -16,13 +16,13 @@
 
 						{if $smarty.session.bans_edit=="yes" || ($smarty.session.bans_edit=="own" && $smarty.session.uname == $ban_detail.username)}
 
-							<img src="templates/{$design}_gfx/page_edit.png" border="0" onclick="NewToggleLayer('banedit_{$ban_detail.bid}')" title="{"_TIP_EDIT"|lang}" style="cursor:pointer;border:0;" />
+							<img src="templates/{$design}/_gfx/page_edit.png" border="0" onclick="NewToggleLayer('banedit_{$ban_detail.bid}')" title="{"_TIP_EDIT"|lang}" style="cursor:pointer;border:0;" />
 
 						{/if}
 
 						{if $smarty.session.bans_delete=="yes" || ($smarty.session.bans_delete=="own" && $smarty.session.uname == $ban_detail.username)}
 
-							<input name="del_ban" type="image" src="templates/{$design}_gfx/page_delete.png" onclick="return confirm('{"_DELBAN"|lang}{"_DATALOSS"|lang}');" border="0" title="{"_TIP_DEL"|lang}" />
+							<input name="del_ban" type="image" src="templates/{$design}/_gfx/page_delete.png" onclick="return confirm('{"_DELBAN"|lang}{"_DATALOSS"|lang}');" border="0" title="{"_TIP_DEL"|lang}" />
 
 							<input type="hidden" name="site" value="{$site}" />
 
@@ -370,7 +370,7 @@
 
 										{if $smarty.session.bans_delete=="yes" || ($smarty.session.bans_delete=="own" && $smarty.session.uname == $demo.name)}
 
-											<input name="del_demo" type="image" src="templates/{$design}_gfx/page_delete.png" border="0" onclick="return confirm('{"_DELDEMO"|lang}{"_DATALOSS"|lang}');" title="{"_TIP_DEL"|lang}" />
+											<input name="del_demo" type="image" src="templates/{$design}/_gfx/page_delete.png" border="0" onclick="return confirm('{"_DELDEMO"|lang}{"_DATALOSS"|lang}');" title="{"_TIP_DEL"|lang}" />
 
 										{/if}
 
@@ -506,7 +506,7 @@
 
 										<img src="images/page_edit.png" title="{"_EDIT"|lang}" border="0" style="cursor:pointer;" onClick="NewToggleLayer('comedit_{$comment.id}');" />
 
-										<input name="del_comment" type="image" src="templates/{$design}_gfx/page_delete.png" border="0" onclick="return confirm('{"_DELCOMMENT"|lang}{"_DATALOSS"|lang}');" title="{"_DELETE"|lang}" />
+										<input name="del_comment" type="image" src="templates/{$design}/_gfx/page_delete.png" border="0" onclick="return confirm('{"_DELCOMMENT"|lang}{"_DATALOSS"|lang}');" title="{"_DELETE"|lang}" />
 
 									{/if}
 

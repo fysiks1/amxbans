@@ -197,12 +197,7 @@ if(isset($_POST["del_ban_x"]) && isset($_POST["bid"]) && $_SESSION["loggedin"]) 
 $smarty->assign("meta","");
 $smarty->assign("title",$title);
 $smarty->assign("version_web",$config->v_web);
-
-$smarty->assign("design", "");
-// amxbans.css included in the design? if not use it from default
-if(file_exists("templates/".$config->design."/amxbans.css")) {
-        $smarty->assign("design",$config->design);
-}
+$smarty->assign("design",$config->design);
 $smarty->assign("dir",$config->document_root);
 $smarty->assign("this",$_SERVER['PHP_SELF']);
 $smarty->assign("vars",$vars);

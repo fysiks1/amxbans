@@ -30,9 +30,7 @@ require_once("config.inc.php");
 
 $id = $_GET["id"];
 
-if(file_exists("../templates/".$config->design."/amxbans.css")) {
-	$design="/".$config->design;
-}
+$design="/".$config->design;
 
 ?>
 

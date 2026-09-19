@@ -23,9 +23,9 @@
 						
 						{if $serv.game}
 							<tr onclick="NewToggleLayer('info_{$serv.sid}');" onmouseout="this.className='m_out'" onmouseover="this.className='m_over'"> 
-								<td class="_center"><img alt="{$serv.game}" title="{$serv.game}" src="templates/{$design}_gfx/games/{$serv.mod}.gif" /></td> 
-								<td class="_center"><img alt="{$serv.os}" title="{$serv.os}" src="templates/{$design}_gfx/os/{$serv.os}.png" /></td> 
-								<td class="_center"><img alt="{"_VAC_ALT"|lang}" title="{"_VAC_ALT"|lang}" src="templates/{$design}_gfx/acheat/vac.png" /></td> 
+								<td class="_center"><img alt="{$serv.game}" title="{$serv.game}" src="templates/{$design}/_gfx/games/{$serv.mod}.gif" /></td> 
+								<td class="_center"><img alt="{$serv.os}" title="{$serv.os}" src="templates/{$design}/_gfx/os/{$serv.os}.png" /></td> 
+								<td class="_center"><img alt="{"_VAC_ALT"|lang}" title="{"_VAC_ALT"|lang}" src="templates/{$design}/_gfx/acheat/vac.png" /></td> 
 								<td>{$serv.hostname}</td> 
 								<td class="_center">
 									{if $serv.bot_players}
@@ -123,7 +123,7 @@
 							<!-- Server Online -->
 						{else}
 							<tr class="offline"> 
-								<td class="_center"><img alt="{$serv.mod}" title="{$serv.mod}" src="templates/{$design}_gfx/games/{$serv.mod}.gif" /></td> 
+								<td class="_center"><img alt="{$serv.mod}" title="{$serv.mod}" src="templates/{$design}/_gfx/games/{$serv.mod}.gif" /></td> 
 								<td class="_center">{"_NA"|lang}</td> 
 								<td class="_center">{"_NA"|lang}</td> 
 								<td>{$serv.hostname}</td> 

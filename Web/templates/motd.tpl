@@ -6,7 +6,7 @@
 <meta name="Description" content="" />
 <meta http-equiv="pragma" content="no-cache" />
 <meta http-equiv="cache-control" content="no-cache" />
-<link rel="stylesheet" type="text/css" href="templates/{$design}/amxbans.css" />
+<link rel="stylesheet" type="text/css" href="templates/{$design}amxbans.css" />
 </head>
 <body>
 	

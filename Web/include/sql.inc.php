@@ -29,7 +29,7 @@ function sql_set_websettings() {
 
 	$config->cookie=$result->cookie;
 	$config->bans_per_page=($result->bans_per_page)<1 ? 1:(int)$result->bans_per_page;
-	$config->design = $result->design;
+	$config->design = "design_" . $result->design;
 	$config->banner = $result->banner;
 	$config->banner_url = $result->banner_url;
 	$config->default_lang = $result->default_lang;
@@ -50,7 +50,7 @@ function sql_set_websettings() {
 	//set vars to an array
 	$vars=array(
 			"cookie"=>trim($config->cookie),
-			"design"=>$config->design,
+			"design"=>$result->design,
 			"bans_per_page"=>(int)$config->bans_per_page,
 			"banner"=>$config->banner,
 			"banner_url"=>$config->banner_url,

@@ -28,13 +28,13 @@
 	$title2 ="_TITLESITE";
 	
 	//Designs suchen
-	$designs[""]="default"; //name from default design
+	$designs = [];
 	$d=opendir($config->templatedir);
 	while($f=readdir($d)) {
 		if($f=="." || $f=="..") continue;
 		if(is_dir($config->templatedir."/".$f)) {
 			$prefix=explode("_",$f);
-			if($prefix[0]=="design") $designs[$f]=$f;
+			if($prefix[0]=="design") $designs[$prefix[1]]=$prefix[1];
 		}
 	}
 	closedir($d);

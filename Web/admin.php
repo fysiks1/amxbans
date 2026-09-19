@@ -85,12 +85,7 @@ $smarty->assign("title",$title2);
 $smarty->assign("version_web",$config->v_web);
 $smarty->assign("banner",$config->banner);
 $smarty->assign("banner_url",$config->banner_url);
-
-$smarty->assign("design", "");
-// amxbans.css available in design? if not, take default one.
-if(file_exists("templates/".$config->design."/amxbans.css")) {
-	$smarty->assign("design",$config->design);
-}
+$smarty->assign("design",$config->design);
 $smarty->assign("dir",$config->document_root);
 $smarty->assign("current_lang",$config->default_lang);
 $smarty->assign("this",$_SERVER['PHP_SELF']);

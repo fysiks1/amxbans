@@ -165,12 +165,7 @@ $smarty->assign("true",true);
 
 $smarty->assign("block_left", $loginblocked ? $block_left : 0);
 $smarty->assign("try", $loginfailed ? $try : 0);
-
-$smarty->assign("design", "");
-// amxbans.css available in design? if not, take default one.
-if(file_exists("templates/".$config->design."/amxbans.css")) {
-	$smarty->assign("design",$config->design);
-}
+$smarty->assign("design",$config->design);
 
 $smarty->display('main_header.tpl');
 $smarty->display('login.tpl');

@@ -41,12 +41,7 @@ $smarty->assign("admins",$admins);
 $smarty->assign("meta","");
 $smarty->assign("title",$title);
 $smarty->assign("version_web",$config->v_web);
-
-$smarty->assign("design", "");
-// amxbans.css available in design? if not, take default one.
-if(file_exists("templates/".$config->design."/amxbans.css")) {
-	$smarty->assign("design",$config->design);
-}
+$smarty->assign("design",$config->design);
 $smarty->assign("dir",$config->document_root);
 $smarty->assign("this",$_SERVER['PHP_SELF']);
 $smarty->assign("menu",$menu);

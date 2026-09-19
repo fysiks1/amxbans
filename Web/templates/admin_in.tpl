@@ -146,7 +146,7 @@
 
 					<td class="fat" style="width:200px;">MySQL {"_VERSION"|lang}</td> 
 
-					<td>{$php_settings.mysql_version} <img alt="" src="templates/{$design}_gfx/generic/{if $php_settings.mysql_version >=4.1}accept{else}exclamation{/if}.png" /></td>
+					<td>{$php_settings.mysql_version} <img alt="" src="templates/{$design}/_gfx/generic/{if $php_settings.mysql_version >=4.1}accept{else}exclamation{/if}.png" /></td>
 
 				</tr>
 
@@ -154,7 +154,7 @@
 
 					<td class="fat" style="width:200px;">safe_mode</td> 
 
-					<td>{$php_settings.safe_mode|lang} <img alt="" src="templates/{$design}_gfx/generic/accept.png" /></td>
+					<td>{$php_settings.safe_mode|lang} <img alt="" src="templates/{$design}/_gfx/generic/accept.png" /></td>
 
 				</tr>
 
@@ -162,7 +162,7 @@
 
 					<td class="fat" style="width:200px;">register_globals</td> 
 
-					<td>{$php_settings.register_globals|lang} <img src="templates/{$design}_gfx/generic/{if $php_settings.register_globals=="_OFF"}accept{else}exclamation{/if}.png" /></td>
+					<td>{$php_settings.register_globals|lang} <img src="templates/{$design}/_gfx/generic/{if $php_settings.register_globals=="_OFF"}accept{else}exclamation{/if}.png" /></td>
 
 				</tr>
 
@@ -170,7 +170,7 @@
 
 					<td class="fat" style="width:200px;">magic_quotes_gpc</td> 
 
-					<td>{$php_settings.magic_quotes_gpc|lang} <img src="templates/{$design}_gfx/generic/{if $php_settings.magic_quotes_gpc=="_OFF"}accept{else}exclamation{/if}.png" /></td>
+					<td>{$php_settings.magic_quotes_gpc|lang} <img src="templates/{$design}/_gfx/generic/{if $php_settings.magic_quotes_gpc=="_OFF"}accept{else}exclamation{/if}.png" /></td>
 
 				</tr>
 
@@ -236,7 +236,7 @@
 
 					<td style="width:15px;">{$php_settings.bcmath|lang}</td>
 
-					<td rowspan="2"><img alt="" src="templates/{$design}_gfx/generic/{if $php_settings.gmp=="_YES" || $php_settings.bcmath=="_YES"}accept{else}exclamation{/if}.png"/></td>
+					<td rowspan="2"><img alt="" src="templates/{$design}/_gfx/generic/{if $php_settings.gmp=="_YES" || $php_settings.bcmath=="_YES"}accept{else}exclamation{/if}.png"/></td>
 
 				</tr>
 
@@ -252,7 +252,7 @@
 
 					<td class="fat" style="width:200px;">GD</td> 
 
-					<td colspan="2"> {$php_settings.gd|lang}{if $php_settings.version_gd} ({$php_settings.version_gd}){/if} <img alt="" src="templates/{$design}_gfx/generic/accept.png"/></td>
+					<td colspan="2"> {$php_settings.gd|lang}{if $php_settings.version_gd} ({$php_settings.version_gd}){/if} <img alt="" src="templates/{$design}/_gfx/generic/accept.png"/></td>
 
 				</tr>
 
@@ -334,7 +334,7 @@
 
 							{if $comment_count.fail != 0} ({$comment_count.fail} {"_ERROR"|lang})
 
-								<img src="templates/{$design}_gfx/generic/exclamation.png" />
+								<img src="templates/{$design}/_gfx/generic/exclamation.png" />
 
 								&nbsp;<input type="submit" name="comment_repair" value="{"_REPAIR"|lang}" />
 
@@ -356,7 +356,7 @@
 
 							{if $file_count.fail != 0} ({$file_count.fail} {"_ERROR"|lang})
 
-								<img src="templates/{$design}_gfx/generic/exclamation.png" />
+								<img src="templates/{$design}/_gfx/generic/exclamation.png" />
 
 								&nbsp;<input type="submit" name="file_repair" value="{"_REPAIR"|lang}" />
 

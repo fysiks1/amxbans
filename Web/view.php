@@ -245,12 +245,7 @@ $smarty->assign("anticheat_array",$anticheat_array);
 $smarty->assign("players", isset($player_array) ? $player_array : NULL);
 $smarty->assign("empty_result",isset($empty_result) ? $empty_result : NULL);
 $smarty->assign("error", false);
-
-$smarty->assign("design", "");
-// amxbans.css available in design? if not, take default one.
-if(file_exists("templates/".$config->design."/amxbans.css")) {
-	$smarty->assign("design",$config->design);
-}
+$smarty->assign("design",$config->design);
 $smarty->assign("dir",$config->document_root);
 $smarty->assign("this",$_SERVER['PHP_SELF']);
 $smarty->assign("menu",$menu);
