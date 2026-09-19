@@ -1,3 +1,7 @@
 **/templates_c
 db.config.inc.php
 *.amxx
+
+# Custom Designs (keep Default)
+Web/templates/design_*
+!Web/templates/design_default
