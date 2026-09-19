@@ -105,7 +105,7 @@ try {
 $config->importdir		= $config->path_root."/tmp";
 $config->templatedir	= $config->path_root."/templates";
 $config->langfilesdir	= $config->path_root."/language/";
-$config->v_web = "6.14.4fy";
+$config->v_web = "6.15.0fy";
 
 
 //get websettings

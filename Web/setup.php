@@ -31,7 +31,7 @@ require_once("install/functions.inc");
 require_once("include/functions.inc.php");
 
 $config = (object)array();
-$config->v_web = "6.14.4fy";
+$config->v_web = "6.15.0fy";
 
 
 //installation are 6 sites
